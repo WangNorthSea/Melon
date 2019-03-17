@@ -22,10 +22,12 @@ int main(int argc, char argv[]) {
 	int c = 0000021001;
 	int d = 1234.12;
 	c--;
-	b &= c;
-	b = b & c;
-	if (a && b)
-		a &= 1;
+	b ^= c;
+	b = b ^ c;
+	if (a > b)
+		a >>= 1;
+	if (a >= b)
+		b = b >> 1;
 	a -> b -= -32;
 	printf("Hello, World!\n");
 	return;

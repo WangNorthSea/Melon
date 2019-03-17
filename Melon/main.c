@@ -12,7 +12,12 @@
 #include "./Lexer/lexer.h"
 
 int main(int argc, const char * argv[]) {
-    FILE * fp = fopen("/Users/haoyuwang/Desktop/Melon/Melon/test.c", "r");
+    if (argc == 1) {
+        printf("Melon: no input file\n");
+        return 0;
+    }
+    
+    FILE * fp = fopen(argv[1], "r");
     Token * headToken = lexicalAnalyze(fp);
     while (headToken -> next != NULL) {
         printf("line: %d  value: %s  kind: %d\n", headToken -> next -> beginLine, headToken -> next -> image, headToken -> next -> kind);

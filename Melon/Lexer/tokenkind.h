@@ -83,38 +83,42 @@
 #define ANDASSIGN 54     // &=
 #define ORASSIGN 55      // |=
 #define XORASSIGN 56     // ^=
+#define LSH 57           // <<
+#define RSH 58           // >>
+#define LSHASSIGN 59     // <<=
+#define RSHASSIGN 60     // >>=
 
 //逻辑运算符
-#define LOGICAND 57         // &&
-#define LOGICOR 58          // ||
-#define LOGICNOT 59         // !
-#define LESSTHAN 60         // <
-#define GREATERTHAN 61      // >
-#define LESSANDEQUAL 62     // <=
-#define GREATERANDEQUAL 63  // >=
-#define EQUAL 64            // ==
-#define NOTEQUAL 65         // !=
+#define LOGICAND 61         // &&
+#define LOGICOR 62          // ||
+#define LOGICNOT 63         // !
+#define LESSTHAN 64         // <
+#define GREATERTHAN 65      // >
+#define LESSANDEQUAL 66     // <=
+#define GREATERANDEQUAL 67  // >=
+#define EQUAL 68            // ==
+#define NOTEQUAL 69         // !=
 
 //赋值
-#define ASSIGN 66   // =
+#define ASSIGN 70   // =
 
 //括号
-#define LEFTPARENTHESE 67    // (
-#define RIGHTPARENTHESE 68   // )
-#define LEFTBRACKET 69       // [
-#define RIGHTBRACKET 70      // ]
-#define LEFTBRACE 71         // {
-#define RIGHTBRACE 72        // }
+#define LEFTPARENTHESE 71    // (
+#define RIGHTPARENTHESE 72   // )
+#define LEFTBRACKET 73       // [
+#define RIGHTBRACKET 74      // ]
+#define LEFTBRACE 75         // {
+#define RIGHTBRACE 76        // }
 
 //标点符号
-#define COMMA 73       // ,
-#define SEMICOLON 74   // ;
-#define DOT 75         // .
+#define COMMA 77       // ,
+#define SEMICOLON 78   // ;
+#define DOT 79         // .
 
 //箭头
-#define ARROW 76       // ->
+#define ARROW 80       // ->
 
 //文件结尾
-#define EOF_ 77
+#define EOF_ 81
 
 #endif /* tokenkind_h */
