@@ -11,7 +11,7 @@
 #include "./Lexer/lexer.h"
 
 int main(int argc, const char * argv[]) {
-    FILE * fp = fopen("./test.c", "r");
+    FILE * fp = fopen("/Users/haoyuwang/Desktop/Melon/Melon/test.c", "r");
     Token * headToken = lexicalAnalyze(fp);
     while (headToken -> next != NULL) {
         printf("line: %d  value: %s  kind: %d\n", headToken -> next -> beginLine, headToken -> next -> image, headToken -> next -> kind);
