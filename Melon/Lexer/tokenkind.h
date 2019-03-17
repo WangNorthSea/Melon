@@ -45,20 +45,74 @@
 //整数字面量
 #define INTEGER 29
 
+//浮点数字面量
+#define FLOAT 30
+
 //字符字面量
-#define CHARACTER 30
+#define CHARACTER 31
 
 //字符串字面量
-#define STRING 31
+#define STRING 32
 
 //空白符
-#define SPACES 32
+#define SPACES 33    // ' ', '\r', '\n', '\t', '\f'
 
 //注释
-#define LINE_COMMENT 33
-#define BLOCK_COMMENT 34
+#define LINE_COMMENT 34
+#define BLOCK_COMMENT 35
+
+//算术运算符
+#define SUM 36           // +
+#define SUB 37           // -
+#define MUL 38           // *
+#define DIV 39           // /
+#define RES 40           // %
+#define AND 41           // &
+#define OR 42            // |
+#define NOT 43           // ~
+#define XOR 44           // ^
+#define SELFSUM 45       // ++
+#define SELFSUB 46       // --
+#define SUMASSIGN 47     // +=
+#define SUBASSIGN 48     // -=
+#define MULASSIGN 49     // *=
+#define DIVASSIGN 50     // /=
+#define RESASSIGN 51     // %=
+#define ANDASSIGN 52     // &=
+#define ORASSIGN 53      // |=
+#define XORASSIGN 54     // ^=
+
+//逻辑运算符
+#define LOGICAND 55         // &&
+#define LOGICOR 56          // ||
+#define LOGICNOT 57         // !
+#define LESSTHAN 58         // <
+#define GREATERTHAN 59      // >
+#define LESSANDEQUAL 60     // <=
+#define GREATERANDEQUAL 61  // >=
+#define EQUAL 62            // ==
+#define NOTEQUAL 63         // !=
+
+//赋值
+#define ASSIGN 64   // =
+
+//括号
+#define LEFTPARENTHESE 65    // (
+#define RIGHTPARENTHESE 66   // )
+#define LEFTBRACKET 67       // [
+#define RIGHTBRACKET 68      // ]
+#define LEFTBRACE 69         // {
+#define RIGHTBRACE 70        // }
+
+//标点符号
+#define COMMA 71       // ,
+#define SEMICOLON 72   // ;
+#define DOT 73         // .
+
+//箭头
+#define ARROW 74       // ->
 
 //文件结尾
-#define EOF_ 35
+#define EOF_ 75
 
 #endif /* tokenkind_h */

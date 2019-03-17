@@ -172,6 +172,8 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = tailToken -> next;
             tailSpecialToken = tailToken;
         }
+        
+        
     }
     
     free(buffer);
