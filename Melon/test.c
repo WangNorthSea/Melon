@@ -18,7 +18,15 @@ int main(int argc, char argv[]) {
 
 
 			*/
-
+	double b = 00003.1415926;
+	int c = 0000021001;
+	int d = 1234.12;
+	c--;
+	b &= c;
+	b = b & c;
+	if (a && b)
+		a &= 1;
+	a -> b -= -32;
 	printf("Hello, World!\n");
 	return;
 }

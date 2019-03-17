@@ -9,17 +9,6 @@
 #ifndef lexer_h
 #define lexer_h
 
-struct Token {
-    int kind;
-    int beginLine;
-    int endLine;
-    char * image;
-    struct Token * next;
-    struct Token * specialToken;
-};
-
-typedef struct Token Token;
-
 extern Token * lexicalAnalyze(FILE * fp);
 
 #endif /* lexer_h */

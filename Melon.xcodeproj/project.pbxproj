@@ -29,7 +29,7 @@
 		30AB0CEB223D3B5500DC2A35 /* Lexer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Lexer.c; sourceTree = "<group>"; };
 		30AB0CED223D3B6000DC2A35 /* lexer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lexer.h; sourceTree = "<group>"; };
 		30AB0CEE223D3FF300DC2A35 /* tokenkind.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tokenkind.h; sourceTree = "<group>"; };
-		30AB0CEF223D466400DC2A35 /* lexstate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lexstate.h; sourceTree = "<group>"; };
+		30CD2E72223E876C0088BD7F /* token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = token.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,7 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				30AB0CEE223D3FF300DC2A35 /* tokenkind.h */,
-				30AB0CEF223D466400DC2A35 /* lexstate.h */,
+				30CD2E72223E876C0088BD7F /* token.h */,
 				30AB0CED223D3B6000DC2A35 /* lexer.h */,
 				30AB0CEB223D3B5500DC2A35 /* Lexer.c */,
 			);

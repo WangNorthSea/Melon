@@ -9,19 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "token.h"
 #include "tokenkind.h"
-#include "lexstate.h"
-
-struct Token {
-    int kind;
-    int beginLine;
-    int endLine;
-    char * image;
-    struct Token * next;
-    struct Token * specialToken;
-};
-
-typedef struct Token Token;
 
 void tokenInit(Token * token) {
     token -> image = NULL;
@@ -161,6 +150,10 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> next -> kind = IMPORT;
                 else if (!strcmp(buffer, "sizeof"))
                     tailToken -> next -> kind = SIZEOF;
+                else if (!strcmp(buffer, "float"))
+                    tailToken -> next -> kind = FLOAT;
+                else if (!strcmp(buffer, "double"))
+                    tailToken -> next -> kind = DOUBLE;
                 else
                     tailToken -> next -> kind = IDENTIFIER;
             }
@@ -502,7 +495,7 @@ Token * lexicalAnalyze(FILE * fp) {
             tailSpecialToken = tailToken;
         }
         
-        //识别行注释与块注释，正则表达式: "//"~("\n")* U "/*"~("*/")*"*/" 不规范，大体是这个意思
+        //识别/, /=以及行注释与块注释，正则表达式: "//"~("\n")* U "/*"~("*/")*"*/" 不规范，大体是这个意思
         if (ch == '/') {
             tailSpecialToken -> specialToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailSpecialToken -> specialToken);
@@ -532,6 +525,30 @@ Token * lexicalAnalyze(FILE * fp) {
                 
                 bufferIndex = 0;
                 tailSpecialToken = tailSpecialToken -> specialToken;
+            }
+            else if (ch == '=') {
+                free(tailSpecialToken -> specialToken);
+                tailSpecialToken -> specialToken = NULL;
+                tailToken -> next = (Token *)malloc(sizeof(Token));
+                tokenInit(tailToken -> next);
+                tailToken -> next -> beginLine = line;
+                tailToken -> next -> endLine = line;
+                tailToken -> next -> kind = DIVASSIGN;
+                
+                buffer[bufferIndex] = '=';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
             }
             else if (ch == '*') {
                 tailSpecialToken -> specialToken -> kind = BLOCK_COMMENT;
@@ -586,8 +603,507 @@ Token * lexicalAnalyze(FILE * fp) {
                     bufferIndex = 0;
             }
             else {
-                printf("Melon: syntax error in line %d\n", line);
-                exit(-1);
+                free(tailSpecialToken -> specialToken);
+                tailSpecialToken -> specialToken = NULL;
+                tailToken -> next = (Token *)malloc(sizeof(Token));
+                tokenInit(tailToken -> next);
+                tailToken -> next -> beginLine = line;
+                tailToken -> next -> endLine = line;
+                tailToken -> next -> kind = DIV;
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+        }
+        
+        //识别+, ++, +=以及以+开头的整数、浮点数字面量
+        if (ch == '+') {
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            
+            ch = fgetc(fp);
+            
+            if (ch == '+') {
+                tailToken -> next -> kind = SELFSUM;
+                
+                buffer[bufferIndex] = '+';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '+';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else if (ch == '=') {
+                tailToken -> next -> kind = SUMASSIGN;
+                
+                buffer[bufferIndex] = '+';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '=';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else if (ch >= '0' && ch <= '9') {
+                buffer[bufferIndex] = '+';
+                bufferIndex++;
+                
+                do {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                } while (ch >= '0' && ch <= '9');
+                
+                if (ch == '.') {
+                    tailToken -> next -> kind = FLOAT_;
+                    
+                    do {
+                        if (bufferIndex == bufferSize - 1)
+                            enlargeBuffer(buffer, &bufferSize);
+                        
+                        buffer[bufferIndex] = ch;
+                        bufferIndex++;
+                        ch = fgetc(fp);
+                    } while (ch >= '0' && ch <= '9');
+                    buffer[bufferIndex] = '\0';
+                    
+                    tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                    
+                    for (int i = 0; i <= bufferIndex; i++)
+                        tailToken -> next -> image[i] = buffer[i];
+                    
+                    bufferIndex = 0;
+                    tailToken = tailToken -> next;
+                    tailSpecialToken = tailToken;
+                }
+                else {
+                    tailToken -> next -> kind = INTEGER;
+                    
+                    buffer[bufferIndex] = '\0';
+                    
+                    tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                    
+                    for (int i = 0; i <= bufferIndex; i++)
+                        tailToken -> next -> image[i] = buffer[i];
+                    
+                    bufferIndex = 0;
+                    tailToken = tailToken -> next;
+                    tailSpecialToken = tailToken;
+                }
+            }
+            else {
+                tailToken -> next -> kind = SUM;
+                
+                buffer[bufferIndex] = '+';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+        }
+        
+        //识别-, --, -=, ->以及以-开头的整数、浮点数字面量
+        if (ch == '-') {
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            
+            ch = fgetc(fp);
+            
+            if (ch == '-') {
+                tailToken -> next -> kind = SELFSUB;
+                
+                buffer[bufferIndex] = '-';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '-';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else if (ch == '=') {
+                tailToken -> next -> kind = SUBASSIGN;
+                
+                buffer[bufferIndex] = '-';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '=';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else if (ch == '>') {
+                tailToken -> next -> kind = ARROW;
+                
+                buffer[bufferIndex] = '-';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '>';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else if (ch >= '0' && ch <= '9') {
+                buffer[bufferIndex] = '-';
+                bufferIndex++;
+                
+                do {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                } while (ch >= '0' && ch <= '9');
+                
+                if (ch == '.') {
+                    tailToken -> next -> kind = FLOAT_;
+                    
+                    do {
+                        if (bufferIndex == bufferSize - 1)
+                            enlargeBuffer(buffer, &bufferSize);
+                        
+                        buffer[bufferIndex] = ch;
+                        bufferIndex++;
+                        ch = fgetc(fp);
+                    } while (ch >= '0' && ch <= '9');
+                    buffer[bufferIndex] = '\0';
+                    
+                    tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                    
+                    for (int i = 0; i <= bufferIndex; i++)
+                        tailToken -> next -> image[i] = buffer[i];
+                    
+                    bufferIndex = 0;
+                    tailToken = tailToken -> next;
+                    tailSpecialToken = tailToken;
+                }
+                else {
+                    tailToken -> next -> kind = INTEGER;
+                    
+                    buffer[bufferIndex] = '\0';
+                    
+                    tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                    
+                    for (int i = 0; i <= bufferIndex; i++)
+                        tailToken -> next -> image[i] = buffer[i];
+                    
+                    bufferIndex = 0;
+                    tailToken = tailToken -> next;
+                    tailSpecialToken = tailToken;
+                }
+            }
+            else {
+                tailToken -> next -> kind = SUB;
+                
+                buffer[bufferIndex] = '-';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+        }
+        
+        //识别直接以数字开头的整数、浮点数字面量
+        if (ch >= '0' && ch <= '9') {
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            
+            do {
+                if (bufferIndex == bufferSize - 1)
+                    enlargeBuffer(buffer, &bufferSize);
+                
+                buffer[bufferIndex] = ch;
+                bufferIndex++;
+                ch = fgetc(fp);
+            } while (ch >= '0' && ch <= '9');
+            
+            if (ch == '.') {
+                tailToken -> next -> kind = FLOAT_;
+                
+                do {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                } while (ch >= '0' && ch <= '9');
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else {
+                tailToken -> next -> kind = INTEGER;
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+        }
+        
+        //识别*, *=
+        if (ch == '*') {
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            
+            ch = fgetc(fp);
+            
+            if (ch == '=') {
+                tailToken -> next -> kind = MULASSIGN;
+                
+                buffer[bufferIndex] = '*';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '=';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else {
+                tailToken -> next -> kind = MUL;
+                
+                buffer[bufferIndex] = '*';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+        }
+        
+        //识别%, %=
+        if (ch == '%') {
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            
+            ch = fgetc(fp);
+            
+            if (ch == '=') {
+                tailToken -> next -> kind = RESASSIGN;
+                
+                buffer[bufferIndex] = '%';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '=';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else {
+                tailToken -> next -> kind = RES;
+                
+                buffer[bufferIndex] = '%';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+        }
+        
+        //识别&, &=, &&
+        if (ch == '&') {
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            
+            ch = fgetc(fp);
+            
+            if (ch == '=') {
+                tailToken -> next -> kind = ANDASSIGN;
+                
+                buffer[bufferIndex] = '&';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '=';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else if (ch == '&') {
+                tailToken -> next -> kind = LOGICAND;
+                
+                buffer[bufferIndex] = '&';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '&';
+                bufferIndex++;
+                ch = fgetc(fp);
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
+            }
+            else {
+                tailToken -> next -> kind = AND;
+                
+                buffer[bufferIndex] = '&';
+                bufferIndex++;
+                
+                buffer[bufferIndex] = '\0';
+                
+                tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                
+                for (int i = 0; i <= bufferIndex; i++)
+                    tailToken -> next -> image[i] = buffer[i];
+                
+                bufferIndex = 0;
+                tailToken = tailToken -> next;
+                tailSpecialToken = tailToken;
             }
         }
         

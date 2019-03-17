@@ -38,81 +38,83 @@
 #define TYPEDEF 25
 #define IMPORT 26
 #define SIZEOF 27
+#define FLOAT 28
+#define DOUBLE 29
 
 //标识符
-#define IDENTIFIER 28
+#define IDENTIFIER 30
 
 //整数字面量
-#define INTEGER 29
+#define INTEGER 31
 
 //浮点数字面量
-#define FLOAT 30
+#define FLOAT_ 32
 
 //字符字面量
-#define CHARACTER 31
+#define CHARACTER 33
 
 //字符串字面量
-#define STRING 32
+#define STRING 34
 
 //空白符
-#define SPACES 33    // ' ', '\r', '\n', '\t', '\f'
+#define SPACES 35    // ' ', '\r', '\n', '\t', '\f'
 
 //注释
-#define LINE_COMMENT 34
-#define BLOCK_COMMENT 35
+#define LINE_COMMENT 36
+#define BLOCK_COMMENT 37
 
 //算术运算符
-#define SUM 36           // +
-#define SUB 37           // -
-#define MUL 38           // *
-#define DIV 39           // /
-#define RES 40           // %
-#define AND 41           // &
-#define OR 42            // |
-#define NOT 43           // ~
-#define XOR 44           // ^
-#define SELFSUM 45       // ++
-#define SELFSUB 46       // --
-#define SUMASSIGN 47     // +=
-#define SUBASSIGN 48     // -=
-#define MULASSIGN 49     // *=
-#define DIVASSIGN 50     // /=
-#define RESASSIGN 51     // %=
-#define ANDASSIGN 52     // &=
-#define ORASSIGN 53      // |=
-#define XORASSIGN 54     // ^=
+#define SUM 38           // +
+#define SUB 39           // -
+#define MUL 40           // *
+#define DIV 41           // /
+#define RES 42           // %
+#define AND 43           // &
+#define OR 44            // |
+#define NOT 45           // ~
+#define XOR 46           // ^
+#define SELFSUM 47       // ++
+#define SELFSUB 48       // --
+#define SUMASSIGN 49     // +=
+#define SUBASSIGN 50     // -=
+#define MULASSIGN 51     // *=
+#define DIVASSIGN 52     // /=
+#define RESASSIGN 53     // %=
+#define ANDASSIGN 54     // &=
+#define ORASSIGN 55      // |=
+#define XORASSIGN 56     // ^=
 
 //逻辑运算符
-#define LOGICAND 55         // &&
-#define LOGICOR 56          // ||
-#define LOGICNOT 57         // !
-#define LESSTHAN 58         // <
-#define GREATERTHAN 59      // >
-#define LESSANDEQUAL 60     // <=
-#define GREATERANDEQUAL 61  // >=
-#define EQUAL 62            // ==
-#define NOTEQUAL 63         // !=
+#define LOGICAND 57         // &&
+#define LOGICOR 58          // ||
+#define LOGICNOT 59         // !
+#define LESSTHAN 60         // <
+#define GREATERTHAN 61      // >
+#define LESSANDEQUAL 62     // <=
+#define GREATERANDEQUAL 63  // >=
+#define EQUAL 64            // ==
+#define NOTEQUAL 65         // !=
 
 //赋值
-#define ASSIGN 64   // =
+#define ASSIGN 66   // =
 
 //括号
-#define LEFTPARENTHESE 65    // (
-#define RIGHTPARENTHESE 66   // )
-#define LEFTBRACKET 67       // [
-#define RIGHTBRACKET 68      // ]
-#define LEFTBRACE 69         // {
-#define RIGHTBRACE 70        // }
+#define LEFTPARENTHESE 67    // (
+#define RIGHTPARENTHESE 68   // )
+#define LEFTBRACKET 69       // [
+#define RIGHTBRACKET 70      // ]
+#define LEFTBRACE 71         // {
+#define RIGHTBRACE 72        // }
 
 //标点符号
-#define COMMA 71       // ,
-#define SEMICOLON 72   // ;
-#define DOT 73         // .
+#define COMMA 73       // ,
+#define SEMICOLON 74   // ;
+#define DOT 75         // .
 
 //箭头
-#define ARROW 74       // ->
+#define ARROW 76       // ->
 
 //文件结尾
-#define EOF_ 75
+#define EOF_ 77
 
 #endif /* tokenkind_h */

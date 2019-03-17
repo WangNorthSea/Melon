@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "./Lexer/token.h"
 #include "./Lexer/lexer.h"
 
 int main(int argc, const char * argv[]) {
