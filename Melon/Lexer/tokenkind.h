@@ -114,11 +114,12 @@
 #define COMMA 77       // ,
 #define SEMICOLON 78   // ;
 #define DOT 79         // .
+#define COLON 80       // :
 
 //箭头
-#define ARROW 80       // ->
+#define ARROW 81       // ->
 
 //文件结尾
-#define EOF_ 81
+#define EOF_ 82
 
 #endif /* tokenkind_h */

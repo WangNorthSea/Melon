@@ -18,6 +18,12 @@ int main(int argc, const char * argv[]) {
     }
     
     FILE * fp = fopen(argv[1], "r");
+    
+    if (fp == NULL) {
+        printf("Melon: no such file or directory\n");
+        exit(-1);
+    }
+    
     Token * headToken = lexicalAnalyze(fp);
     while (headToken -> next != NULL) {
         printf("line: %d  value: %s  kind: %d\n", headToken -> next -> beginLine, headToken -> next -> image, headToken -> next -> kind);

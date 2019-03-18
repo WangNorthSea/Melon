@@ -185,11 +185,30 @@ Token * lexicalAnalyze(FILE * fp) {
                 
                 buffer[bufferIndex] = ch;
                 bufferIndex++;
+                
                 ch = fgetc(fp);
+                
+                if (ch == '\\') {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    
+                    ch = fgetc(fp);
+                    
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    
+                    ch = fgetc(fp);
+                }
             } while (ch != '\'' && ch != '\n' && ch != EOF);
             
             if (ch == '\n' || ch == EOF) {
-                printf("Melon: syntax error in line %d\n", line);
+                printf("Melon: syntax \033[31merror\033[0m in line %d\n", line);
                 exit(-1);
             }
             
@@ -227,11 +246,30 @@ Token * lexicalAnalyze(FILE * fp) {
                 
                 buffer[bufferIndex] = ch;
                 bufferIndex++;
+                
                 ch = fgetc(fp);
+                
+                if (ch == '\\') {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    
+                    ch = fgetc(fp);
+                    
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    
+                    ch = fgetc(fp);
+                }
             } while (ch != '\"' && ch != '\n' && ch != EOF);
             
             if (ch == '\n' || ch == EOF) {
-                printf("Melon: syntax error in line %d\n", line);
+                printf("Melon: syntax \033[31merror\033[0m in line %d\n", line);
                 exit(-1);
             }
             
@@ -312,6 +350,30 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken -> next -> beginLine = line;
             tailToken -> next -> endLine = line;
             tailToken -> next -> kind = DOT;
+            
+            buffer[bufferIndex] = ch;
+            bufferIndex++;
+            ch = fgetc(fp);
+            
+            buffer[bufferIndex] = '\0';
+            
+            tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+            
+            for (int i = 0; i <= bufferIndex; i++)
+                tailToken -> next -> image[i] = buffer[i];
+            
+            bufferIndex = 0;
+            tailToken = tailToken -> next;
+            tailSpecialToken = tailToken;
+        }
+        
+        if (ch == ':') {
+            syntaxError = 0;
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            tailToken -> next -> kind = COLON;
             
             buffer[bufferIndex] = ch;
             bufferIndex++;
