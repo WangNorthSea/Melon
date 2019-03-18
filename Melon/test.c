@@ -1,4 +1,4 @@
-int main(int argc, char argv[]) {
+int main(int argc, const char * argv[]) {
 	char a = 'f';        //测试专用
 	if (a == 'f')
 		printf("Nice!\n");
