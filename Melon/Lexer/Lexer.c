@@ -367,6 +367,7 @@ Token * lexicalAnalyze(FILE * fp) {
             tailSpecialToken = tailToken;
         }
         
+        //识别冒号，正则表达式: ";"
         if (ch == ':') {
             syntaxError = 0;
             tailToken -> next = (Token *)malloc(sizeof(Token));
@@ -374,6 +375,31 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken -> next -> beginLine = line;
             tailToken -> next -> endLine = line;
             tailToken -> next -> kind = COLON;
+            
+            buffer[bufferIndex] = ch;
+            bufferIndex++;
+            ch = fgetc(fp);
+            
+            buffer[bufferIndex] = '\0';
+            
+            tailToken -> next -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+            
+            for (int i = 0; i <= bufferIndex; i++)
+                tailToken -> next -> image[i] = buffer[i];
+            
+            bufferIndex = 0;
+            tailToken = tailToken -> next;
+            tailSpecialToken = tailToken;
+        }
+        
+        //识别问号，正则表达式: "?"
+        if (ch == '?') {
+            syntaxError = 0;
+            tailToken -> next = (Token *)malloc(sizeof(Token));
+            tokenInit(tailToken -> next);
+            tailToken -> next -> beginLine = line;
+            tailToken -> next -> endLine = line;
+            tailToken -> next -> kind = QUESTION;
             
             buffer[bufferIndex] = ch;
             bufferIndex++;

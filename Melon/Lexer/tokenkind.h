@@ -115,11 +115,12 @@
 #define SEMICOLON 78   // ;
 #define DOT 79         // .
 #define COLON 80       // :
+#define QUESTION 81    // ?
 
 //箭头
-#define ARROW 81       // ->
+#define ARROW 82       // ->
 
 //文件结尾
-#define EOF_ 82
+#define EOF_ 83
 
 #endif /* tokenkind_h */

@@ -20,7 +20,7 @@ int main(int argc, const char * argv[]) {
     FILE * fp = fopen(argv[1], "r");
     
     if (fp == NULL) {
-        printf("Melon: no such file or directory\n");
+        printf("Melon: %s: no such file\n", argv[1]);
         exit(-1);
     }
     
