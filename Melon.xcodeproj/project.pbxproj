@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		30AB0CE4223D3B2800DC2A35 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CE3223D3B2800DC2A35 /* main.c */; };
 		30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CEB223D3B5500DC2A35 /* Lexer.c */; };
+		30EBAC1E223FEE5E00A2D96E /* Parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 30EBAC1D223FEE5E00A2D96E /* Parser.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +31,9 @@
 		30AB0CED223D3B6000DC2A35 /* lexer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lexer.h; sourceTree = "<group>"; };
 		30AB0CEE223D3FF300DC2A35 /* tokenkind.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tokenkind.h; sourceTree = "<group>"; };
 		30CD2E72223E876C0088BD7F /* token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = token.h; sourceTree = "<group>"; };
+		30EBAC1C223FEE4800A2D96E /* node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; };
+		30EBAC1D223FEE5E00A2D96E /* Parser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Parser.c; sourceTree = "<group>"; };
+		30EBAC1F223FEE6700A2D96E /* parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = parser.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +66,8 @@
 		30AB0CE2223D3B2800DC2A35 /* Melon */ = {
 			isa = PBXGroup;
 			children = (
+				30EBAC1B223FEE1E00A2D96E /* ASTNode */,
+				30EBAC1A223FEE1100A2D96E /* Parser */,
 				30AB0CEA223D3B3F00DC2A35 /* Lexer */,
 				30AB0CE3223D3B2800DC2A35 /* main.c */,
 			);
@@ -77,6 +83,23 @@
 				30AB0CEB223D3B5500DC2A35 /* Lexer.c */,
 			);
 			path = Lexer;
+			sourceTree = "<group>";
+		};
+		30EBAC1A223FEE1100A2D96E /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				30EBAC1F223FEE6700A2D96E /* parser.h */,
+				30EBAC1D223FEE5E00A2D96E /* Parser.c */,
+			);
+			path = Parser;
+			sourceTree = "<group>";
+		};
+		30EBAC1B223FEE1E00A2D96E /* ASTNode */ = {
+			isa = PBXGroup;
+			children = (
+				30EBAC1C223FEE4800A2D96E /* node.h */,
+			);
+			path = ASTNode;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +160,7 @@
 			files = (
 				30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */,
 				30AB0CE4223D3B2800DC2A35 /* main.c in Sources */,
+				30EBAC1E223FEE5E00A2D96E /* Parser.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

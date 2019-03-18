@@ -11,6 +11,14 @@
 #include "./Lexer/token.h"
 #include "./Lexer/lexer.h"
 
+typedef struct {
+    int line;
+} Node;
+
+typedef struct {
+    Node line;
+} ExprNode;
+
 int main(int argc, const char * argv[]) {
     if (argc == 1) {
         printf("Melon: no input file\n");
