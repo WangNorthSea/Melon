@@ -18,6 +18,7 @@ int main(int argc, const char * argv[]) {
 
 
 			*/
+	label:
 	double b = 00003.1415926;
 	int c = 0000021001;
 	int d = 1234.12;
