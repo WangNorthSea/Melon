@@ -995,22 +995,49 @@ Token * lexicalAnalyze(FILE * fp) {
         
         //识别直接以数字开头的整数、浮点数字面量
         if (ch >= '0' && ch <= '9') {
+            int hasX = 0;
             syntaxError = 0;
             tailToken -> next = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken -> next);
             tailToken -> next -> beginLine = line;
             tailToken -> next -> endLine = line;
             
-            do {
-                if (bufferIndex == bufferSize - 1)
-                    enlargeBuffer(buffer, &bufferSize);
-                
-                buffer[bufferIndex] = ch;
-                bufferIndex++;
-                ch = fgetc(fp);
-            } while (ch >= '0' && ch <= '9');
+            if (ch == '0') {
+                FILE * temp = fp;
+                ch = fgetc(temp);
+                if (ch == 'x' || ch == 'X') {
+                    buffer[bufferIndex] = '0';
+                    bufferIndex++;
+                    
+                    hasX = 1;
+                    fp = temp;
+                }
+                else
+                    ch = '0';
+            }
             
-            if (ch == '.') {
+            if (hasX) {
+                do {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                } while ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'));
+            }
+            else {
+                do {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                } while (ch >= '0' && ch <= '9');
+            }
+            
+            if (ch == '.' && !hasX) {
                 tailToken -> next -> kind = FLOAT_;
                 
                 do {

@@ -19,6 +19,9 @@ int main(int argc, const char * argv[]) {
 
 			*/
 	label:
+	int a = 0xaff109;
+	int bc = 0XADDee12a;
+	int cc = 00123a;
 	double b = 00003.1415926;
 	int c = 0000021001;
 	int d = 1234.12;
