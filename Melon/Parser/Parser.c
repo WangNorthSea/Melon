@@ -11,100 +11,121 @@
 #include "../Lexer/token.h"
 #include "../Lexer/tokenkind.h"
 
-void * importStmts(Token * currentToken);
+void * importStmts(void);
 
-void * topDefs(Token * currentToken);
+void * topDefs(void);
 
-void * importStmt(Token * currentToken);
+void * importStmt(void);
 
-void * name(Token * currentToken);
+void * name(void);
 
-void * defvars(Token * currentToken);
+void * defvars(void);
 
-void * defun(Token * currentToken);
+void * defun(void);
 
-void * storage(Token * currentToken);
+void * storage(void);
 
-void * type(Token * currentToken);
+void * type(void);
 
-void * expr(Token * currentToken);
+void * expr(void);
 
-void * typeref(Token * currentToken);
+void * typeref(void);
 
-void * params(Token * currentToken);
+void * typeref_base(void);
 
-void * block(Token * currentToken);
+void * params(void);
 
-void * fixedParams(Token * currentToken);
+void * block(void);
 
-void * param(Token * currentToken);
+void * fixedParams(void);
 
-void * defconst(Token * currentToken);
+void * param(void);
 
-void * defstruct(Token * currentToken);
+void * defconst(void);
 
-void * defunion(Token * currentToken);
+void * defstruct(void);
 
-void * typedef_(Token * currentToken);
+void * defunion(void);
 
-int match(Token * token, int kind);
+void * typedef_(void);
+
+void * stmts(void);
+
+void * member_list(void);
+
+void * slot(void);
+
+void * varname(void);
+
+void * array(void);
+
+int isType(void);
+
+int match(int kind);
 
 Token * token = NULL;
 
 void compilationUnit(Token * headToken) {
     token = headToken -> next;
     
-    importStmts(token);
+    importStmts();
     
-    topDefs(token);
+    topDefs();
     
-    match(token, EOF_);
+    match(EOF_);
 }
 
-void * importStmts(Token * currentToken) {
+void * importStmts(void) {
     void * returnPtr;
     do {                             //(importStmt())*
-        returnPtr = importStmt(currentToken);
+        returnPtr = importStmt();
     } while (returnPtr != NULL);
     
     return NULL;
 }
 
-void * topDefs(Token * currentToken) {
+void * topDefs(void) {
     void * returnPtr = NULL;
-    Token * lookahead1 = currentToken;
-    Token * lookahead2 = currentToken;
-    lookahead2 -> next -> next -> next = NULL;     //有隐患
+    Token * lookahead1 = token;
     
     while (1) {
-        if (storage(lookahead1) != NULL && typeref(lookahead1) != NULL && match(lookahead1, IDENTIFIER) && match(lookahead1, LEFTPARENTHESE)) {
-            returnPtr = defun(currentToken);
-        }
-        else if (defvars(lookahead2) != NULL) {
-            returnPtr = defvars(currentToken);
+        if (storage() != NULL && typeref() != NULL && match(IDENTIFIER) && match(LEFTPARENTHESE)) {
+            token = lookahead1;
+            returnPtr = defun();
         }
         else {
-            switch (currentToken -> kind) {
-                case CONST:
-                    returnPtr = defconst(currentToken);
-                    break;
-                case STRUCT:
-                    returnPtr = defstruct(currentToken);
-                    break;
-                case UNION:
-                    returnPtr = defunion(currentToken);
-                    break;
-                case TYPEDEF:
-                    returnPtr = typedef_(currentToken);
-                    break;
-                default:
-                    goto jumpout;
+            token = lookahead1;
+            Token * lookahead2 = token -> next -> next -> next;    //有隐患
+            token -> next -> next -> next = NULL;
+            
+            if (defvars() != NULL) {
+                token = lookahead1;
+                token -> next -> next -> next = lookahead2;
+                returnPtr = defvars();
+            }
+            else {
+                token = lookahead1;
+                token -> next -> next -> next = lookahead2;
+                switch (token -> kind) {
+                    case CONST:
+                        returnPtr = defconst();
+                        break;
+                    case STRUCT:
+                        returnPtr = defstruct();
+                        break;
+                    case UNION:
+                        returnPtr = defunion();
+                        break;
+                    case TYPEDEF:
+                        returnPtr = typedef_();
+                        break;
+                    default:
+                        goto jumpout;
+                }
             }
         }
         
-        lookahead1 = currentToken;
-        lookahead2 = currentToken;
-        lookahead2 -> next -> next -> next = NULL;
+        lookahead1 = token;
     }
 jumpout:
     
@@ -112,133 +133,236 @@ jumpout:
     return returnPtr;
 }
 
-void * importStmt(Token * currentToken) {
+void * importStmt(void) {
     void * returnPtr = NULL;
     
-    if (!match(currentToken, IMPORT))
+    if (!match(IMPORT))
         return NULL;
     
-    name(currentToken);
+    name();
     
     do {                        //("." name())*
-        if (match(currentToken, DOT))
-            returnPtr = name(currentToken);
+        if (match(DOT))
+            returnPtr = name();
         else
             break;
         
     } while (returnPtr != NULL);
     
-    if (!match(currentToken, SEMICOLON))
+    if (!match(SEMICOLON))
         return NULL;
     
     return returnPtr;
 }
 
-void * name(Token * currentToken) {
+void * name(void) {
     void * returnPtr = NULL;
     
-    if (match(currentToken, IDENTIFIER))
+    if (match(IDENTIFIER))
         return returnPtr;
     else
         return NULL;
 }
 
-void * storage(Token * currentToken) {
+void * storage(void) {
     void * returnPtr = NULL;
     
-    if (match(currentToken, STATIC))
+    if (match(STATIC))
         return returnPtr;
     else
         return NULL;
 }
 
-void * defvars(Token * currentToken) {
+void * defvars(void) {
     void * returnPtr = NULL;
     
-    storage(currentToken);
+    storage();
     
-    type(currentToken);
+    type();
     
-    name(currentToken);
+    if (match(LEFTPARENTHESE)) {        //函数指针
+        if (!match(MUL))
+            return NULL;
+        
+        name();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+        
+        if (!match(LEFTPARENTHESE))
+            return NULL;
+        
+        params();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+    }
+    else {
+        varname();
+    }
     
-    if (match(currentToken, ASSIGN))   //["=" expr()]
-        expr(currentToken);
+    
+    
+    if (match(ASSIGN))   //["=" expr()]
+        expr();
     
     do {                   //("," name() ["=" expr()])*
-        if (match(currentToken, COMMA)) {
-            name(currentToken);
+        if (match(COMMA)) {
+            varname();
             
-            if (match(currentToken, ASSIGN)) {
-                expr(currentToken);
+            if (match(ASSIGN)) {
+                expr();
             }
         }
         else
             returnPtr = NULL;
     } while (returnPtr != NULL);
     
-    if (!match(currentToken, SEMICOLON))
+    if (!match(SEMICOLON))
         return NULL;
     
     return returnPtr;
 }
 
-void * defun(Token * currentToken) {
+void * defun(void) {
     void * returnPtr = NULL;
     
-    storage(currentToken);
+    storage();
     
-    typeref(currentToken);
+    typeref();
     
-    name(currentToken);
+    name();
     
-    if (!match(currentToken, LEFTPARENTHESE))
+    if (!match(LEFTPARENTHESE))
         return NULL;
     
-    params(currentToken);
+    params();
     
-    if (!match(currentToken, RIGHTPARENTHESE))
+    if (!match(RIGHTPARENTHESE))
         return NULL;
     
-    block(currentToken);
+    block();
     
     
     return returnPtr;
 }
 
-void * type(Token * currentToken) {
+void * type(void) {
+    void * returnPtr = NULL;
+    
+    typeref();
+    
+    return returnPtr;
+}
+
+void * expr(void) {
     void * returnPtr = NULL;
     
     
     return returnPtr;
 }
 
-void * expr(Token * currentToken) {
+void * typeref(void) {
     void * returnPtr = NULL;
+    
+    typeref_base();
+    
+    return returnPtr;
+}
+
+void * typeref_base(void) {
+    void * returnPtr = NULL;
+    
+    switch (token -> kind) {
+        case VOID:
+            token = token -> next;
+            break;
+        case CHAR:
+            token = token -> next;
+            break;
+        case SHORT:
+            token = token -> next;
+            break;
+        case INT:
+            token = token -> next;
+            break;
+        case LONG:
+            token = token -> next;
+            break;
+        case UNSIGNED:
+            token = token -> next;
+            switch (token -> kind) {
+                case CHAR:
+                    token = token -> next;
+                    break;
+                case SHORT:
+                    token = token -> next;
+                    break;
+                case INT:
+                    token = token -> next;
+                    break;
+                case LONG:
+                    token = token -> next;
+                    break;
+                default:
+                    //语法错误
+                    break;
+            }
+            break;
+        case STRUCT:
+            token = token -> next;
+            if (match(IDENTIFIER)) {
+                
+            }
+            else {
+                //语法错误
+            }
+            break;
+        case UNION:
+            token = token -> next;
+            if (match(IDENTIFIER)) {
+                
+            }
+            else {
+                //语法错误
+            }
+        default:
+            if (isType()) {
+                token = token -> next;
+                if (match(IDENTIFIER)) {
+                    
+                }
+                else {
+                    //语法错误
+                }
+            }
+            else {
+                //语法错误
+            }
+            break;
+    }
+    
+    
     
     
     return returnPtr;
 }
 
-void * typeref(Token * currentToken) {
+void * params(void) {
     void * returnPtr = NULL;
+    Token * lookahead = token;
     
-    
-    return returnPtr;
-}
-
-void * params(Token * currentToken) {
-    void * returnPtr = NULL;
-    Token * lookahead = currentToken;
-    
-    if (match(lookahead, VOID) && match(lookahead, RIGHTPARENTHESE)) {         //LOOKAHEAD(<VOID> ")")
-        if (!match(currentToken, VOID))
+    if (match(VOID) && match(RIGHTPARENTHESE)) {         //LOOKAHEAD(<VOID> ")")
+        token = lookahead;
+        if (!match(VOID))
             return NULL;
     }
     else {
-        fixedParams(currentToken);
+        token = lookahead;
+        fixedParams();
         
-        if (match(currentToken, COMMA)) {  //["," "..."]
-            if (match(currentToken, DOT) && match(currentToken, DOT) && match(currentToken, DOT)) {
+        if (match(COMMA)) {  //["," "..."]
+            if (match(DOT) && match(DOT) && match(DOT)) {
                 
             }
         }
@@ -247,9 +371,84 @@ void * params(Token * currentToken) {
     return returnPtr;
 }
 
-void * block(Token * currentToken) {
+void * block(void) {
     void * returnPtr = NULL;
     
+    if (!match(LEFTBRACE))
+        return NULL;
+    
+    stmts();
+    
+    if (!match(RIGHTBRACE))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * fixedParams(void) {
+    void * returnPtr = NULL;
+    
+    param();
+    
+    Token * lookahead1 = token;
+    Token * lookahead2 = token -> next -> next;     //有隐患
+    token -> next -> next = NULL;
+    
+    do {                                     //(LOOKAHEAD(2) "," param())* 区分, ...
+        if (match(COMMA) && !match(DOT)) {
+            token = lookahead1;
+            token -> next -> next = lookahead2;
+            if (match(COMMA))
+                ;
+            
+            param();
+        }
+        else {
+            token = lookahead1;
+            token -> next -> next = lookahead2;
+            returnPtr = NULL;
+            break;
+        }
+        
+        lookahead1 = token;
+        lookahead2 = token -> next -> next;     //有隐患
+        token -> next -> next = NULL;
+    } while (1);
+    
+    return returnPtr;
+}
+
+void * param(void) {
+    void * returnPtr = NULL;
+    
+    type();
+    
+    if (match(LEFTPARENTHESE)) {        //函数指针
+        if (!match(MUL))
+            return NULL;
+        
+        name();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+        
+        if (!match(LEFTPARENTHESE))
+            return NULL;
+        
+        params();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+    }
+    else {
+        varname();
+    }
+    
+    return returnPtr;
+}
+
+void * defconst(void) {
+    void * returnPtr = NULL;
     
     
     
@@ -258,38 +457,134 @@ void * block(Token * currentToken) {
     return returnPtr;
 }
 
-void * fixedParams(Token * currentToken) {
+void * defstruct(void) {
     void * returnPtr = NULL;
-    Token * lookahead = currentToken;
     
-    param(currentToken);
+    if (!match(STRUCT))
+        return NULL;
     
-    do {                                     //(LOOKAHEAD(2) "," param())* 区分, ...
-        if (match(lookahead, COMMA) && !match(lookahead, DOT)) {
-            if (match(currentToken, COMMA))
-                ;
-            
-            param(currentToken);
+    name();
+    
+    member_list();
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * defunion(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(UNION))
+        return NULL;
+    
+    name();
+    
+    member_list();
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * typedef_(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(TYPEDEF))
+        return NULL;
+    
+    typeref();
+    
+    varname();
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * stmts(void) {
+    void * returnPtr = NULL;
+    
+    
+    
+    
+    
+    return returnPtr;
+}
+
+void * member_list(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(LEFTBRACE))
+        return NULL;
+    
+    do {                          //(slot() ";")*
+        if (slot() != NULL) {
+            if (!match(SEMICOLON))
+                return NULL;
         }
         else
-            returnPtr = NULL;
+            break;
+    } while (1);
+    
+    if (!match(RIGHTBRACE))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * slot(void) {
+    void * returnPtr = NULL;
+    
+    type();
+    
+    if (match(LEFTPARENTHESE)) {        //函数指针
+        if (!match(MUL))
+            return NULL;
+        
+        name();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+        
+        if (!match(LEFTPARENTHESE))
+            return NULL;
+        
+        params();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+    }
+    else {
+        varname();
+    }
+    
+    return returnPtr;
+}
+
+void * varname(void) {
+    void * returnPtr = NULL;
+    
+    do {                    //("*")*
+        if (!match(MUL))
+            break;
+    } while (1);
+    
+    name();
+    
+    do {
+        returnPtr = array();               //零个或多个
     } while (returnPtr != NULL);
     
     return returnPtr;
 }
 
-void * param(Token * currentToken) {
+void * array(void) {
     void * returnPtr = NULL;
     
-    type(currentToken);
-    
-    name(currentToken);
-    
-    return returnPtr;
-}
-
-void * defconst(Token * currentToken) {
-    void * returnPtr = NULL;
     
     
     
@@ -298,37 +593,14 @@ void * defconst(Token * currentToken) {
     return returnPtr;
 }
 
-void * defstruct(Token * currentToken) {
-    void * returnPtr = NULL;
+int isType(void) {
     
     
     
-    
-    
-    return returnPtr;
+    return 0;
 }
 
-void * defunion(Token * currentToken) {
-    void * returnPtr = NULL;
-    
-    
-    
-    
-    
-    return returnPtr;
-}
-
-void * typedef_(Token * currentToken) {
-    void * returnPtr = NULL;
-    
-    
-    
-    
-    
-    return returnPtr;
-}
-
-int match(Token * token, int kind) {
+int match(int kind) {
     if (token -> kind == kind) {
         token = token -> next;
         return 1;

@@ -367,7 +367,7 @@ Token * lexicalAnalyze(FILE * fp) {
             tailSpecialToken = tailToken;
         }
         
-        //识别冒号，正则表达式: ";"
+        //识别冒号，正则表达式: ":"
         if (ch == ':') {
             syntaxError = 0;
             tailToken -> next = (Token *)malloc(sizeof(Token));
