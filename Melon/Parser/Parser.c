@@ -93,6 +93,30 @@ void * case_body(void);
 
 void * primary(void);
 
+void * term(void);
+
+void * opassign_op(void);
+
+void * expr10(void);
+
+void * expr9(void);
+
+void * expr8(void);
+
+void * expr7(void);
+
+void * expr6(void);
+
+void * expr5(void);
+
+void * expr4(void);
+
+void * expr3(void);
+
+void * expr2(void);
+
+void * expr1(void);
+
 int isType(void);
 
 int match(int kind);
@@ -291,7 +315,33 @@ void * type(void) {
 
 void * expr(void) {
     void * returnPtr = NULL;
+    Token * lookahead = token;
     
+    if (term() != NULL && match(ASSIGN)) {
+        token = lookahead;
+        term();
+        
+        if (!match(ASSIGN))
+            return NULL;
+        
+        expr();
+    }
+    else {
+        token = lookahead;
+        
+        if (term() != NULL && opassign_op() != NULL) {
+            token = lookahead;
+            term();
+            
+            opassign_op();
+            
+            expr();
+        }
+        else {
+            token = lookahead;
+            expr10();
+        }
+    }
     
     return returnPtr;
 }
@@ -939,9 +989,6 @@ void * return_stmt(void) {
             return NULL;
     }
     
-    
-    
-    
     return returnPtr;
 }
 
@@ -1012,6 +1059,265 @@ void * primary(void) {
     
     
     
+    
+    return returnPtr;
+}
+
+void * term(void) {
+    void * returnPtr = NULL;
+    
+    
+    
+    
+    
+    
+    return returnPtr;
+}
+
+void * opassign_op(void) {
+    void * returnPtr = NULL;
+    
+    switch (token -> kind) {
+        case SUMASSIGN:
+            token = token -> next;
+            break;
+        case SUBASSIGN:
+            token = token -> next;
+            break;
+        case MULASSIGN:
+            token = token -> next;
+            break;
+        case DIVASSIGN:
+            token = token -> next;
+            break;
+        case RESASSIGN:
+            token = token -> next;
+            break;
+        case ANDASSIGN:
+            token = token -> next;
+            break;
+        case ORASSIGN:
+            token = token -> next;
+            break;
+        case XORASSIGN:
+            token = token -> next;
+            break;
+        case LSHASSIGN:
+            token = token -> next;
+            break;
+        case RSHASSIGN:
+            token = token -> next;
+            break;
+        default:
+            //语法错误
+            break;
+    }
+    
+    return returnPtr;
+}
+
+void * expr10(void) {
+    void * returnPtr = NULL;
+    
+    expr9();
+    
+    //可选           ["?" expr() ":" expr10()]
+    if (match(QUESTION)) {
+        expr();
+        
+        if (!match(COLON))
+            return NULL;
+        
+        expr10();
+    }
+    
+    return returnPtr;
+}
+
+void * expr9(void) {
+    void * returnPtr = NULL;
+    
+    expr8();
+    
+    //("||" expr8())*
+    do {
+        if (match(LOGICOR)) {
+            expr8();
+        }
+        else
+            returnPtr = NULL;
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr8(void) {
+    void * returnPtr = NULL;
+    
+    expr7();
+    
+    //("&&" expr7())*
+    do {
+        if (match(LOGICAND)) {
+            expr7();
+        }
+        else
+            returnPtr = NULL;
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr7(void) {
+    void * returnPtr = NULL;
+    
+    expr6();
+    
+    do {  //(">" expr6() | "<" expr6() | ">=" expr6() | "<=" expr6() | "==" expr6() | "!=" expr6())*
+        switch (token -> kind) {
+            case GREATERTHAN:
+                token = token -> next;
+                expr6();
+                break;
+            case LESSTHAN:
+                token = token -> next;
+                expr6();
+                break;
+            case GREATERANDEQUAL:
+                token = token -> next;
+                expr6();
+                break;
+            case LESSANDEQUAL:
+                token = token -> next;
+                expr6();
+                break;
+            case EQUAL:
+                token = token -> next;
+                expr6();
+                break;
+            case NOTEQUAL:
+                token = token -> next;
+                expr6();
+                break;
+            default:
+                returnPtr = NULL;
+                break;
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr6(void) {
+    void * returnPtr = NULL;
+    
+    expr5();
+    
+    do {        //("|" expr5())*
+        if (match(OR)) {
+            expr5();
+        }
+        else {
+            returnPtr = NULL;
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr5(void) {
+    void * returnPtr = NULL;
+    
+    expr4();
+    
+    do {        //("^" expr4())*
+        if (match(XOR)) {
+            expr4();
+        }
+        else {
+            returnPtr = NULL;
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr4(void) {
+    void * returnPtr = NULL;
+    
+    expr3();
+    
+    do {        //("&" expr3())*
+        if (match(AND)) {
+            expr3();
+        }
+        else {
+            returnPtr = NULL;
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr3(void) {
+    void * returnPtr = NULL;
+    
+    expr2();
+    
+    do {       //(">>" expr2() | "<<" expr2())*
+        if (match(RSH)) {
+            expr2();
+        }
+        else if (match(LSH)) {
+            expr2();
+        }
+        else {
+            returnPtr = NULL;
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr2(void) {
+    void * returnPtr = NULL;
+    
+    expr1();
+    
+    do {       //("+" expr1() | "-" expr1())*
+        if (match(SUM)) {
+            expr1();
+        }
+        else if (match(SUB)) {
+            expr1();
+        }
+        else {
+            returnPtr = NULL;
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * expr1(void) {
+    void * returnPtr = NULL;
+    
+    term();
+    
+    do {       //("*" term() | "/" term() | "%" term())*
+        if (match(MUL)) {
+            term();
+        }
+        else if (match(DIV)) {
+            term();
+        }
+        else if (match(RES)){
+            term();
+        }
+        else {
+            returnPtr = NULL;
+        }
+    } while (returnPtr != NULL);
     
     return returnPtr;
 }
