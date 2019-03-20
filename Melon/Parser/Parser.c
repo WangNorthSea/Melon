@@ -51,6 +51,8 @@ void * typedef_(void);
 
 void * stmts(void);
 
+void * stmt(void);
+
 void * member_list(void);
 
 void * slot(void);
@@ -58,6 +60,38 @@ void * slot(void);
 void * varname(void);
 
 void * array(void);
+
+void * labeled_stmt(void);
+
+void * if_stmt(void);
+
+void * while_stmt(void);
+
+void * dowhile_stmt(void);
+
+void * for_stmt(void);
+
+void * switch_stmt(void);
+
+void * break_stmt(void);
+
+void * continue_stmt(void);
+
+void * goto_stmt(void);
+
+void * return_stmt(void);
+
+void * case_clauses(void);
+
+void * case_clause(void);
+
+void * default_clause(void);
+
+void * cases(void);
+
+void * case_body(void);
+
+void * primary(void);
 
 int isType(void);
 
@@ -450,9 +484,53 @@ void * param(void) {
 void * defconst(void) {
     void * returnPtr = NULL;
     
+    if (!match(CONST))
+        return NULL;
+    
+    storage();
+    
+    type();
+    
+    if (match(LEFTPARENTHESE)) {        //函数指针
+        if (!match(MUL))
+            return NULL;
+        
+        name();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+        
+        if (!match(LEFTPARENTHESE))
+            return NULL;
+        
+        params();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+    }
+    else {
+        varname();
+    }
     
     
     
+    if (match(ASSIGN))   //["=" expr()]
+        expr();
+    
+    do {                   //("," name() ["=" expr()])*
+        if (match(COMMA)) {
+            varname();
+            
+            if (match(ASSIGN)) {
+                expr();
+            }
+        }
+        else
+            returnPtr = NULL;
+    } while (returnPtr != NULL);
+    
+    if (!match(SEMICOLON))
+        return NULL;
     
     return returnPtr;
 }
@@ -508,9 +586,64 @@ void * typedef_(void) {
 void * stmts(void) {
     void * returnPtr = NULL;
     
+    do {                         //(stmt())*
+        returnPtr = stmt();
+    } while (returnPtr != NULL);
     
+    return returnPtr;
+}
+
+void * stmt(void) {
+    void * returnPtr = NULL;
     
-    
+    if (match(SEMICOLON)) {
+        
+    }
+    else if (token -> kind == IDENTIFIER && token -> next -> kind == COLON) {
+        labeled_stmt();
+    }
+    else if (token -> kind == LEFTPARENTHESE || token -> kind == SELFSUM || token -> kind == SELFSUB || token -> kind == SUM || token -> kind == SUB || token -> kind == LOGICNOT || token -> kind == NOT || token -> kind == MUL || token -> kind == AND || token -> kind == SIZEOF || token -> kind == INTEGER || token -> kind == CHARACTER || token -> kind == STRING || token -> kind == IDENTIFIER) {
+        expr();
+        
+        if (!match(SEMICOLON))
+            return NULL;
+    }
+    else if (token -> kind == LEFTBRACE) {
+        block();
+    }
+    else if (token -> kind == IF) {
+        if_stmt();
+    }
+    else if (token -> kind == WHILE) {
+        while_stmt();
+    }
+    else if (token -> kind == DO) {
+        dowhile_stmt();
+    }
+    else if (token -> kind == FOR) {
+        for_stmt();
+    }
+    else if (token -> kind == SWITCH) {
+        switch_stmt();
+    }
+    else if (token -> kind == BREAK) {
+        break_stmt();
+    }
+    else if (token -> kind == CONTINUE) {
+        continue_stmt();
+    }
+    else if (token -> kind == GOTO) {
+        goto_stmt();
+    }
+    else if (token -> kind == RETURN) {
+        return_stmt();
+    }
+    else if (token -> kind == CONST) {
+        defconst();
+    }
+    else {
+        defvars();      //匹配不成功即为语法错误
+    }
     
     return returnPtr;
 }
@@ -583,6 +716,296 @@ void * varname(void) {
 }
 
 void * array(void) {
+    void * returnPtr = NULL;
+    
+    do {
+        if (token -> kind == LEFTBRACKET && token -> next -> kind == RIGHTBRACKET) {
+            match(LEFTBRACKET);
+            match(RIGHTBRACKET);
+        }
+        else {
+            if (match(LEFTBRACKET)) {
+                if (match(INTEGER)) {
+                    if (match(RIGHTBRACKET)) {
+                        
+                    }
+                    else {
+                        returnPtr = NULL;
+                    }
+                }
+                else {
+                    returnPtr = NULL;
+                }
+            }
+            else {
+                returnPtr = NULL;
+            }
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * labeled_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(IDENTIFIER))
+        return NULL;
+    
+    if (!match(COLON))
+        return NULL;
+    
+    stmt();                   //label其实记录的是这条语句的地址
+    
+    
+    return returnPtr;
+}
+
+void * if_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(IF))
+        return NULL;
+    
+    if (!match(LEFTPARENTHESE))
+        return NULL;
+    
+    expr();
+    
+    if (!match(RIGHTPARENTHESE))
+        return NULL;
+    
+    stmt();
+    
+    if (match(ELSE)) {     //[LOOKAHEAD(1) <ELSE> stmt()]
+        stmt();
+    }
+    
+    return returnPtr;
+}
+
+void * while_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(WHILE))
+        return NULL;
+    
+    if (!match(LEFTPARENTHESE))
+        return NULL;
+    
+    expr();
+    
+    if (!match(RIGHTPARENTHESE))
+        return NULL;
+    
+    stmt();
+    
+    return returnPtr;
+}
+
+void * dowhile_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(DO))
+        return NULL;
+    
+    stmt();
+    
+    if (!match(WHILE))
+        return NULL;
+    
+    if (!match(LEFTPARENTHESE))
+        return NULL;
+    
+    expr();
+    
+    if (!match(RIGHTPARENTHESE))
+        return NULL;
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * for_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(FOR))
+        return NULL;
+    
+    if (!match(LEFTPARENTHESE))
+        return NULL;
+    
+    expr();      //可选
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    expr();      //可选
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    expr();      //可选
+    
+    if (!match(RIGHTPARENTHESE))
+        return NULL;
+    
+    stmt();
+    
+    return returnPtr;
+}
+
+void * switch_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(SWITCH))
+        return NULL;
+    
+    if (!match(LEFTPARENTHESE))
+        return NULL;
+    
+    expr();
+    
+    if (!match(RIGHTPARENTHESE))
+        return NULL;
+    
+    if (!match(LEFTBRACE))
+        return NULL;
+    
+    case_clauses();
+    
+    
+    if (!match(RIGHTBRACE))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * break_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(BREAK))
+        return NULL;
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * continue_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(CONTINUE))
+        return NULL;
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * goto_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(GOTO))
+        return NULL;
+    
+    if (!match(IDENTIFIER))
+        return NULL;
+    
+    if (!match(SEMICOLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * return_stmt(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(RETURN))
+        return NULL;
+    
+    if (token -> kind == SEMICOLON) {
+        match(SEMICOLON);
+        
+    }
+    else {
+        expr();
+        
+        if (!match(SEMICOLON))
+            return NULL;
+    }
+    
+    
+    
+    
+    return returnPtr;
+}
+
+void * case_clauses(void) {
+    void * returnPtr = NULL;
+    
+    do {                              //(case_clause())*
+        returnPtr = case_clause();
+    } while (returnPtr != NULL);
+    
+    default_clause();         //必需
+    
+    return returnPtr;
+}
+
+void * case_clause(void) {
+    void * returnPtr = NULL;
+    
+    cases();
+    
+    case_body();
+    
+    return returnPtr;
+}
+
+void * default_clause(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(DEFAULT))
+        return NULL;
+    
+    if (!match(COLON))
+        return NULL;
+    
+    case_body();
+    
+    return returnPtr;
+}
+
+void * cases(void) {
+    void * returnPtr = NULL;
+    
+    if (!match(CASE))
+        return NULL;
+    
+    primary();
+    
+    if (!match(COLON))
+        return NULL;
+    
+    return returnPtr;
+}
+
+void * case_body(void) {
+    void * returnPtr = NULL;
+    
+    do {                         //(stmt())+
+        returnPtr = stmt();
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * primary(void) {
     void * returnPtr = NULL;
     
     
