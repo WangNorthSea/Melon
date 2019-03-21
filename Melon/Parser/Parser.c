@@ -117,6 +117,12 @@ void * expr2(void);
 
 void * expr1(void);
 
+void * unary(void);
+
+void * postfix(void);
+
+void * args(void);
+
 int isType(void);
 
 int match(int kind);
@@ -1055,21 +1061,55 @@ void * case_body(void) {
 void * primary(void) {
     void * returnPtr = NULL;
     
-    
-    
-    
-    
+    switch (token -> kind) {
+        case INTEGER:
+            token = token -> next;
+            break;
+        case CHARACTER:
+            token = token -> next;
+            break;
+        case STRING:
+            token = token -> next;
+            break;
+        case IDENTIFIER:
+            token = token -> next;
+            break;
+        case LEFTPARENTHESE:
+            token = token -> next;
+            expr();
+            if (!match(RIGHTPARENTHESE))
+                return NULL;
+            break;
+        default:
+            //语法错误
+            break;
+    }
     
     return returnPtr;
 }
 
 void * term(void) {
     void * returnPtr = NULL;
+    Token * lookahead = token;
     
-    
-    
-    
-    
+    if (match(LEFTPARENTHESE) && type()) {
+        token = lookahead;
+        
+        if (!match(LEFTPARENTHESE))
+            return NULL;
+        
+        type();
+        
+        if (!match(RIGHTPARENTHESE))
+            return NULL;
+        
+        term();
+    }
+    else {
+        token = lookahead;
+        
+        unary();
+    }
     
     return returnPtr;
 }
@@ -1318,6 +1358,137 @@ void * expr1(void) {
             returnPtr = NULL;
         }
     } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * unary(void) {
+    void * returnPtr = NULL;
+    Token * lookahead1 = NULL;
+    Token * lookahead2 = NULL;
+    
+    switch (token -> kind) {
+        case SELFSUM:
+            token = token -> next;
+            unary();
+            break;
+        case SELFSUB:
+            token = token -> next;
+            unary();
+            break;
+        case SUM:
+            token = token -> next;
+            term();
+            break;
+        case SUB:
+            token = token -> next;
+            term();
+            break;
+        case LOGICNOT:
+            token = token -> next;
+            term();
+            break;
+        case NOT:
+            token = token -> next;
+            term();
+            break;
+        case MUL:
+            token = token -> next;
+            term();
+            break;
+        case AND:
+            token = token -> next;
+            term();
+            break;
+        case SIZEOF:
+            token = token -> next;
+            lookahead1 = token;
+            lookahead2 = token -> next -> next;
+            token -> next -> next = NULL;
+            
+            if (match(LEFTPARENTHESE) && type() != NULL) {
+                token = lookahead1;
+                token -> next -> next = lookahead2;
+                
+                if (!match(LEFTPARENTHESE))
+                    return NULL;
+                
+                type();
+                
+                if (!match(RIGHTPARENTHESE))
+                    return NULL;
+            }
+            else {
+                token = lookahead1;
+                token -> next -> next = lookahead2;
+                
+                unary();
+            }
+            break;
+        default:
+            postfix();
+    }
+    
+    return returnPtr;
+    
+}
+
+void * postfix(void) {
+    void * returnPtr = NULL;
+    
+    primary();
+    
+    do {    //("++"|"--"|"["expr()"]"|"."name()|"->"name()|"("args()")")*
+        switch (token -> kind) {
+            case SELFSUM:
+                token = token -> next;
+                break;
+            case SELFSUB:
+                token = token -> next;
+                break;
+            case LEFTBRACKET:
+                token = token -> next;
+                expr();
+                if (!match(RIGHTBRACKET))
+                    return NULL;
+                break;
+            case DOT:
+                token = token -> next;
+                name();
+                break;
+            case ARROW:
+                token = token -> next;
+                name();
+                break;
+            case LEFTPARENTHESE:
+                token = token -> next;
+                args();
+                if (!match(RIGHTPARENTHESE))
+                    return NULL;
+                break;
+            default:
+                returnPtr = NULL;
+                break;
+        }
+    } while (returnPtr != NULL);
+    
+    return returnPtr;
+}
+
+void * args(void) {
+    void * returnPtr = NULL;
+    
+    //可选  [expr() ("," expr())*]
+    if (expr() != NULL) {
+        do {
+            if (match(COMMA)) {
+                expr();
+            }
+            else {
+                returnPtr = NULL;
+            }
+        } while (returnPtr != NULL);
+    }
     
     return returnPtr;
 }

@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "./Lexer/token.h"
 #include "./Lexer/lexer.h"
+#include "./Parser/parser.h"
 
 typedef struct {
     int line;
@@ -33,9 +34,14 @@ int main(int argc, const char * argv[]) {
     }
     
     Token * headToken = lexicalAnalyze(fp);
+    Token * headToken2 = headToken;
     while (headToken -> next != NULL) {
         printf("line: %d  value: %s  kind: %d\n", headToken -> next -> beginLine, headToken -> next -> image, headToken -> next -> kind);
         headToken = headToken -> next;
     }
+    
+    compilationUnit(headToken2);
+    
+    printf("done.\n");
     return 0;
 }

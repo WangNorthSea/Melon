@@ -9,5 +9,6 @@
 #ifndef parser_h
 #define parser_h
 
+extern void compilationUnit(Token * headToken);
 
 #endif /* parser_h */
