@@ -9,34 +9,19 @@
 #ifndef node_h
 #define node_h
 
-//抽象语法书根节点
-typedef struct {
+struct ASTNode {
+    int kind;
+    char * file;
     int line;
-} AST;
+    char * image;
+    struct ASTNode * ptr1;
+    struct ASTNode * ptr2;
+    struct ASTNode * ptr3;
+    struct ASTNode * ptr4;
+    struct ASTNode * ptr5;
+    struct ASTNode * ptr6;
+};
 
-//表达式节点
-typedef struct {
-    int line;
-} ExprNode;
-
-//结构体成员节点
-typedef struct {
-    int line;
-} Slot;
-
-//语句节点
-typedef struct {
-    int line;
-} StmtNode;
-
-//类型定义节点
-typedef struct {
-    int line;
-} TypeDefinition;
-
-//存储类型节点
-typedef struct {
-    int line;
-} TypeNode;
+typedef struct ASTNode ASTNode;
 
 #endif /* node_h */

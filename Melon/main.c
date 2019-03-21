@@ -40,6 +40,7 @@ int main(int argc, const char * argv[]) {
         headToken = headToken -> next;
     }
     
+    parsingFile = argv[1];
     compilationUnit(headToken2);
     
     printf("done.\n");

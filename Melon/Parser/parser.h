@@ -11,4 +11,6 @@
 
 extern void compilationUnit(Token * headToken);
 
+extern const char * parsingFile;
+
 #endif /* parser_h */

@@ -10,124 +10,128 @@
 #include <stdlib.h>
 #include "../Lexer/token.h"
 #include "../Lexer/tokenkind.h"
+#include "../ASTNode/node.h"
+#include "../ASTNode/constructor.h"
 
-void * importStmts(void);
+ASTNode * importStmts(void);
 
-void * topDefs(void);
+ASTNode * topDefs(void);
 
-void * importStmt(void);
+ASTNode * importStmt(void);
 
-void * name(void);
+ASTNode * name(void);
 
-void * defvars(void);
+ASTNode * defvars(void);
 
-void * defun(void);
+ASTNode * defun(void);
 
-void * storage(void);
+ASTNode * storage(void);
 
-void * type(void);
+ASTNode * type(void);
 
-void * expr(void);
+ASTNode * expr(void);
 
-void * typeref(void);
+ASTNode * typeref(void);
 
-void * typeref_base(void);
+ASTNode * typeref_base(void);
 
-void * params(void);
+ASTNode * params(void);
 
-void * block(void);
+ASTNode * block(void);
 
-void * fixedParams(void);
+ASTNode * fixedParams(void);
 
-void * param(void);
+ASTNode * param(void);
 
-void * defconst(void);
+ASTNode * defconst(void);
 
-void * defstruct(void);
+ASTNode * defstruct(void);
 
-void * defunion(void);
+ASTNode * defunion(void);
 
-void * typedef_(void);
+ASTNode * typedef_(void);
 
-void * stmts(void);
+ASTNode * stmts(void);
 
-void * stmt(void);
+ASTNode * stmt(void);
 
-void * member_list(void);
+ASTNode * member_list(void);
 
-void * slot(void);
+ASTNode * slot(void);
 
-void * varname(void);
+ASTNode * varname(void);
 
-void * array(void);
+ASTNode * array(void);
 
-void * labeled_stmt(void);
+ASTNode * labeled_stmt(void);
 
-void * if_stmt(void);
+ASTNode * if_stmt(void);
 
-void * while_stmt(void);
+ASTNode * while_stmt(void);
 
-void * dowhile_stmt(void);
+ASTNode * dowhile_stmt(void);
 
-void * for_stmt(void);
+ASTNode * for_stmt(void);
 
-void * switch_stmt(void);
+ASTNode * switch_stmt(void);
 
-void * break_stmt(void);
+ASTNode * break_stmt(void);
 
-void * continue_stmt(void);
+ASTNode * continue_stmt(void);
 
-void * goto_stmt(void);
+ASTNode * goto_stmt(void);
 
-void * return_stmt(void);
+ASTNode * return_stmt(void);
 
-void * case_clauses(void);
+ASTNode * case_clauses(void);
 
-void * case_clause(void);
+ASTNode * case_clause(void);
 
-void * default_clause(void);
+ASTNode * default_clause(void);
 
-void * cases(void);
+ASTNode * cases(void);
 
-void * case_body(void);
+ASTNode * case_body(void);
 
-void * primary(void);
+ASTNode * primary(void);
 
-void * term(void);
+ASTNode * term(void);
 
-void * opassign_op(void);
+ASTNode * opassign_op(void);
 
-void * expr10(void);
+ASTNode * expr10(void);
 
-void * expr9(void);
+ASTNode * expr9(void);
 
-void * expr8(void);
+ASTNode * expr8(void);
 
-void * expr7(void);
+ASTNode * expr7(void);
 
-void * expr6(void);
+ASTNode * expr6(void);
 
-void * expr5(void);
+ASTNode * expr5(void);
 
-void * expr4(void);
+ASTNode * expr4(void);
 
-void * expr3(void);
+ASTNode * expr3(void);
 
-void * expr2(void);
+ASTNode * expr2(void);
 
-void * expr1(void);
+ASTNode * expr1(void);
 
-void * unary(void);
+ASTNode * unary(void);
 
-void * postfix(void);
+ASTNode * postfix(void);
 
-void * args(void);
+ASTNode * args(void);
 
 int isType(void);
 
 int match(int kind);
 
 Token * token = NULL;
+
+const char * parsingFile = NULL;
 
 void compilationUnit(Token * headToken) {
     token = headToken -> next;
@@ -139,8 +143,8 @@ void compilationUnit(Token * headToken) {
     match(EOF_);
 }
 
-void * importStmts(void) {
-    void * returnPtr;
+ASTNode * importStmts(void) {
+    ASTNode * returnPtr;
     do {                             //(importStmt())*
         returnPtr = importStmt();
     } while (returnPtr != NULL);
@@ -148,8 +152,8 @@ void * importStmts(void) {
     return NULL;
 }
 
-void * topDefs(void) {
-    void * returnPtr = NULL;
+ASTNode * topDefs(void) {
+    ASTNode * returnPtr = NULL;
     Token * lookahead1 = token;
     
     while (1) {
@@ -197,8 +201,8 @@ jumpout:
     return returnPtr;
 }
 
-void * importStmt(void) {
-    void * returnPtr = NULL;
+ASTNode * importStmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(IMPORT))
         return NULL;
@@ -219,8 +223,8 @@ void * importStmt(void) {
     return returnPtr;
 }
 
-void * name(void) {
-    void * returnPtr = NULL;
+ASTNode * name(void) {
+    ASTNode * returnPtr = NULL;
     
     if (match(IDENTIFIER))
         return returnPtr;
@@ -228,8 +232,8 @@ void * name(void) {
         return NULL;
 }
 
-void * storage(void) {
-    void * returnPtr = NULL;
+ASTNode * storage(void) {
+    ASTNode * returnPtr = NULL;
     
     if (match(STATIC))
         return returnPtr;
@@ -237,8 +241,8 @@ void * storage(void) {
         return NULL;
 }
 
-void * defvars(void) {
-    void * returnPtr = NULL;
+ASTNode * defvars(void) {
+    ASTNode * returnPtr = NULL;
     
     storage();
     
@@ -288,8 +292,8 @@ void * defvars(void) {
     return returnPtr;
 }
 
-void * defun(void) {
-    void * returnPtr = NULL;
+ASTNode * defun(void) {
+    ASTNode * returnPtr = NULL;
     
     storage();
     
@@ -311,16 +315,16 @@ void * defun(void) {
     return returnPtr;
 }
 
-void * type(void) {
-    void * returnPtr = NULL;
+ASTNode * type(void) {
+    ASTNode * returnPtr = NULL;
     
     typeref();
     
     return returnPtr;
 }
 
-void * expr(void) {
-    void * returnPtr = NULL;
+ASTNode * expr(void) {
+    ASTNode * returnPtr = NULL;
     Token * lookahead = token;
     
     if (term() != NULL && match(ASSIGN)) {
@@ -352,16 +356,16 @@ void * expr(void) {
     return returnPtr;
 }
 
-void * typeref(void) {
-    void * returnPtr = NULL;
+ASTNode * typeref(void) {
+    ASTNode * returnPtr = NULL;
     
     typeref_base();
     
     return returnPtr;
 }
 
-void * typeref_base(void) {
-    void * returnPtr = NULL;
+ASTNode * typeref_base(void) {
+    ASTNode * returnPtr = NULL;
     
     switch (token -> kind) {
         case VOID:
@@ -438,8 +442,8 @@ void * typeref_base(void) {
     return returnPtr;
 }
 
-void * params(void) {
-    void * returnPtr = NULL;
+ASTNode * params(void) {
+    ASTNode * returnPtr = NULL;
     Token * lookahead = token;
     
     if (match(VOID) && match(RIGHTPARENTHESE)) {         //LOOKAHEAD(<VOID> ")")
@@ -461,8 +465,8 @@ void * params(void) {
     return returnPtr;
 }
 
-void * block(void) {
-    void * returnPtr = NULL;
+ASTNode * block(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(LEFTBRACE))
         return NULL;
@@ -475,8 +479,8 @@ void * block(void) {
     return returnPtr;
 }
 
-void * fixedParams(void) {
-    void * returnPtr = NULL;
+ASTNode * fixedParams(void) {
+    ASTNode * returnPtr = NULL;
     
     param();
     
@@ -508,8 +512,8 @@ void * fixedParams(void) {
     return returnPtr;
 }
 
-void * param(void) {
-    void * returnPtr = NULL;
+ASTNode * param(void) {
+    ASTNode * returnPtr = NULL;
     
     type();
     
@@ -537,8 +541,8 @@ void * param(void) {
     return returnPtr;
 }
 
-void * defconst(void) {
-    void * returnPtr = NULL;
+ASTNode * defconst(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(CONST))
         return NULL;
@@ -591,8 +595,8 @@ void * defconst(void) {
     return returnPtr;
 }
 
-void * defstruct(void) {
-    void * returnPtr = NULL;
+ASTNode * defstruct(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(STRUCT))
         return NULL;
@@ -607,8 +611,8 @@ void * defstruct(void) {
     return returnPtr;
 }
 
-void * defunion(void) {
-    void * returnPtr = NULL;
+ASTNode * defunion(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(UNION))
         return NULL;
@@ -623,8 +627,8 @@ void * defunion(void) {
     return returnPtr;
 }
 
-void * typedef_(void) {
-    void * returnPtr = NULL;
+ASTNode * typedef_(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(TYPEDEF))
         return NULL;
@@ -639,8 +643,8 @@ void * typedef_(void) {
     return returnPtr;
 }
 
-void * stmts(void) {
-    void * returnPtr = NULL;
+ASTNode * stmts(void) {
+    ASTNode * returnPtr = NULL;
     
     do {                         //(stmt())*
         returnPtr = stmt();
@@ -649,8 +653,8 @@ void * stmts(void) {
     return returnPtr;
 }
 
-void * stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (match(SEMICOLON)) {
         
@@ -704,8 +708,8 @@ void * stmt(void) {
     return returnPtr;
 }
 
-void * member_list(void) {
-    void * returnPtr = NULL;
+ASTNode * member_list(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(LEFTBRACE))
         return NULL;
@@ -725,8 +729,8 @@ void * member_list(void) {
     return returnPtr;
 }
 
-void * slot(void) {
-    void * returnPtr = NULL;
+ASTNode * slot(void) {
+    ASTNode * returnPtr = NULL;
     
     type();
     
@@ -754,8 +758,8 @@ void * slot(void) {
     return returnPtr;
 }
 
-void * varname(void) {
-    void * returnPtr = NULL;
+ASTNode * varname(void) {
+    ASTNode * returnPtr = NULL;
     
     do {                    //("*")*
         if (!match(MUL))
@@ -771,8 +775,8 @@ void * varname(void) {
     return returnPtr;
 }
 
-void * array(void) {
-    void * returnPtr = NULL;
+ASTNode * array(void) {
+    ASTNode * returnPtr = NULL;
     
     do {
         if (token -> kind == LEFTBRACKET && token -> next -> kind == RIGHTBRACKET) {
@@ -802,8 +806,8 @@ void * array(void) {
     return returnPtr;
 }
 
-void * labeled_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * labeled_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(IDENTIFIER))
         return NULL;
@@ -817,8 +821,8 @@ void * labeled_stmt(void) {
     return returnPtr;
 }
 
-void * if_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * if_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(IF))
         return NULL;
@@ -840,8 +844,8 @@ void * if_stmt(void) {
     return returnPtr;
 }
 
-void * while_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * while_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(WHILE))
         return NULL;
@@ -859,8 +863,8 @@ void * while_stmt(void) {
     return returnPtr;
 }
 
-void * dowhile_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * dowhile_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(DO))
         return NULL;
@@ -884,8 +888,8 @@ void * dowhile_stmt(void) {
     return returnPtr;
 }
 
-void * for_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * for_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(FOR))
         return NULL;
@@ -913,8 +917,8 @@ void * for_stmt(void) {
     return returnPtr;
 }
 
-void * switch_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * switch_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(SWITCH))
         return NULL;
@@ -939,8 +943,8 @@ void * switch_stmt(void) {
     return returnPtr;
 }
 
-void * break_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * break_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(BREAK))
         return NULL;
@@ -951,8 +955,8 @@ void * break_stmt(void) {
     return returnPtr;
 }
 
-void * continue_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * continue_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(CONTINUE))
         return NULL;
@@ -963,8 +967,8 @@ void * continue_stmt(void) {
     return returnPtr;
 }
 
-void * goto_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * goto_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(GOTO))
         return NULL;
@@ -978,8 +982,8 @@ void * goto_stmt(void) {
     return returnPtr;
 }
 
-void * return_stmt(void) {
-    void * returnPtr = NULL;
+ASTNode * return_stmt(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(RETURN))
         return NULL;
@@ -998,8 +1002,8 @@ void * return_stmt(void) {
     return returnPtr;
 }
 
-void * case_clauses(void) {
-    void * returnPtr = NULL;
+ASTNode * case_clauses(void) {
+    ASTNode * returnPtr = NULL;
     
     do {                              //(case_clause())*
         returnPtr = case_clause();
@@ -1010,8 +1014,8 @@ void * case_clauses(void) {
     return returnPtr;
 }
 
-void * case_clause(void) {
-    void * returnPtr = NULL;
+ASTNode * case_clause(void) {
+    ASTNode * returnPtr = NULL;
     
     cases();
     
@@ -1020,8 +1024,8 @@ void * case_clause(void) {
     return returnPtr;
 }
 
-void * default_clause(void) {
-    void * returnPtr = NULL;
+ASTNode * default_clause(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(DEFAULT))
         return NULL;
@@ -1034,8 +1038,8 @@ void * default_clause(void) {
     return returnPtr;
 }
 
-void * cases(void) {
-    void * returnPtr = NULL;
+ASTNode * cases(void) {
+    ASTNode * returnPtr = NULL;
     
     if (!match(CASE))
         return NULL;
@@ -1048,8 +1052,8 @@ void * cases(void) {
     return returnPtr;
 }
 
-void * case_body(void) {
-    void * returnPtr = NULL;
+ASTNode * case_body(void) {
+    ASTNode * returnPtr = NULL;
     
     do {                         //(stmt())+
         returnPtr = stmt();
@@ -1058,38 +1062,37 @@ void * case_body(void) {
     return returnPtr;
 }
 
-void * primary(void) {
-    void * returnPtr = NULL;
+ASTNode * primary(void) {
+    ASTNode * returnPtr = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    ASTNode * Node;
     
     switch (token -> kind) {
         case INTEGER:
-            token = token -> next;
-            break;
         case CHARACTER:
-            token = token -> next;
-            break;
         case STRING:
-            token = token -> next;
-            break;
         case IDENTIFIER:
+            Node = NodeConstructor(token -> kind, parsingFile, token -> beginLine, token -> image, ptrs);
             token = token -> next;
-            break;
+            return Node;
         case LEFTPARENTHESE:
             token = token -> next;
-            expr();
-            if (!match(RIGHTPARENTHESE))
-                return NULL;
-            break;
+            Node = expr();
+            if (!match(RIGHTPARENTHESE)) {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+            return Node;
         default:
-            //语法错误
-            break;
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
     }
     
     return returnPtr;
 }
 
-void * term(void) {
-    void * returnPtr = NULL;
+ASTNode * term(void) {
+    ASTNode * returnPtr = NULL;
     Token * lookahead = token;
     
     if (match(LEFTPARENTHESE) && type()) {
@@ -1114,8 +1117,8 @@ void * term(void) {
     return returnPtr;
 }
 
-void * opassign_op(void) {
-    void * returnPtr = NULL;
+ASTNode * opassign_op(void) {
+    ASTNode * returnPtr = NULL;
     
     switch (token -> kind) {
         case SUMASSIGN:
@@ -1156,8 +1159,8 @@ void * opassign_op(void) {
     return returnPtr;
 }
 
-void * expr10(void) {
-    void * returnPtr = NULL;
+ASTNode * expr10(void) {
+    ASTNode * returnPtr = NULL;
     
     expr9();
     
@@ -1174,8 +1177,8 @@ void * expr10(void) {
     return returnPtr;
 }
 
-void * expr9(void) {
-    void * returnPtr = NULL;
+ASTNode * expr9(void) {
+    ASTNode * returnPtr = NULL;
     
     expr8();
     
@@ -1191,8 +1194,8 @@ void * expr9(void) {
     return returnPtr;
 }
 
-void * expr8(void) {
-    void * returnPtr = NULL;
+ASTNode * expr8(void) {
+    ASTNode * returnPtr = NULL;
     
     expr7();
     
@@ -1208,8 +1211,8 @@ void * expr8(void) {
     return returnPtr;
 }
 
-void * expr7(void) {
-    void * returnPtr = NULL;
+ASTNode * expr7(void) {
+    ASTNode * returnPtr = NULL;
     
     expr6();
     
@@ -1248,8 +1251,8 @@ void * expr7(void) {
     return returnPtr;
 }
 
-void * expr6(void) {
-    void * returnPtr = NULL;
+ASTNode * expr6(void) {
+    ASTNode * returnPtr = NULL;
     
     expr5();
     
@@ -1265,8 +1268,8 @@ void * expr6(void) {
     return returnPtr;
 }
 
-void * expr5(void) {
-    void * returnPtr = NULL;
+ASTNode * expr5(void) {
+    ASTNode * returnPtr = NULL;
     
     expr4();
     
@@ -1282,8 +1285,8 @@ void * expr5(void) {
     return returnPtr;
 }
 
-void * expr4(void) {
-    void * returnPtr = NULL;
+ASTNode * expr4(void) {
+    ASTNode * returnPtr = NULL;
     
     expr3();
     
@@ -1299,8 +1302,8 @@ void * expr4(void) {
     return returnPtr;
 }
 
-void * expr3(void) {
-    void * returnPtr = NULL;
+ASTNode * expr3(void) {
+    ASTNode * returnPtr = NULL;
     
     expr2();
     
@@ -1319,8 +1322,8 @@ void * expr3(void) {
     return returnPtr;
 }
 
-void * expr2(void) {
-    void * returnPtr = NULL;
+ASTNode * expr2(void) {
+    ASTNode * returnPtr = NULL;
     
     expr1();
     
@@ -1339,8 +1342,8 @@ void * expr2(void) {
     return returnPtr;
 }
 
-void * expr1(void) {
-    void * returnPtr = NULL;
+ASTNode * expr1(void) {
+    ASTNode * returnPtr = NULL;
     
     term();
     
@@ -1362,8 +1365,8 @@ void * expr1(void) {
     return returnPtr;
 }
 
-void * unary(void) {
-    void * returnPtr = NULL;
+ASTNode * unary(void) {
+    ASTNode * returnPtr = NULL;
     Token * lookahead1 = NULL;
     Token * lookahead2 = NULL;
     
@@ -1433,8 +1436,8 @@ void * unary(void) {
     
 }
 
-void * postfix(void) {
-    void * returnPtr = NULL;
+ASTNode * postfix(void) {
+    ASTNode * returnPtr = NULL;
     
     primary();
     
@@ -1475,8 +1478,8 @@ void * postfix(void) {
     return returnPtr;
 }
 
-void * args(void) {
-    void * returnPtr = NULL;
+ASTNode * args(void) {
+    ASTNode * returnPtr = NULL;
     
     //可选  [expr() ("," expr())*]
     if (expr() != NULL) {

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		30AB0CE4223D3B2800DC2A35 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CE3223D3B2800DC2A35 /* main.c */; };
 		30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CEB223D3B5500DC2A35 /* Lexer.c */; };
+		30BBA9882243DF8A00508A4D /* Constructor.c in Sources */ = {isa = PBXBuildFile; fileRef = 30BBA9872243DF8A00508A4D /* Constructor.c */; };
 		30EBAC1E223FEE5E00A2D96E /* Parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 30EBAC1D223FEE5E00A2D96E /* Parser.c */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,8 @@
 		30AB0CEB223D3B5500DC2A35 /* Lexer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Lexer.c; sourceTree = "<group>"; };
 		30AB0CED223D3B6000DC2A35 /* lexer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lexer.h; sourceTree = "<group>"; };
 		30AB0CEE223D3FF300DC2A35 /* tokenkind.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tokenkind.h; sourceTree = "<group>"; };
+		30BBA9872243DF8A00508A4D /* Constructor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Constructor.c; sourceTree = "<group>"; };
+		30BBA9892243DF9500508A4D /* constructor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constructor.h; sourceTree = "<group>"; };
 		30CD2E72223E876C0088BD7F /* token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = token.h; sourceTree = "<group>"; };
 		30EBAC1C223FEE4800A2D96E /* node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; };
 		30EBAC1D223FEE5E00A2D96E /* Parser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Parser.c; sourceTree = "<group>"; };
@@ -98,6 +101,8 @@
 			isa = PBXGroup;
 			children = (
 				30EBAC1C223FEE4800A2D96E /* node.h */,
+				30BBA9892243DF9500508A4D /* constructor.h */,
+				30BBA9872243DF8A00508A4D /* Constructor.c */,
 			);
 			path = ASTNode;
 			sourceTree = "<group>";
@@ -158,6 +163,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30BBA9882243DF8A00508A4D /* Constructor.c in Sources */,
 				30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */,
 				30AB0CE4223D3B2800DC2A35 /* main.c in Sources */,
 				30EBAC1E223FEE5E00A2D96E /* Parser.c in Sources */,
