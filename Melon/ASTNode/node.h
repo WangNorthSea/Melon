@@ -14,14 +14,27 @@ struct ASTNode {
     char * file;
     int line;
     char * image;
-    struct ASTNode * ptr1;
-    struct ASTNode * ptr2;
-    struct ASTNode * ptr3;
-    struct ASTNode * ptr4;
-    struct ASTNode * ptr5;
-    struct ASTNode * ptr6;
+    struct ASTNode * ptrs[6];
 };
 
 typedef struct ASTNode ASTNode;
+
+#define IntegerLiteral 100
+#define CharacterLiteral 101
+#define StringLiteral 102
+#define Identifier 103
+#define Cast 104
+#define PrefixOp 105
+#define UnaryOp 106
+#define Dereference 107
+#define Address 108
+#define SizeofType 109
+#define SizeofExpr 110
+#define SuffixOp 111
+#define ArrayRef 112
+#define Member 113
+#define PtrMember 114
+#define Funcall 115
+
 
 #endif /* node_h */
