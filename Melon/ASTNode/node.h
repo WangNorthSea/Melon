@@ -35,6 +35,6 @@ typedef struct ASTNode ASTNode;
 #define Member 113
 #define PtrMember 114
 #define Funcall 115
-
+#define BinaryOp 116
 
 #endif /* node_h */
