@@ -36,5 +36,19 @@ typedef struct ASTNode ASTNode;
 #define PtrMember 114
 #define Funcall 115
 #define BinaryOp 116
+#define LogicAnd 117
+#define LogicOr 118
+#define CondExpr 119
+#define Assign 120
+#define OpAssign 121
+#define Operator 122
+#define If 123
+#define While 124
+#define DoWhile 125
+#define For 126
+#define Switch 127
+#define Break 128
+#define Continue 129
+#define Goto 130
 
 #endif /* node_h */
