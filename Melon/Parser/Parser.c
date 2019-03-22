@@ -541,17 +541,29 @@ ASTNode * params(void) {
 }
 
 ASTNode * block(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    if (!match(LEFTBRACE))
-        return NULL;
+    if (!match(LEFTBRACE)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    stmts();
+    ptrs[0] = stmts();        //没有语句则返回NULL，非语法错误
     
-    if (!match(RIGHTBRACE))
-        return NULL;
+    if (!match(RIGHTBRACE)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    return returnPtr;
+    return NodeConstructor(Block, parsingFile, token -> beginLine, NULL, ptrs);
 }
 
 ASTNode * fixedParams(void) {
@@ -719,68 +731,237 @@ ASTNode * typedef_(void) {
 }
 
 ASTNode * stmts(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * Node = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
     do {                         //(stmt())*
-        returnPtr = stmt();
-    } while (returnPtr != NULL);
+        ptrs[0] = Node;
+        ptrs[1] = stmt();
+        
+        if (ptrs[1] == NULL)
+            goto jumpout;
+        
+        Node = NodeConstructor(Stmts, parsingFile, token -> beginLine, NULL, ptrs);
+    } while (1);
+jumpout:
     
-    return returnPtr;
+    return Node;
 }
 
 ASTNode * stmt(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * Node = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
     if (match(SEMICOLON)) {
-        
+        Node = NodeConstructor(EmptyStmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == IDENTIFIER && token -> next -> kind == COLON) {
-        labeled_stmt();
+        ptrs[0] = labeled_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == LEFTPARENTHESE || token -> kind == SELFSUM || token -> kind == SELFSUB || token -> kind == SUM || token -> kind == SUB || token -> kind == LOGICNOT || token -> kind == NOT || token -> kind == MUL || token -> kind == AND || token -> kind == SIZEOF || token -> kind == INTEGER || token -> kind == CHARACTER || token -> kind == STRING || token -> kind == IDENTIFIER) {
-        expr();
+        ptrs[0] = expr();
         
-        if (!match(SEMICOLON))
-            return NULL;
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        if (!match(SEMICOLON)) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == LEFTBRACE) {
-        block();
+        ptrs[0] = block();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == IF) {
-        if_stmt();
+        ptrs[0] = if_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == WHILE) {
-        while_stmt();
+        ptrs[0] = while_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == DO) {
-        dowhile_stmt();
+        ptrs[0] = dowhile_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == FOR) {
-        for_stmt();
+        ptrs[0] = for_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == SWITCH) {
-        switch_stmt();
+        ptrs[0] = switch_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == BREAK) {
-        break_stmt();
+        ptrs[0] = break_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == CONTINUE) {
-        continue_stmt();
+        ptrs[0] = continue_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == GOTO) {
-        goto_stmt();
+        ptrs[0] = goto_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == RETURN) {
-        return_stmt();
+        ptrs[0] = return_stmt();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else if (token -> kind == CONST) {
-        defconst();
+        ptrs[0] = defconst();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     else {
-        defvars();      //匹配不成功即为语法错误
+        ptrs[0] = defvars();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
     
-    return returnPtr;
+    return Node;
 }
 
 ASTNode * member_list(void) {
@@ -882,18 +1063,40 @@ ASTNode * array(void) {
 }
 
 ASTNode * labeled_stmt(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    char * label = NULL;
     
-    if (!match(IDENTIFIER))
-        return NULL;
+    label = token -> image;
+    if (!match(IDENTIFIER)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    if (!match(COLON))
-        return NULL;
+    if (!match(COLON)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    stmt();                   //label其实记录的是这条语句的地址
+    ptrs[0] = stmt();                   //label其实记录的是这条语句的地址
     
+    if (ptrs[0] == NULL) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    return returnPtr;
+    return NodeConstructor(Label, parsingFile, token -> beginLine, label, ptrs);
 }
 
 ASTNode * if_stmt(void) {
@@ -1317,83 +1520,202 @@ ASTNode * goto_stmt(void) {
 }
 
 ASTNode * return_stmt(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    if (!match(RETURN))
-        return NULL;
-    
-    if (token -> kind == SEMICOLON) {
-        match(SEMICOLON);
-        
-    }
-    else {
-        expr();
-        
-        if (!match(SEMICOLON))
+    if (!match(RETURN)) {
+        if (prelooking)
             return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
     }
     
-    return returnPtr;
+    if (token -> kind == SEMICOLON)
+        match(SEMICOLON);
+    else {
+        ptrs[0] = expr();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+        
+        if (!match(SEMICOLON)) {
+            if (prelooking)
+                return NULL;
+            else {
+                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+                exit(-1);
+            }
+        }
+    }
+    
+    return NodeConstructor(Return, parsingFile, token -> beginLine, NULL, ptrs);;
 }
 
 ASTNode * case_clauses(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * Node = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};         //语法树结构
+                                                                /*         /          */
+    do {                              //(case_clause())*       /*    CaseClauses       */
+        ptrs[0] = Node;                                /*            /         \              */
+        ptrs[1] = case_clause();                       /*       CaseClauses  default_clause()  */
+                                                       /*        /        \                     */
+        if (ptrs[1] == NULL)                          /*    CaseClauses   case_clause()          */
+            goto jumpout;                             /*     /        \                            */
+                                                    /*  CaseClauses  case_clause()                  */
+        Node = NodeConstructor(CaseClauses, parsingFile, token -> beginLine, NULL, ptrs);
+    } while (1);                                 /*     /        \                                   */
+jumpout:                                         /*   NULL      case_clause()                         */
     
-    do {                              //(case_clause())*
-        returnPtr = case_clause();
-    } while (returnPtr != NULL);
+    ptrs[1] = default_clause();         //必需
     
-    default_clause();         //必需
+    if (ptrs[1] == NULL) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    return returnPtr;
+    Node = NodeConstructor(CaseClauses, parsingFile, token -> beginLine, NULL, ptrs);
+    return Node;
 }
 
 ASTNode * case_clause(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    cases();
+    ptrs[0] = cases();
     
-    case_body();
+    if (ptrs[0] == NULL) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    return returnPtr;
+    ptrs[1] = case_body();
+    
+    if (ptrs[1] == NULL) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
+    
+    return NodeConstructor(CaseClause, parsingFile, token -> beginLine, NULL, ptrs);
 }
 
 ASTNode * default_clause(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    if (!match(DEFAULT))
-        return NULL;
+    if (!match(DEFAULT)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    if (!match(COLON))
-        return NULL;
+    if (!match(COLON)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    case_body();
+    ptrs[0] = case_body();
     
-    return returnPtr;
+    if (ptrs[0] == NULL) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
+    
+    return NodeConstructor(DefaultClause, parsingFile, token -> beginLine, NULL, ptrs);
 }
 
 ASTNode * cases(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    if (!match(CASE))
-        return NULL;
+    if (!match(CASE)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    primary();
+    ptrs[0] = primary();
     
-    if (!match(COLON))
-        return NULL;
+    if (ptrs[0] == NULL) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
     
-    return returnPtr;
+    if (!match(COLON)) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
+    
+    return NodeConstructor(Cases, parsingFile, token -> beginLine, NULL, ptrs);
 }
 
 ASTNode * case_body(void) {
-    ASTNode * returnPtr = NULL;
+    ASTNode * Node = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    do {                         //(stmt())+
-        returnPtr = stmt();
-    } while (returnPtr != NULL);
+    ptrs[0] = Node;
+    ptrs[1] = stmt();            //至少有一个stmt()
     
-    return returnPtr;
+    if (ptrs[1] == NULL) {
+        if (prelooking)
+            return NULL;
+        else {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
+            exit(-1);
+        }
+    }
+    
+    Node = NodeConstructor(CaseBody, parsingFile, token -> beginLine, NULL, ptrs);
+    
+    do {                         //(stmt())*      语法树结构类似case_clauses()
+        ptrs[0] = Node;
+        ptrs[1] = stmt();
+        
+        if (ptrs[1] == NULL)
+            goto jumpout;
+        
+        Node = NodeConstructor(CaseBody, parsingFile, token -> beginLine, NULL, ptrs);
+    } while (1);
+jumpout:
+    
+    return Node;
 }
 
 ASTNode * primary(void) {

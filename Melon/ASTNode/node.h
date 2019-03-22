@@ -50,5 +50,16 @@ typedef struct ASTNode ASTNode;
 #define Break 128
 #define Continue 129
 #define Goto 130
+#define Return 131
+#define CaseClauses 132
+#define CaseClause 133
+#define DefaultClause 134
+#define Cases 135
+#define CaseBody 136
+#define Block 137
+#define Stmts 138
+#define EmptyStmt 139
+#define Label 140
+#define Stmt 141
 
 #endif /* node_h */
