@@ -11,10 +11,13 @@
 
 struct ASTNode {
     int kind;
+    int listLen;
     char * file;
     int line;
     char * image;
     struct ASTNode * ptrs[6];
+    struct ASTNode * list;
+    void (*append)(int, struct ASTNode *, struct ASTNode);
 };
 
 typedef struct ASTNode ASTNode;
@@ -61,5 +64,21 @@ typedef struct ASTNode ASTNode;
 #define EmptyStmt 139
 #define Label 140
 #define Stmt 141
+#define FuncPtr 142
+#define DefinedVariables 143
+#define Variable 144
+#define DefinedFunc 145
+#define VoidType 146
+#define CharType 147
+#define ShortIntType 148
+#define IntType 149
+#define LongIntType 150
+#define UnsignedCharType 151
+#define UnsignedShortIntType 152
+#define UnsignedIntType 153
+#define UnsignedLongIntType 154
+#define StructType 155
+#define UnionType 156
+#define UserType 157
 
 #endif /* node_h */
