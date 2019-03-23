@@ -80,5 +80,13 @@ typedef struct ASTNode ASTNode;
 #define StructType 155
 #define UnionType 156
 #define UserType 157
+#define ParamsNode 158
+#define FuncPtrParam 159
+#define ConstParam 160
+#define NormalParam 161
+#define DefinedConstVariables 162
+#define DefinedStruct 163
+#define DefinedUnion 164
+#define TypeDef 165
 
 #endif /* node_h */
