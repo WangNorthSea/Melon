@@ -10,10 +10,10 @@
 #include <string.h>
 #include "node.h"
 
-void append(int listLen, ASTNode * list, ASTNode ToAppend) {
-    listLen++;
-    list = (ASTNode *)realloc(list, sizeof(ASTNode) * (listLen));
-    list[listLen - 1] = ToAppend;
+void append(ASTNode * appender, ASTNode ToAppend) {
+    appender -> listLen++;
+    appender -> list = (ASTNode *)realloc(appender -> list, sizeof(ASTNode) * (appender -> listLen));
+    appender -> list[appender -> listLen - 1] = ToAppend;
 }
 
 ASTNode * NodeConstructor(int kind, const char * file, int line, char * image, ASTNode * ptrs[6]) {

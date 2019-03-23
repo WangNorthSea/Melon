@@ -17,7 +17,7 @@ struct ASTNode {
     char * image;
     struct ASTNode * ptrs[6];
     struct ASTNode * list;
-    void (*append)(int, struct ASTNode *, struct ASTNode);
+    void (*append)(struct ASTNode *, struct ASTNode);
 };
 
 typedef struct ASTNode ASTNode;
@@ -88,5 +88,21 @@ typedef struct ASTNode ASTNode;
 #define DefinedStruct 163
 #define DefinedUnion 164
 #define TypeDef 165
+#define Args 166
+#define MemberList 167
+#define Slot 168
+#define PtrRef 169
+#define Varname 170
+#define UnfixedArray 171
+#define FixedArray 172
+#define Static 173
+#define Name 174
+#define Import 175
+#define TopDefs 176
+#define Imports 177
+#define Root 178
+#define FloatType 179
+#define DoubleType 180
+#define FloatLiteral 181
 
 #endif /* node_h */

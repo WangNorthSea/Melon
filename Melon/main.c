@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include "./Lexer/token.h"
 #include "./Lexer/lexer.h"
+#include "./ASTNode/node.h"
 #include "./Parser/parser.h"
+#include "Dumper/ASTdumper.h"
 
 typedef struct {
     int line;
@@ -40,9 +42,11 @@ int main(int argc, const char * argv[]) {
         headToken = headToken -> next;
     }
     
-    parsingFile = argv[1];
-    compilationUnit(headToken2);
+    printf("\nAST:\n");
     
-    printf("done.\n");
+    parsingFile = argv[1];
+    ASTNode * rootNode = compilationUnit(headToken2);
+    dumpAST(rootNode);
+    
     return 0;
 }

@@ -1003,38 +1003,36 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken -> next -> endLine = line;
             
             if (ch == '0') {
-                FILE * temp = fp;
-                ch = fgetc(temp);
+                ch = fgetc(fp);
+                buffer[bufferIndex] = '0';
+                bufferIndex++;
                 if (ch == 'x' || ch == 'X') {
-                    buffer[bufferIndex] = '0';
+                    buffer[bufferIndex] = ch;
                     bufferIndex++;
-                    
                     hasX = 1;
-                    fp = temp;
+                    ch = fgetc(fp);
                 }
-                else
-                    ch = '0';
             }
             
             if (hasX) {
-                do {
+                while ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F')) {
                     if (bufferIndex == bufferSize - 1)
                         enlargeBuffer(buffer, &bufferSize);
                     
                     buffer[bufferIndex] = ch;
                     bufferIndex++;
                     ch = fgetc(fp);
-                } while ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'));
+                }
             }
             else {
-                do {
+                while (ch >= '0' && ch <= '9') {
                     if (bufferIndex == bufferSize - 1)
                         enlargeBuffer(buffer, &bufferSize);
                     
                     buffer[bufferIndex] = ch;
                     bufferIndex++;
                     ch = fgetc(fp);
-                } while (ch >= '0' && ch <= '9');
+                }
             }
             
             if (ch == '.' && !hasX) {

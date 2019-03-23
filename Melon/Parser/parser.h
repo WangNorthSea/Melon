@@ -9,7 +9,7 @@
 #ifndef parser_h
 #define parser_h
 
-extern void compilationUnit(Token * headToken);
+extern ASTNode * compilationUnit(Token * headToken);
 
 extern const char * parsingFile;
 

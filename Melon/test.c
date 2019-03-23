@@ -21,10 +21,10 @@ int main(int argc, const char * argv[]) {
 	label:
 	int a = 0xaff109;
 	int bc = 0XADDee12a;
-	int cc = 00123a;
+	int cc = 00123;
 	double b = 00003.1415926;
 	int c = 0000021001;
-	int d = 1234.12;
+	int d = 00;
 	c--;
 	b ^= c;
 	b = b ^ c;
@@ -34,5 +34,5 @@ int main(int argc, const char * argv[]) {
 		b = b >> 1;
 	a -> b -= -32;
 	printf("Hello, World!\n");
-	return;
+	return 0;
 }
