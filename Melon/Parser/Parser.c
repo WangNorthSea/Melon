@@ -3611,16 +3611,9 @@ ASTNode * postfix(void) {
                 token = token -> next;
                 
                 ptrs[0] = Node;
-                ptrs[1] = args();
                 
-                if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
-                    }
-                }
+                if (token -> kind != RIGHTPARENTHESE)
+                    ptrs[1] = args();
                 
                 Node = NodeConstructor(Funcall, parsingFile, token -> beginLine, NULL, ptrs);
                 
@@ -3651,7 +3644,9 @@ ASTNode * args(void) {
     
     ptrs[0] = expr();         //可选  [expr() ("," expr())*]
     
-    Node -> append(Node, *ptrs[0]);
+    if (ptrs[0] != NULL) {
+        Node -> append(Node, *ptrs[0]);
+    }
     
     if (ptrs[0] != NULL) {
         do {
@@ -3674,6 +3669,8 @@ ASTNode * args(void) {
                 goto jumpout;
         } while (1);
     }
+    else
+        return NULL;
 jumpout:
     
     return Node;
