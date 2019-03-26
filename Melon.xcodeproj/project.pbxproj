@@ -64,7 +64,6 @@
 			children = (
 				303B909A224691F1008B3BEF /* ASTdumper.h */,
 				303B9098224691E8008B3BEF /* DumpAST.c */,
-				30BBA9892243DF9500508A4D /* constructor.h */,
 			);
 			path = Dumper;
 			sourceTree = "<group>";
@@ -124,6 +123,7 @@
 		30EBAC1B223FEE1E00A2D96E /* ASTNode */ = {
 			isa = PBXGroup;
 			children = (
+				30BBA9892243DF9500508A4D /* constructor.h */,
 				30EBAC1C223FEE4800A2D96E /* node.h */,
 				30BBA9872243DF8A00508A4D /* Constructor.c */,
 			);
