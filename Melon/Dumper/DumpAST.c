@@ -259,6 +259,9 @@ void kindTable(int kind) {
         case 181:
             printf("FloatLiteral");
             break;
+        case 182:
+            printf("UnlimitedParams");
+            break;
         default:
             break;
     }

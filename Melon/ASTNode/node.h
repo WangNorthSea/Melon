@@ -104,5 +104,6 @@ typedef struct ASTNode ASTNode;
 #define FloatType 179
 #define DoubleType 180
 #define FloatLiteral 181
+#define UnlimitedParams 182
 
 #endif /* node_h */

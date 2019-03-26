@@ -128,6 +128,8 @@ int isType(void);
 
 int match(int kind);
 
+void throwSyntaxError(const char * file, int line, char * expected);
+
 Token * token = NULL;
 
 const char * parsingFile = NULL;
@@ -202,8 +204,7 @@ ASTNode * topDefs(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "function definition");
                 }
             }
             
@@ -221,8 +222,7 @@ ASTNode * topDefs(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
                     }
                 }
                 
@@ -238,8 +238,7 @@ ASTNode * topDefs(void) {
                             if (prelooking)
                                 return NULL;
                             else {
-                                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                                exit(-1);
+                                throwSyntaxError(parsingFile, token -> beginLine, "constant definition");
                             }
                         }
                         
@@ -253,8 +252,7 @@ ASTNode * topDefs(void) {
                             if (prelooking)
                                 return NULL;
                             else {
-                                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                                exit(-1);
+                                throwSyntaxError(parsingFile, token -> beginLine, "struct definition");
                             }
                         }
                         
@@ -268,8 +266,7 @@ ASTNode * topDefs(void) {
                             if (prelooking)
                                 return NULL;
                             else {
-                                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                                exit(-1);
+                                throwSyntaxError(parsingFile, token -> beginLine, "union definition");
                             }
                         }
                         
@@ -283,8 +280,7 @@ ASTNode * topDefs(void) {
                             if (prelooking)
                                 return NULL;
                             else {
-                                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                                exit(-1);
+                                throwSyntaxError(parsingFile, token -> beginLine, "typedef statement");
                             }
                         }
                         
@@ -320,8 +316,7 @@ ASTNode * importStmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -336,8 +331,7 @@ ASTNode * importStmt(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "identifier");
                 }
             }
             
@@ -352,8 +346,7 @@ ASTNode * importStmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -372,10 +365,10 @@ ASTNode * name(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
+    return NULL;
 }
 
 ASTNode * storage(void) {
@@ -403,8 +396,7 @@ ASTNode * defvars(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "variable type");
         }
     }
     
@@ -416,8 +408,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
             }
         }
         
@@ -427,8 +418,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
             }
         }
         
@@ -436,8 +426,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
         
@@ -445,8 +434,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
             }
         }
         
@@ -456,8 +444,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
             }
         }
         
@@ -465,8 +452,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
     }
@@ -477,8 +463,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
             }
         }
     }
@@ -491,8 +476,7 @@ ASTNode * defvars(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
         }
@@ -503,8 +487,7 @@ ASTNode * defvars(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
         }
@@ -530,8 +513,7 @@ ASTNode * defvars(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "variable name");
                 }
             }
             
@@ -544,8 +526,7 @@ ASTNode * defvars(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
             }
@@ -563,8 +544,7 @@ jumpout:
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -582,8 +562,7 @@ ASTNode * defun(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "return value type");
         }
     }
     
@@ -593,8 +572,7 @@ ASTNode * defun(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -602,8 +580,7 @@ ASTNode * defun(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
         }
     }
     
@@ -613,8 +590,7 @@ ASTNode * defun(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "parameters");
         }
     }
     
@@ -622,8 +598,7 @@ ASTNode * defun(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
         }
     }
 
@@ -633,8 +608,7 @@ ASTNode * defun(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "block statements");
         }
     }
     
@@ -698,8 +672,7 @@ ASTNode * type(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "legitimate type");
                     }
                     break;
             }
@@ -711,8 +684,7 @@ ASTNode * type(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "identifier");
                 }
             }
             
@@ -725,8 +697,7 @@ ASTNode * type(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "identifier");
                 }
             }
             
@@ -739,8 +710,7 @@ ASTNode * type(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "identifier");
                     }
                 }
                 
@@ -770,8 +740,7 @@ ASTNode * expr(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "term");
             }
         }
         
@@ -779,8 +748,7 @@ ASTNode * expr(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'=\'");
             }
         }
         
@@ -790,8 +758,7 @@ ASTNode * expr(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "expression");
             }
         }
         
@@ -811,8 +778,7 @@ ASTNode * expr(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -822,8 +788,7 @@ ASTNode * expr(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "assign operator");
                 }
             }
             
@@ -833,8 +798,7 @@ ASTNode * expr(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -849,8 +813,7 @@ ASTNode * expr(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -874,8 +837,7 @@ ASTNode * params(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'void\'");
             }
         }
     }
@@ -888,8 +850,7 @@ ASTNode * params(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
             }
         }
         
@@ -898,11 +859,12 @@ ASTNode * params(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "\'...\'");
                 }
             }
-            Node -> ptrs[0] = (ASTNode *)0x11111111;       //Node -> ptrs[0] != NULL 代表支持,...
+            ASTNode * temp = NodeConstructor(UnlimitedParams, parsingFile, token -> beginLine, NULL, ptrs);
+            Node -> append(Node, *temp);
+            free(temp);
         }
     }
     
@@ -916,8 +878,7 @@ ASTNode * block(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'{\'");
         }
     }
     
@@ -927,8 +888,7 @@ ASTNode * block(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'}\'");
         }
     }
     
@@ -947,8 +907,7 @@ ASTNode * fixedParams(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "parameter");
         }
     }
     
@@ -971,8 +930,7 @@ ASTNode * fixedParams(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "parameter");
                 }
             }
             
@@ -1009,8 +967,7 @@ ASTNode * param(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "parameter type");
         }
     }
     
@@ -1021,8 +978,7 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
             }
         }
         
@@ -1032,8 +988,7 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
             }
         }
         
@@ -1041,8 +996,7 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
         
@@ -1050,8 +1004,7 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
             }
         }
         
@@ -1061,8 +1014,7 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
             }
         }
         
@@ -1070,8 +1022,7 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
     }
@@ -1082,8 +1033,7 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
             }
         }
     }
@@ -1110,8 +1060,7 @@ ASTNode * defconst(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'const\'");
         }
     }
     
@@ -1125,8 +1074,7 @@ ASTNode * defconst(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "data type");
         }
     }
     
@@ -1138,8 +1086,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
             }
         }
         
@@ -1149,8 +1096,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
             }
         }
         
@@ -1158,8 +1104,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
         
@@ -1167,8 +1112,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
             }
         }
         
@@ -1178,8 +1122,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
             }
         }
         
@@ -1187,8 +1130,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
     }
@@ -1199,8 +1141,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
             }
         }
     }
@@ -1213,8 +1154,7 @@ ASTNode * defconst(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "\'=\'");
                 }
             }
         }
@@ -1225,8 +1165,7 @@ ASTNode * defconst(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
         }
@@ -1252,8 +1191,7 @@ ASTNode * defconst(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "variable name");
                 }
             }
             
@@ -1266,8 +1204,7 @@ ASTNode * defconst(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
             }
@@ -1285,8 +1222,7 @@ jumpout:
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -1300,8 +1236,7 @@ ASTNode * defstruct(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'struct\'");
         }
     }
     
@@ -1311,8 +1246,7 @@ ASTNode * defstruct(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -1322,8 +1256,7 @@ ASTNode * defstruct(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "members");
         }
     }
     
@@ -1331,8 +1264,7 @@ ASTNode * defstruct(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -1346,8 +1278,7 @@ ASTNode * defunion(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'union\'");
         }
     }
     
@@ -1357,8 +1288,7 @@ ASTNode * defunion(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -1368,8 +1298,7 @@ ASTNode * defunion(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "members");
         }
     }
     
@@ -1377,8 +1306,7 @@ ASTNode * defunion(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -1392,8 +1320,7 @@ ASTNode * typedef_(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'typedef\'");
         }
     }
     
@@ -1403,8 +1330,7 @@ ASTNode * typedef_(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "data type");
         }
     }
     
@@ -1414,8 +1340,7 @@ ASTNode * typedef_(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -1423,8 +1348,7 @@ ASTNode * typedef_(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -1468,8 +1392,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "label statement");
             }
         }
         
@@ -1482,8 +1405,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "expression");
             }
         }
         
@@ -1491,8 +1413,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
             }
         }
         
@@ -1505,8 +1426,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "block statements");
             }
         }
         
@@ -1519,8 +1439,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'if\' statement");
             }
         }
         
@@ -1533,8 +1452,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'while\' statement");
             }
         }
         
@@ -1547,8 +1465,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'do while\' statement");
             }
         }
         
@@ -1561,8 +1478,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'for\' statement");
             }
         }
         
@@ -1575,8 +1491,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'switch\' statement");
             }
         }
         
@@ -1589,8 +1504,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'break\' statement");
             }
         }
         
@@ -1603,8 +1517,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'continue\' statement");
             }
         }
         
@@ -1617,8 +1530,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'goto\' statement");
             }
         }
         
@@ -1631,8 +1543,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'return\' statement");
             }
         }
         
@@ -1645,8 +1556,7 @@ ASTNode * stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "constant definition");
             }
         }
         
@@ -1664,8 +1574,7 @@ ASTNode * stmt(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
                 }
             }
             
@@ -1690,8 +1599,7 @@ ASTNode * member_list(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'{\'");
         }
     }
     
@@ -1710,8 +1618,7 @@ ASTNode * member_list(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'}\'");
         }
     }
     
@@ -1739,8 +1646,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
             }
         }
         
@@ -1750,8 +1656,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
             }
         }
         
@@ -1759,8 +1664,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
         
@@ -1768,8 +1672,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
             }
         }
         
@@ -1779,8 +1682,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
             }
         }
         
@@ -1788,8 +1690,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
     }
@@ -1800,8 +1701,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
             }
         }
     }
@@ -1826,8 +1726,7 @@ ASTNode * slot(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "variable name");
                 }
             }
             
@@ -1844,8 +1743,7 @@ jumpout:
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -1875,8 +1773,7 @@ ASTNode * varname(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -1917,8 +1814,7 @@ ASTNode * array(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "\']\'");
                     }
                 }
             }
@@ -1926,8 +1822,7 @@ ASTNode * array(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "integer literal");
                 }
             }
         }
@@ -1935,6 +1830,7 @@ ASTNode * array(void) {
             return NULL;
         }
     }
+    return NULL;
 }
 
 ASTNode * labeled_stmt(void) {
@@ -1946,8 +1842,7 @@ ASTNode * labeled_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -1955,8 +1850,7 @@ ASTNode * labeled_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
         }
     }
     
@@ -1966,8 +1860,7 @@ ASTNode * labeled_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "statement");
         }
     }
     
@@ -1981,8 +1874,7 @@ ASTNode * if_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'if\'");
         }
     }
     
@@ -1990,19 +1882,18 @@ ASTNode * if_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
         }
     }
     
-    ptrs[0] = expr();
+    if (token -> kind != RIGHTPARENTHESE)
+        ptrs[0] = expr();
     
     if (ptrs[0] == NULL) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -2010,8 +1901,7 @@ ASTNode * if_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
         }
     }
     
@@ -2021,8 +1911,7 @@ ASTNode * if_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "statement");
         }
     }
     
@@ -2033,8 +1922,7 @@ ASTNode * if_stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "statement");
             }
         }
     }
@@ -2049,8 +1937,7 @@ ASTNode * while_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'while\'");
         }
     }
     
@@ -2058,19 +1945,18 @@ ASTNode * while_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
         }
     }
     
-    ptrs[0] = expr();
+    if (token -> kind != RIGHTPARENTHESE)
+        ptrs[0] = expr();
     
     if (ptrs[0] == NULL) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -2078,8 +1964,7 @@ ASTNode * while_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
         }
     }
     
@@ -2089,8 +1974,7 @@ ASTNode * while_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "statement");
         }
     }
     
@@ -2104,8 +1988,7 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'do\'");
         }
     }
     
@@ -2115,8 +1998,7 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "statement");
         }
     }
     
@@ -2124,8 +2006,7 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'while\'");
         }
     }
     
@@ -2133,19 +2014,18 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
         }
     }
     
-    ptrs[1] = expr();
+    if (token -> kind != RIGHTPARENTHESE)
+        ptrs[1] = expr();
     
     if (ptrs[1] == NULL) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -2153,8 +2033,7 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
         }
     }
     
@@ -2162,8 +2041,7 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -2177,8 +2055,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'for\'");
         }
     }
     
@@ -2186,8 +2063,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
         }
     }
     
@@ -2197,8 +2073,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -2208,8 +2083,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -2219,8 +2093,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
         }
     }
     
@@ -2230,8 +2103,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "statement");
         }
     }
     
@@ -2245,8 +2117,7 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'switch\'");
         }
     }
     
@@ -2254,19 +2125,18 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
         }
     }
     
-    ptrs[0] = expr();
+    if (token -> kind != RIGHTPARENTHESE)
+        ptrs[0] = expr();
     
     if (ptrs[0] == NULL) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -2274,8 +2144,7 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
         }
     }
     
@@ -2283,8 +2152,7 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'{\'");
         }
     }
     
@@ -2294,8 +2162,7 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "case clauses");
         }
     }
     
@@ -2303,8 +2170,7 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'}\'");
         }
     }
     
@@ -2318,8 +2184,7 @@ ASTNode * break_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'break\'");
         }
     }
     
@@ -2327,8 +2192,7 @@ ASTNode * break_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -2342,8 +2206,7 @@ ASTNode * continue_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'continue\'");
         }
     }
     
@@ -2351,8 +2214,7 @@ ASTNode * continue_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -2367,8 +2229,7 @@ ASTNode * goto_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'goto\'");
         }
     }
     
@@ -2377,8 +2238,7 @@ ASTNode * goto_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
         }
     }
     
@@ -2386,8 +2246,7 @@ ASTNode * goto_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
         }
     }
     
@@ -2401,8 +2260,7 @@ ASTNode * return_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'return\'");
         }
     }
     
@@ -2415,8 +2273,7 @@ ASTNode * return_stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "expression");
             }
         }
         
@@ -2424,8 +2281,7 @@ ASTNode * return_stmt(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
             }
         }
     }
@@ -2456,8 +2312,7 @@ jumpout:
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "default clause");
         }
     }
     
@@ -2476,8 +2331,7 @@ ASTNode * case_clause(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'case\'");
         }
     }
     
@@ -2487,8 +2341,7 @@ ASTNode * case_clause(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "case body");
         }
     }
     
@@ -2502,8 +2355,7 @@ ASTNode * default_clause(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'default\'");
         }
     }
     
@@ -2511,8 +2363,7 @@ ASTNode * default_clause(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
         }
     }
     
@@ -2522,8 +2373,7 @@ ASTNode * default_clause(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "default body");
         }
     }
     
@@ -2537,8 +2387,7 @@ ASTNode * cases(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\'case\'");
         }
     }
     
@@ -2548,8 +2397,7 @@ ASTNode * cases(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "case situation");
         }
     }
     
@@ -2557,8 +2405,7 @@ ASTNode * cases(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
         }
     }
     
@@ -2577,8 +2424,7 @@ ASTNode * case_body(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "statement");
         }
     }
     
@@ -2632,8 +2478,7 @@ ASTNode * primary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -2641,8 +2486,7 @@ ASTNode * primary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
                 }
             }
             break;
@@ -2650,8 +2494,7 @@ ASTNode * primary(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "literal, identifier or \'(\'");
             }
     }
     
@@ -2672,8 +2515,7 @@ ASTNode * term(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
             }
         }
         
@@ -2683,8 +2525,7 @@ ASTNode * term(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "data type");
             }
         }
         
@@ -2692,8 +2533,7 @@ ASTNode * term(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
             }
         }
         
@@ -2703,8 +2543,7 @@ ASTNode * term(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "term");
             }
         }
         
@@ -2720,8 +2559,7 @@ ASTNode * term(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
             }
         }
     }
@@ -2778,8 +2616,7 @@ ASTNode * opassign_op(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "assign operator");
             }
             break;
     }
@@ -2797,8 +2634,7 @@ ASTNode * expr10(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
 
@@ -2811,8 +2647,7 @@ ASTNode * expr10(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "expression");
             }
         }
         
@@ -2820,8 +2655,7 @@ ASTNode * expr10(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
             }
         }
         
@@ -2831,8 +2665,7 @@ ASTNode * expr10(void) {
             if (prelooking)
                 return NULL;
             else {
-                printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                exit(-1);
+                throwSyntaxError(parsingFile, token -> beginLine, "expression");
             }
         }
         
@@ -2852,8 +2685,7 @@ ASTNode * expr9(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -2867,8 +2699,7 @@ ASTNode * expr9(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -2892,8 +2723,7 @@ ASTNode * expr8(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -2907,8 +2737,7 @@ ASTNode * expr8(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -2932,8 +2761,7 @@ ASTNode * expr7(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -2948,8 +2776,7 @@ ASTNode * expr7(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -2964,8 +2791,7 @@ ASTNode * expr7(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -2980,8 +2806,7 @@ ASTNode * expr7(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -2996,8 +2821,7 @@ ASTNode * expr7(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -3012,8 +2836,7 @@ ASTNode * expr7(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -3028,8 +2851,7 @@ ASTNode * expr7(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -3054,8 +2876,7 @@ ASTNode * expr6(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -3068,8 +2889,7 @@ ASTNode * expr6(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -3093,8 +2913,7 @@ ASTNode * expr5(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -3107,8 +2926,7 @@ ASTNode * expr5(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -3132,8 +2950,7 @@ ASTNode * expr4(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -3146,8 +2963,7 @@ ASTNode * expr4(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -3171,8 +2987,7 @@ ASTNode * expr3(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -3185,8 +3000,7 @@ ASTNode * expr3(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -3200,8 +3014,7 @@ ASTNode * expr3(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -3226,8 +3039,7 @@ ASTNode * expr2(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "expression");
         }
     }
     
@@ -3240,8 +3052,7 @@ ASTNode * expr2(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -3255,8 +3066,7 @@ ASTNode * expr2(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
                 }
             }
             
@@ -3280,8 +3090,7 @@ ASTNode * expr1(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "term");
         }
     }
     
@@ -3294,8 +3103,7 @@ ASTNode * expr1(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -3309,8 +3117,7 @@ ASTNode * expr1(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -3324,8 +3131,7 @@ ASTNode * expr1(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -3354,8 +3160,7 @@ ASTNode * unary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
                 }
             }
             
@@ -3369,8 +3174,7 @@ ASTNode * unary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
                 }
             }
             
@@ -3384,8 +3188,7 @@ ASTNode * unary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -3399,8 +3202,7 @@ ASTNode * unary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -3414,8 +3216,7 @@ ASTNode * unary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -3429,8 +3230,7 @@ ASTNode * unary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "term");
                 }
             }
             
@@ -3452,8 +3252,7 @@ ASTNode * unary(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
                     }
                 }
                 
@@ -3463,8 +3262,7 @@ ASTNode * unary(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "data type");
                     }
                 }
                 
@@ -3472,8 +3270,7 @@ ASTNode * unary(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
                     }
                 }
                 
@@ -3490,8 +3287,7 @@ ASTNode * unary(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
                     }
                 }
                 
@@ -3505,8 +3301,7 @@ ASTNode * unary(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                    exit(-1);
+                    throwSyntaxError(parsingFile, token -> beginLine, "postfix operation");
                 }
             }
     }
@@ -3524,8 +3319,7 @@ ASTNode * postfix(void) {
         if (prelooking)
             return NULL;
         else {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-            exit(-1);
+            throwSyntaxError(parsingFile, token -> beginLine, "literal, identifier or \'(\'");
         }
     }
     
@@ -3557,8 +3351,7 @@ ASTNode * postfix(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -3568,8 +3361,7 @@ ASTNode * postfix(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "\']\'");
                     }
                 }
                 break;
@@ -3583,8 +3375,7 @@ ASTNode * postfix(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "identifier");
                     }
                 }
                 
@@ -3600,8 +3391,7 @@ ASTNode * postfix(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
                     }
                 }
                 
@@ -3621,8 +3411,7 @@ ASTNode * postfix(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
                     }
                 }
                 break;
@@ -3658,8 +3447,7 @@ ASTNode * args(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        printf("Melon: %s: syntax \033[31merror\033[0m in line %d\n", parsingFile, token -> beginLine);
-                        exit(-1);
+                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
                     }
                 }
                 
@@ -3699,4 +3487,9 @@ int match(int kind) {
     }
     else
         return 0;
+}
+
+void throwSyntaxError(const char * file, int line, char * expected) {
+    printf("Melon: %s: syntax \033[31merror\033[0m in line %d expected %s\n", file, line, expected);
+    exit(-1);
 }
