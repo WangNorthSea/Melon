@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3038183A2249C37C000A768B /* Scope.c in Sources */ = {isa = PBXBuildFile; fileRef = 303818392249C37C000A768B /* Scope.c */; };
+		3038183E2249C402000A768B /* Hashtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 3038183D2249C402000A768B /* Hashtable.c */; };
 		303B9099224691E8008B3BEF /* DumpAST.c in Sources */ = {isa = PBXBuildFile; fileRef = 303B9098224691E8008B3BEF /* DumpAST.c */; };
 		30AB0CE4223D3B2800DC2A35 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CE3223D3B2800DC2A35 /* main.c */; };
 		30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CEB223D3B5500DC2A35 /* Lexer.c */; };
@@ -27,6 +29,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		303818392249C37C000A768B /* Scope.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Scope.c; sourceTree = "<group>"; };
+		3038183B2249C385000A768B /* scope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = scope.h; sourceTree = "<group>"; };
+		3038183C2249C3F3000A768B /* hashtable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hashtable.h; sourceTree = "<group>"; };
+		3038183D2249C402000A768B /* Hashtable.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Hashtable.c; sourceTree = "<group>"; };
 		303B9098224691E8008B3BEF /* DumpAST.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DumpAST.c; sourceTree = "<group>"; };
 		303B909A224691F1008B3BEF /* ASTdumper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ASTdumper.h; sourceTree = "<group>"; };
 		30AB0CE0223D3B2800DC2A35 /* Melon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Melon; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,6 +64,7 @@
 			children = (
 				303B909A224691F1008B3BEF /* ASTdumper.h */,
 				303B9098224691E8008B3BEF /* DumpAST.c */,
+				30BBA9892243DF9500508A4D /* constructor.h */,
 			);
 			path = Dumper;
 			sourceTree = "<group>";
@@ -106,6 +113,10 @@
 			children = (
 				30EBAC1F223FEE6700A2D96E /* parser.h */,
 				30EBAC1D223FEE5E00A2D96E /* Parser.c */,
+				3038183B2249C385000A768B /* scope.h */,
+				303818392249C37C000A768B /* Scope.c */,
+				3038183C2249C3F3000A768B /* hashtable.h */,
+				3038183D2249C402000A768B /* Hashtable.c */,
 			);
 			path = Parser;
 			sourceTree = "<group>";
@@ -114,7 +125,6 @@
 			isa = PBXGroup;
 			children = (
 				30EBAC1C223FEE4800A2D96E /* node.h */,
-				30BBA9892243DF9500508A4D /* constructor.h */,
 				30BBA9872243DF8A00508A4D /* Constructor.c */,
 			);
 			path = ASTNode;
@@ -176,11 +186,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3038183A2249C37C000A768B /* Scope.c in Sources */,
 				303B9099224691E8008B3BEF /* DumpAST.c in Sources */,
 				30BBA9882243DF8A00508A4D /* Constructor.c in Sources */,
 				30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */,
 				30AB0CE4223D3B2800DC2A35 /* main.c in Sources */,
 				30EBAC1E223FEE5E00A2D96E /* Parser.c in Sources */,
+				3038183E2249C402000A768B /* Hashtable.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

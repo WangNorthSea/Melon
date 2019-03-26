@@ -23,12 +23,12 @@ typedef struct {
 } ExprNode;
 
 int main(int argc, const char * argv[]) {
-    if (argc == 1) {
+    /*if (argc == 1) {
         printf("Melon: no input file\n");
         return 0;
-    }
+    }*/
     
-    FILE * fp = fopen(argv[1], "r");
+    FILE * fp = fopen("/Users/haoyuwang/Desktop/Melon/Melon/test3.c", "r");
     
     if (fp == NULL) {
         printf("Melon: %s: no such file\n", argv[1]);
@@ -44,7 +44,7 @@ int main(int argc, const char * argv[]) {
     
     printf("\nAST:\n");
     
-    parsingFile = argv[1];
+    parsingFile = "/Users/haoyuwang/Desktop/Melon/Melon/test3.c";
     ASTNode * rootNode = compilationUnit(headToken2);
     dumpAST(rootNode);
     

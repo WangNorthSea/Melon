@@ -9,5 +9,13 @@
 #ifndef scope_h
 #define scope_h
 
+struct Scope {
+    struct Scope * upperLevel;
+    Hashtable * symbolTable;
+};
+
+typedef struct Scope Scope;
+
+extern Scope * ScopeConstructor(Scope * upperLevel);
 
 #endif /* scope_h */
