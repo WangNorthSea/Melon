@@ -68,6 +68,24 @@
 			path = Dumper;
 			sourceTree = "<group>";
 		};
+		309DCF50224B1024009C012D /* SymbolTable */ = {
+			isa = PBXGroup;
+			children = (
+				3038183B2249C385000A768B /* scope.h */,
+				303818392249C37C000A768B /* Scope.c */,
+				3038183C2249C3F3000A768B /* hashtable.h */,
+				3038183D2249C402000A768B /* Hashtable.c */,
+			);
+			path = SymbolTable;
+			sourceTree = "<group>";
+		};
+		309DCF51224B1063009C012D /* Semantics */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Semantics;
+			sourceTree = "<group>";
+		};
 		30AB0CD7223D3B2800DC2A35 = {
 			isa = PBXGroup;
 			children = (
@@ -90,6 +108,8 @@
 				303B9097224691D6008B3BEF /* Dumper */,
 				30EBAC1B223FEE1E00A2D96E /* ASTNode */,
 				30EBAC1A223FEE1100A2D96E /* Parser */,
+				309DCF51224B1063009C012D /* Semantics */,
+				309DCF50224B1024009C012D /* SymbolTable */,
 				30AB0CEA223D3B3F00DC2A35 /* Lexer */,
 				30AB0CE3223D3B2800DC2A35 /* main.c */,
 			);
@@ -112,10 +132,6 @@
 			children = (
 				30EBAC1F223FEE6700A2D96E /* parser.h */,
 				30EBAC1D223FEE5E00A2D96E /* Parser.c */,
-				3038183B2249C385000A768B /* scope.h */,
-				303818392249C37C000A768B /* Scope.c */,
-				3038183C2249C3F3000A768B /* hashtable.h */,
-				3038183D2249C402000A768B /* Hashtable.c */,
 			);
 			path = Parser;
 			sourceTree = "<group>";

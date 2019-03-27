@@ -13,8 +13,6 @@
 #include "../Lexer/tokenkind.h"
 #include "../ASTNode/node.h"
 #include "../ASTNode/constructor.h"
-#include "hashtable.h"
-#include "scope.h"
 
 ASTNode * importStmts(void);
 
