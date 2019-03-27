@@ -262,6 +262,18 @@ void kindTable(int kind) {
         case 182:
             printf("UnlimitedParams");
             break;
+        case 183:
+            printf("FuncStmt");
+            break;
+        case 184:
+            printf("ExternFunc");
+            break;
+        case 185:
+            printf("ExternVar");
+            break;
+        case 186:
+            printf("ExternConst");
+            break;
         default:
             break;
     }

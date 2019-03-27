@@ -122,6 +122,8 @@ ASTNode * postfix(void);
 
 ASTNode * args(void);
 
+ASTNode * extern_(void);
+
 int isType(void);
 
 int match(int kind);
@@ -213,7 +215,7 @@ ASTNode * topDefs(void) {
             prelooking--;
             token = lookahead1;
             
-            if (token -> kind != CONST && token -> next -> next -> kind != LEFTBRACE) {
+            if (token -> kind != EXTERN && token -> kind != CONST && token -> next -> next -> kind != LEFTBRACE) {
                 ptrs[0] = defvars();
                 
                 if (ptrs[0] == NULL) {
@@ -279,6 +281,20 @@ ASTNode * topDefs(void) {
                                 return NULL;
                             else {
                                 throwSyntaxError(parsingFile, token -> beginLine, "typedef statement");
+                            }
+                        }
+                        
+                        Node -> append(Node, *ptrs[0]);
+                        free(ptrs[0]);
+                        break;
+                    case EXTERN:
+                        ptrs[0] = extern_();
+                        
+                        if (ptrs[0] == NULL) {
+                            if (prelooking)
+                                return NULL;
+                            else {
+                                throwSyntaxError(parsingFile, token -> beginLine, "extern statement");
                             }
                         }
                         
@@ -599,6 +615,9 @@ ASTNode * defun(void) {
             throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
         }
     }
+    
+    if (match(SEMICOLON))
+        return NodeConstructor(FuncStmt, parsingFile, token -> beginLine, NULL, ptrs);
 
     ptrs[4] = block();
     
@@ -3460,6 +3479,76 @@ ASTNode * args(void) {
 jumpout:
     
     return Node;
+}
+
+ASTNode * extern_(void) {
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    Token * lookahead = NULL;
+    
+    if (!match(EXTERN)) {
+        if (prelooking)
+            return NULL;
+        else {
+            throwSyntaxError(parsingFile, token -> beginLine, "\'extern\'");
+        }
+    }
+    
+    lookahead = token;
+    
+    prelooking++;
+    storage();
+    if (type() != NULL && match(IDENTIFIER) && match(LEFTPARENTHESE)) {
+        prelooking--;
+        token = lookahead;
+        ptrs[0] = defun();
+        
+        if (ptrs[0] == NULL) {
+            if (prelooking)
+                return NULL;
+            else {
+                throwSyntaxError(parsingFile, token -> beginLine, "function definition");
+            }
+        }
+        
+        return NodeConstructor(ExternFunc, parsingFile, token -> beginLine, NULL, ptrs);
+    }
+    else {
+        prelooking--;
+        token = lookahead;
+        
+        if (token -> kind != CONST && token -> next -> next -> kind != LEFTBRACE) {
+            ptrs[0] = defvars();
+            
+            if (ptrs[0] == NULL) {
+                if (prelooking)
+                    return NULL;
+                else {
+                    throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
+                }
+            }
+            
+            return NodeConstructor(ExternVar, parsingFile, token -> beginLine, NULL, ptrs);
+        }
+        else {
+            switch (token -> kind) {
+                case CONST:
+                    ptrs[0] = defconst();
+                    
+                    if (ptrs[0] == NULL) {
+                        if (prelooking)
+                            return NULL;
+                        else {
+                            throwSyntaxError(parsingFile, token -> beginLine, "constant definition");
+                        }
+                    }
+                    
+                    return NodeConstructor(ExternConst, parsingFile, token -> beginLine, NULL, ptrs);
+                    break;
+                default:
+                    return NULL;
+            }
+        }
+    }
 }
 
 int isType(void) {
