@@ -109,5 +109,7 @@ typedef struct ASTNode ASTNode;
 #define ExternFunc 184
 #define ExternVar 185
 #define ExternConst 186
+#define ConstFuncPtr 187
+#define ConstVariable 188
 
 #endif /* node_h */

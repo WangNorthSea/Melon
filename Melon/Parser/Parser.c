@@ -1214,14 +1214,14 @@ ASTNode * defconst(void) {
             }
         }
         
-        temp = NodeConstructor(FuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
+        temp = NodeConstructor(ConstFuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
         Node -> append(Node, *temp);
         free(temp);
         
         return Node;
     }
     
-    temp = NodeConstructor(Variable, parsingFile, token -> beginLine, NULL, ptrs);
+    temp = NodeConstructor(ConstVariable, parsingFile, token -> beginLine, NULL, ptrs);
     Node -> append(Node, *temp);
     free(temp);
     

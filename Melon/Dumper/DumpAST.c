@@ -274,6 +274,12 @@ void kindTable(int kind) {
         case 186:
             printf("ExternConst");
             break;
+        case 187:
+            printf("ConstFuncPtr");
+            break;
+        case 188:
+            printf("ConstVariable");
+            break;
         default:
             break;
     }
