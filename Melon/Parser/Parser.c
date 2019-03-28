@@ -193,6 +193,8 @@ ASTNode * topDefs(void) {
         if (token -> kind == EOF_)
             break;
         
+        printf("%s\n", token -> image);
+        
         prelooking++;
         storage();
         if (type() != NULL && match(IDENTIFIER) && match(LEFTPARENTHESE)) {
@@ -416,7 +418,6 @@ ASTNode * defvars(void) {
     
     if (match(LEFTPARENTHESE)) {        //函数指针
         isFuncPtr = 1;
-        free(Node);
         
         if (!match(MUL)) {
             if (prelooking)
@@ -508,6 +509,14 @@ ASTNode * defvars(void) {
     }
     
     if (isFuncPtr) {
+        if (!match(SEMICOLON)) {
+            if (prelooking)
+                return NULL;
+            else {
+                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            }
+        }
+        
         temp = NodeConstructor(FuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
         Node -> append(Node, *temp);
         free(temp);
@@ -634,6 +643,7 @@ ASTNode * defun(void) {
 
 ASTNode * type(void) {
     ASTNode * Node = NULL;
+    ASTNode * temp = NULL;
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     char * label = NULL;
     
@@ -738,6 +748,16 @@ ASTNode * type(void) {
             }
             break;
     }
+    
+    do {                    //("*")*
+        if (match(MUL)) {
+            temp = NodeConstructor(PtrRef, parsingFile, token -> beginLine, NULL, ptrs);
+            Node -> append(Node, *temp);
+            free(temp);
+        }
+        else
+            break;
+    } while (1);
     
     return Node;
 }
@@ -1097,7 +1117,6 @@ ASTNode * defconst(void) {
     
     if (match(LEFTPARENTHESE)) {        //函数指针
         isFuncPtr = 1;
-        free(Node);
         
         if (!match(MUL)) {
             if (prelooking)
@@ -1189,6 +1208,14 @@ ASTNode * defconst(void) {
     }
     
     if (isFuncPtr) {
+        if (!match(SEMICOLON)) {
+            if (prelooking)
+                return NULL;
+            else {
+                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            }
+        }
+        
         temp = NodeConstructor(FuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
         Node -> append(Node, *temp);
         free(temp);
@@ -1657,7 +1684,6 @@ ASTNode * slot(void) {
     
     if (match(LEFTPARENTHESE)) {        //函数指针
         isFuncPtr = 1;
-        free(Node);
         
         if (!match(MUL)) {
             if (prelooking)
@@ -1724,6 +1750,14 @@ ASTNode * slot(void) {
     }
     
     if (isFuncPtr) {
+        if (!match(SEMICOLON)) {
+            if (prelooking)
+                return NULL;
+            else {
+                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            }
+        }
+        
         temp = NodeConstructor(FuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
         Node -> append(Node, *temp);
         free(temp);
@@ -1773,16 +1807,6 @@ ASTNode * varname(void) {
     ASTNode * temp = NULL;
     
     Node = NodeConstructor(Varname, parsingFile, token -> beginLine, NULL, ptrs);
-    
-    do {                    //("*")*
-        if (match(MUL)) {
-            temp = NodeConstructor(PtrRef, parsingFile, token -> beginLine, NULL, ptrs);
-            Node -> append(Node, *temp);
-            free(temp);
-        }
-        else
-            break;
-    } while (1);
     
     ptrs[0] = name();
     

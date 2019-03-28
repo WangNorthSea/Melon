@@ -11,7 +11,7 @@
 #include "hashtable.h"
 #include "scope.h"
 
-void append(Scope * appender, Scope * toAppend) {
+void appendScope(Scope * appender, Scope * toAppend) {
     appender -> listLen++;
     appender -> lowerLevel = (Scope **)realloc(appender -> lowerLevel, sizeof(Scope *) * appender -> listLen);
     appender -> lowerLevel[appender -> listLen - 1] = toAppend;
@@ -23,6 +23,6 @@ Scope * ScopeConstructor(Scope * upperLevel) {
     scope -> upperLevel = upperLevel;
     scope -> symbolTable = HashtableConstructor();
     scope -> lowerLevel = NULL;
-    scope -> append = append;
+    scope -> appendScope = appendScope;
     return scope;
 }

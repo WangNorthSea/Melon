@@ -15,7 +15,16 @@ void iterator(ASTNode * node);
 
 Scope * scope;
 
-void semanticAnalyze(ASTNode * root) {
+char * fileChecking;
+
+void definedFunc(ASTNode * node);
+
+void definedStruct(ASTNode * node);
+
+void definedUnion(ASTNode * node);
+
+void semanticAnalyze(ASTNode * root, char * file) {
+    fileChecking = file;
     scope = ScopeConstructor(NULL);
     iterator(root);
 }
@@ -23,7 +32,25 @@ void semanticAnalyze(ASTNode * root) {
 void iterator(ASTNode * node) {
     switch (node -> kind) {
         case DefinedFunc:
-            
+            definedFunc(node);
+            break;
+        case DefinedStruct:
+            definedStruct(node);
+            break;
+        case DefinedUnion:
+            definedUnion(node);
             break;
     }
+}
+
+void definedFunc(ASTNode * node) {
+    
+}
+
+void definedStruct(ASTNode * node) {
+    
+}
+
+void definedUnion(ASTNode * node) {
+    
 }
