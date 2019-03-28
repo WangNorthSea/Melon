@@ -17,6 +17,18 @@ void appendScope(Scope * appender, Scope * toAppend) {
     appender -> lowerLevel[appender -> listLen - 1] = toAppend;
 }
 
+ASTNode * lookup(Scope * scope, char * key) {
+    ASTNode * target = NULL;
+    while (scope != NULL) {
+        target = scope -> symbolTable -> get(scope -> symbolTable, key);
+        if (target != NULL)
+            return target;
+        else
+            scope = scope -> upperLevel;
+    }
+    return target;
+}
+
 Scope * ScopeConstructor(Scope * upperLevel) {
     Scope * scope = (Scope *)malloc(sizeof(Scope));
     scope -> listLen = 0;
@@ -24,5 +36,6 @@ Scope * ScopeConstructor(Scope * upperLevel) {
     scope -> symbolTable = HashtableConstructor();
     scope -> lowerLevel = NULL;
     scope -> appendScope = appendScope;
+    scope -> lookup = lookup;
     return scope;
 }

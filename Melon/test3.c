@@ -1,4 +1,5 @@
 int * (*ppp)(int ** c[]);
+int cccddd = getcc((int)a);
 
 const void (*papa)(void);
 struct ss {
@@ -7,16 +8,17 @@ struct ss {
 	void (*ssa)(char a);
 };
 
-struct ss abc;
 
 union aac {
 	int c;
 	double f;
 };
 
-union aac sdd;
 
 void aa(int a, const int b, int (*c)(int ll, int lc)) {
+	int a;
 	double ** aaa[3];
 	return;
 }
+
+void asssdd(int cccds);

@@ -15,6 +15,7 @@ struct Scope {
     Hashtable * symbolTable;
     int listLen;
     void (*appendScope)(struct Scope * appender, struct Scope * toAppend);
+    ASTNode * lookup(struct Scope * scope, char * key);
 };
 
 typedef struct Scope Scope;

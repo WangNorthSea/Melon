@@ -193,8 +193,6 @@ ASTNode * topDefs(void) {
         if (token -> kind == EOF_)
             break;
         
-        printf("%s\n", token -> image);
-        
         prelooking++;
         storage();
         if (type() != NULL && match(IDENTIFIER) && match(LEFTPARENTHESE)) {
