@@ -208,7 +208,7 @@ Token * lexicalAnalyze(FILE * fp) {
             } while (ch != '\'' && ch != '\n' && ch != EOF);
             
             if (ch == '\n' || ch == EOF) {
-                printf("Melon: syntax \033[31merror\033[0m in line %d\n", line);
+                printf("Melon: lexical \033[31merror\033[0m in line %d\n", line);
                 exit(-1);
             }
             
@@ -269,7 +269,7 @@ Token * lexicalAnalyze(FILE * fp) {
             } while (ch != '\"' && ch != '\n' && ch != EOF);
             
             if (ch == '\n' || ch == EOF) {
-                printf("Melon: syntax \033[31merror\033[0m in line %d\n", line);
+                printf("Melon: lexical \033[31merror\033[0m in line %d\n", line);
                 exit(-1);
             }
             
@@ -1663,7 +1663,7 @@ Token * lexicalAnalyze(FILE * fp) {
         }
         
         if (syntaxError) {
-            printf("Melon: syntax \033[31merror\033[0m in line %d\n", line);
+            printf("Melon: lexical \033[31merror\033[0m in line %d\n", line);
             exit(-1);
         }
     }

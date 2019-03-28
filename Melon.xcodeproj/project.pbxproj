@@ -10,6 +10,7 @@
 		3038183A2249C37C000A768B /* Scope.c in Sources */ = {isa = PBXBuildFile; fileRef = 303818392249C37C000A768B /* Scope.c */; };
 		3038183E2249C402000A768B /* Hashtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 3038183D2249C402000A768B /* Hashtable.c */; };
 		303B9099224691E8008B3BEF /* DumpAST.c in Sources */ = {isa = PBXBuildFile; fileRef = 303B9098224691E8008B3BEF /* DumpAST.c */; };
+		30A6C56C224C775400096B6D /* SA.c in Sources */ = {isa = PBXBuildFile; fileRef = 30A6C56B224C775400096B6D /* SA.c */; };
 		30AB0CE4223D3B2800DC2A35 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CE3223D3B2800DC2A35 /* main.c */; };
 		30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CEB223D3B5500DC2A35 /* Lexer.c */; };
 		30BBA9882243DF8A00508A4D /* Constructor.c in Sources */ = {isa = PBXBuildFile; fileRef = 30BBA9872243DF8A00508A4D /* Constructor.c */; };
@@ -35,6 +36,8 @@
 		3038183D2249C402000A768B /* Hashtable.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Hashtable.c; sourceTree = "<group>"; };
 		303B9098224691E8008B3BEF /* DumpAST.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DumpAST.c; sourceTree = "<group>"; };
 		303B909A224691F1008B3BEF /* ASTdumper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ASTdumper.h; sourceTree = "<group>"; };
+		30A6C56B224C775400096B6D /* SA.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SA.c; sourceTree = "<group>"; };
+		30A6C56D224C776500096B6D /* semantics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = semantics.h; sourceTree = "<group>"; };
 		30AB0CE0223D3B2800DC2A35 /* Melon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Melon; sourceTree = BUILT_PRODUCTS_DIR; };
 		30AB0CE3223D3B2800DC2A35 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		30AB0CEB223D3B5500DC2A35 /* Lexer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Lexer.c; sourceTree = "<group>"; };
@@ -82,6 +85,8 @@
 		309DCF51224B1063009C012D /* Semantics */ = {
 			isa = PBXGroup;
 			children = (
+				30A6C56D224C776500096B6D /* semantics.h */,
+				30A6C56B224C775400096B6D /* SA.c */,
 			);
 			path = Semantics;
 			sourceTree = "<group>";
@@ -203,6 +208,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3038183A2249C37C000A768B /* Scope.c in Sources */,
+				30A6C56C224C775400096B6D /* SA.c in Sources */,
 				303B9099224691E8008B3BEF /* DumpAST.c in Sources */,
 				30BBA9882243DF8A00508A4D /* Constructor.c in Sources */,
 				30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */,

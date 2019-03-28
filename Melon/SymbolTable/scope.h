@@ -11,7 +11,10 @@
 
 struct Scope {
     struct Scope * upperLevel;
+    struct Scope ** lowerLevel;
     Hashtable * symbolTable;
+    int listLen;
+    void (*append)(struct Scope * appender, struct Scope * toAppend);
 };
 
 typedef struct Scope Scope;
