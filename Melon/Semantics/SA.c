@@ -11,6 +11,7 @@
 #include "../ASTNode/node.h"
 #include "../SymbolTable/hashtable.h"
 #include "../SymbolTable/scope.h"
+#include "../ASTNode/constructor.h"
 
 void iterator(ASTNode * node);
 
@@ -43,6 +44,14 @@ void funcStmt(ASTNode * node);
 void funcall(ASTNode * node);
 
 ASTNode * exprCheck(ASTNode * node);
+
+struct ass {
+    int a;
+};
+
+int ass = 1;
+
+void typeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 void newScope(void);
 
@@ -99,7 +108,7 @@ void iterator(ASTNode * node) {
             funcStmt(node);
             break;
         case Funcall:
-            funcall(node);
+            //funcall(node);
             break;
     }
     
@@ -115,7 +124,7 @@ void iterator(ASTNode * node) {
         scope = scope -> upperLevel;
 }
 
-void definedFunc(ASTNode * node) {
+void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
     if (scope -> lookup(scope, node -> ptrs[2] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
@@ -241,7 +250,102 @@ void funcStmt(ASTNode * node) {
 
 //从表达式节点出发，检查表达式各部分的类型，进行隐式类型转换，并返回表达式最终得到的类型，基本上是语义分析的核心
 ASTNode * exprCheck(ASTNode * node) {
+    if (node -> kind == Identifier) {
+        ASTNode * target = scope -> lookup(scope, node -> image);       //并不是type
+        if (target == NULL) {
+            printf("Melon: %s: semantic \033[31merror\033[0m in line %d identifier \'%s\' undefined\n", fileChecking, node -> line, node -> image);
+            exit(-1);
+        }
+        
+        switch (target -> kind) {
+            case DefinedFunc:
+                return target -> ptrs[1];
+                break;
+                
+            default:
+                break;
+        }
+    }
+    else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral)
+        return node;
+    else if (node -> kind == BinaryOp) {
+        ASTNode * type1 = exprCheck(node -> ptrs[0]);
+        ASTNode * type2 = exprCheck(node -> ptrs[1]);
+        
+        typeChecker(node, type1, type2);
+    }
+    
     return NULL;
+}
+
+void typeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    ASTNode * temp = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
+    switch (type1 -> kind) {
+        case IntegerLiteral:
+            switch (type2 -> kind) {
+                case IntegerLiteral:
+                    break;
+                case CharacterLiteral:
+                    break;
+                case StringLiteral:
+                    throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                    break;
+                case FloatLiteral:
+                    temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                    ptrs[0] = temp;
+                    ptrs[1] = type1;
+                    parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+                    break;
+                case SizeofType:
+                    break;
+                case SizeofExpr:
+                    break;
+                case Address:
+                    break;
+                case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+                    throwSemanticError(fileChecking, type1 -> line, "void type operand");
+                    break;
+                case CharType:
+                    break;
+                case ShortIntType:
+                    break;
+                case LongIntType:
+                    break;
+                case UnsignedCharType:
+                    break;
+                case UnsignedShortIntType:
+                    break;
+                case UnsignedIntType:
+                    break;
+                case UnsignedLongIntType:
+                    break;
+                case StructType:
+                    throwSemanticError(fileChecking, type1 -> line, "struct type operand");
+                    break;
+                case UnionType:
+                    throwSemanticError(fileChecking, type1 -> line, "union type operand");
+                    break;
+                case FloatType:
+                    if (type2 -> listLen == 0) {                //不带PtrRef，进行隐式类型转换
+                        temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);
+                        ptrs[0] = temp;
+                        ptrs[1] = type1;
+                        parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+                    }
+                    break;
+                case DoubleType:
+                    if (type2 -> listLen == 0) {
+                        temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);
+                        ptrs[0] = temp;
+                        ptrs[1] = type1;
+                        parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+                    }
+                    break;
+            }
+            break;
+    }
 }
 
 void newScope(void) {

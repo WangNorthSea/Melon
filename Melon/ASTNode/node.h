@@ -79,7 +79,6 @@ typedef struct ASTNode ASTNode;
 #define UnsignedLongIntType 154
 #define StructType 155
 #define UnionType 156
-#define UserType 157
 #define ParamsNode 158
 #define FuncPtrParam 159
 #define ConstParam 160

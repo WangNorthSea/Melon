@@ -13,6 +13,7 @@
 #include "../Lexer/tokenkind.h"
 #include "../ASTNode/node.h"
 #include "../ASTNode/constructor.h"
+#include "../SymbolTable/hashtable.h"
 
 ASTNode * importStmts(void);
 
@@ -124,7 +125,7 @@ ASTNode * args(void);
 
 ASTNode * extern_(void);
 
-int isType(void);
+ASTNode * getType(char * key);
 
 int match(int kind);
 
@@ -136,19 +137,12 @@ const char * parsingFile = NULL;
 
 int prelooking = 0;
 
-char ** typeDefList = NULL;
-
-int typeDefCount = 0;
-
-void typeDefAppend(char * image) {
-    typeDefCount++;
-    typeDefList = (char **)realloc(typeDefList, sizeof(char *) * typeDefCount);
-    typeDefList[typeDefCount - 1] = image;
-}
+Hashtable * typeDefList = NULL;
 
 ASTNode * compilationUnit(Token * headToken) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     token = headToken -> next;
+    typeDefList = HashtableConstructor();
     
     if (token == NULL)
         return NodeConstructor(Root, parsingFile, 1, NULL, ptrs);
@@ -215,7 +209,7 @@ ASTNode * topDefs(void) {
             prelooking--;
             token = lookahead1;
             
-            if (token -> kind != EXTERN && token -> kind != CONST && token -> next -> next -> kind != LEFTBRACE) {
+            if (token -> kind != TYPEDEF && token -> kind != EXTERN && token -> kind != CONST && token -> next -> next -> kind != LEFTBRACE) {
                 ptrs[0] = defvars();
                 
                 if (ptrs[0] == NULL) {
@@ -729,21 +723,10 @@ ASTNode * type(void) {
             Node = NodeConstructor(UnionType, parsingFile, token -> beginLine, label, ptrs);
             break;
         default:
-            if (isType()) {
-                label = token -> image;
-                if (!match(IDENTIFIER)) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-                    }
-                }
-                
-                Node = NodeConstructor(UserType, parsingFile, token -> beginLine, label, ptrs);
-            }
-            else {
-                return NULL;
-            }
+            temp = getType(token -> image);
+            if (temp != NULL)
+                token = token -> next;
+            return temp;
             break;
     }
     
@@ -1394,7 +1377,7 @@ ASTNode * typedef_(void) {
         }
     }
     
-    typeDefAppend(ptrs[1] -> image);
+    typeDefList -> put(typeDefList, ptrs[1] -> image, ptrs[0]);
     
     return NodeConstructor(TypeDef, parsingFile, token -> beginLine, NULL, ptrs);
 }
@@ -3573,17 +3556,8 @@ ASTNode * extern_(void) {
     }
 }
 
-int isType(void) {
-    int i;
-    
-    for (i = 0; i < typeDefCount; i++) {
-        if (strcmp(typeDefList[i], token -> image))
-            continue;
-        else
-            break;
-    }
-    
-    return i == typeDefCount ? 0 : 1;
+ASTNode * getType(char * key) {
+    return typeDefList -> get(typeDefList, key);
 }
 
 int match(int kind) {

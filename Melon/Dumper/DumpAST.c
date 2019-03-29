@@ -184,9 +184,6 @@ void kindTable(int kind) {
         case 156:
             printf("UnionType");
             break;
-        case 157:
-            printf("UserType");
-            break;
         case 158:
             printf("ParamsNode");
             break;
