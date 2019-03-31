@@ -3,6 +3,8 @@ int cmp(int a, int b) {
 	return c;
 }
 
+int (*ssaa)(int cdx);
+
 int main(void) {
 	int aa = cmp(2, 3);
 	int c = (aa++ + 2) * (3 - 4);

@@ -41,15 +41,15 @@ void constVariable(ASTNode * node);
 
 void funcStmt(ASTNode * node);
 
+void externFunc(ASTNode * node);
+
+void externVar(ASTNode * node);
+
+void externConst(ASTNode * node);
+
 void funcall(ASTNode * node);
 
 ASTNode * exprCheck(ASTNode * node);
-
-struct ass {
-    int a;
-};
-
-int ass = 1;
 
 void typeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
@@ -106,6 +106,15 @@ void iterator(ASTNode * node) {
             break;
         case FuncStmt:
             funcStmt(node);
+            break;
+        case ExternFunc:
+            externFunc(node);
+            break;
+        case ExternVar:
+            externVar(node);
+            break;
+        case ExternConst:
+            externConst(node);
             break;
         case Funcall:
             //funcall(node);
@@ -209,6 +218,26 @@ void funcStmt(ASTNode * node) {
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
 }
 
+void externFunc(ASTNode * node) {
+    if (scope -> lookup(scope, node -> ptrs[0] -> ptrs[2] -> image) != NULL)
+        throwSemanticError(fileChecking, node -> line, "function redefined");
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> ptrs[2] -> image, node);
+}
+
+void externVar(ASTNode * node) {
+    if (node -> ptrs[0] -> list[0].kind == Variable)
+        variable(&(node -> ptrs[0] -> list[0]));
+    else
+        funcPtr(&(node -> ptrs[0] -> list[0]));
+}
+
+void externConst(ASTNode * node) {
+    if (node -> ptrs[0] -> list[0].kind == ConstVariable)
+        constVariable(&(node -> ptrs[0] -> list[0]));
+    else
+        constFuncPtr(&(node -> ptrs[0] -> list[0]));
+}
+
 /*void funcall(ASTNode * node) {
     int params = 3;
     ASTNode * targetFunc = scope -> lookup(scope, node -> ptrs[0] -> image);
@@ -261,7 +290,57 @@ ASTNode * exprCheck(ASTNode * node) {
             case DefinedFunc:
                 return target -> ptrs[1];
                 break;
-                
+            case DefinedStruct:
+                return target;
+                break;
+            case DefinedUnion:
+                return target;
+                break;
+            case NormalParam:
+                return target -> ptrs[0];
+                break;
+            case ConstParam:
+                return target -> ptrs[0];
+                break;
+            case FuncPtrParam:
+                return target -> ptrs[0];
+                break;
+            case FuncPtr:
+                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                    return target -> ptrs[1];
+                else
+                    return target -> ptrs[0];
+                break;
+            case ConstFuncPtr:
+                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                    return target -> ptrs[1];
+                else
+                    return target -> ptrs[0];
+                break;
+            case Variable:
+                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                    return target -> ptrs[1];
+                else
+                    return target -> ptrs[0];
+                break;
+            case ConstVariable:
+                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                    return target -> ptrs[1];
+                else
+                    return target -> ptrs[0];
+                break;
+            case FuncStmt:
+                return target -> ptrs[1];
+                break;
+            case ExternFunc:
+                return target -> ptrs[0] -> ptrs[1];
+                break;
+            case ExternVar:
+                return target -> ptrs[0] -> ptrs[1];
+                break;
+            case ExternConst:
+                return target -> ptrs[0] -> ptrs[1];
+                break;
             default:
                 break;
         }
