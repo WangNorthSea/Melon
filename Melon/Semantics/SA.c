@@ -55,6 +55,22 @@ void typeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 void newScope(void);
 
+void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void characterLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void stringLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void addressType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
 void throwSemanticError(const char * file, int line, char * content);
 
 void semanticAnalyze(ASTNode * root, const char * file) {
@@ -358,71 +374,36 @@ ASTNode * exprCheck(ASTNode * node) {
 }
 
 void typeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
-    ASTNode * temp = NULL;
-    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
-    
     switch (type1 -> kind) {
         case IntegerLiteral:
-            switch (type2 -> kind) {
-                case IntegerLiteral:
-                    break;
-                case CharacterLiteral:
-                    break;
-                case StringLiteral:
-                    throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
-                    break;
-                case FloatLiteral:
-                    temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
-                    ptrs[0] = temp;
-                    ptrs[1] = type1;
-                    parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
-                    break;
-                case SizeofType:
-                    break;
-                case SizeofExpr:
-                    break;
-                case Address:
-                    break;
-                case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
-                    throwSemanticError(fileChecking, type1 -> line, "void type operand");
-                    break;
-                case CharType:
-                    break;
-                case ShortIntType:
-                    break;
-                case LongIntType:
-                    break;
-                case UnsignedCharType:
-                    break;
-                case UnsignedShortIntType:
-                    break;
-                case UnsignedIntType:
-                    break;
-                case UnsignedLongIntType:
-                    break;
-                case StructType:
-                    throwSemanticError(fileChecking, type1 -> line, "struct type operand");
-                    break;
-                case UnionType:
-                    throwSemanticError(fileChecking, type1 -> line, "union type operand");
-                    break;
-                case FloatType:
-                    if (type2 -> listLen == 0) {                //不带PtrRef，进行隐式类型转换
-                        temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);
-                        ptrs[0] = temp;
-                        ptrs[1] = type1;
-                        parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
-                    }
-                    break;
-                case DoubleType:
-                    if (type2 -> listLen == 0) {
-                        temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);
-                        ptrs[0] = temp;
-                        ptrs[1] = type1;
-                        parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
-                    }
-                    break;
-            }
+            integerLiteralType(parent, type1, type2);
+            break;
+        case CharacterLiteral:
+            characterLiteralType(parent, type1, type2);
+            break;
+        case StringLiteral:
+            stringLiteralType(parent, type1, type2);
+            break;
+        case FloatLiteral:
+            floatLiteralType(parent, type1, type2);
+            break;
+        case SizeofType:
+            integerLiteralType(parent, type1, type2);
+            break;
+        case SizeofExpr:
+            integerLiteralType(parent, type1, type2);
+            break;
+        case Address:
+            addressType(parent, type1, type2);
+            break;
+        case VoidType:
+            voidType(parent, type1, type2);
+            break;
+        case CharType:
+            charType(parent, type1, type2);
+            break;
+        case ShortIntType:
+            shortIntType(parent, type1, type2);
             break;
     }
 }
@@ -431,6 +412,763 @@ void newScope(void) {
     Scope * temp = ScopeConstructor(scope);
     scope -> appendScope(scope, temp);
     scope = temp;
+}
+
+//字面量自身不需要进行隐式类型转换，需不需要转换的关键在于是否将其存储在了固定长度的空间中
+
+void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    ASTNode * temp = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
+    switch (type2 -> kind) {
+        case IntegerLiteral:
+            break;
+        case CharacterLiteral:
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case FloatLiteral:
+            break;
+        case SizeofType:
+            break;
+        case SizeofExpr:
+            break;
+        case Address:
+            break;
+        case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case ShortIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case IntType:
+            break;
+        case LongIntType:
+            break;
+        case UnsignedCharType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedShortIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedIntType:
+            break;
+        case UnsignedLongIntType:
+            break;
+        case StructType:
+            throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+            break;
+        case UnionType:
+            throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+            break;
+        case FloatType:
+            break;
+        case DoubleType:
+            break;
+        default:
+            break;
+    }
+}
+
+void characterLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    switch (type2 -> kind) {
+        case IntegerLiteral:
+            break;
+        case CharacterLiteral:
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case FloatLiteral:
+            break;
+        case SizeofType:
+            break;
+        case SizeofExpr:
+            break;
+        case Address:
+            break;
+        case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharType:
+            break;
+        case ShortIntType:
+            break;
+        case IntType:
+            break;
+        case LongIntType:
+            break;
+        case UnsignedCharType:
+            break;
+        case UnsignedShortIntType:
+            break;
+        case UnsignedIntType:
+            break;
+        case UnsignedLongIntType:
+            break;
+        case StructType:
+            throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+            break;
+        case UnionType:
+            throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+            break;
+        case FloatType:
+            break;
+        case DoubleType:
+            break;
+        default:
+            break;
+    }
+}
+
+void stringLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    switch (type2 -> kind) {
+        case IntegerLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case CharacterLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            break;
+        case FloatLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case SizeofType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case SizeofExpr:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case Address:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case ShortIntType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case IntType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case LongIntType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedCharType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedShortIntType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedIntType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedLongIntType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case StructType:
+            throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+            break;
+        case UnionType:
+            throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+            break;
+        case FloatType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case DoubleType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        default:
+            break;
+    }
+}
+
+//浮点数字面量按double类型存储
+void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    ASTNode * temp = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
+    switch (type2 -> kind) {
+        case IntegerLiteral:
+            break;
+        case CharacterLiteral:
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case FloatLiteral:
+            break;
+        case SizeofType:
+            break;
+        case SizeofExpr:
+            break;
+        case Address:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case ShortIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case IntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case LongIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedCharType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedShortIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case UnsignedLongIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case StructType:
+            throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+            break;
+        case UnionType:
+            throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+            break;
+        case FloatType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case DoubleType:
+            if (type2 -> listLen != 0)
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        default:
+            break;
+    }
+}
+
+void addressType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    ASTNode * temp = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
+    switch (type2 -> kind) {
+        case IntegerLiteral:
+            break;
+        case CharacterLiteral:
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case FloatLiteral:
+            break;
+        case SizeofType:
+            break;
+        case SizeofExpr:
+            break;
+        case Address:
+            break;
+        case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case ShortIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case IntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case LongIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedCharType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedShortIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedIntType:
+            if (type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedLongIntType:
+            break;
+        case StructType:
+            throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+            break;
+        case UnionType:
+            throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+            break;
+        case FloatType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case DoubleType:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        default:
+            break;
+    }
+}
+
+void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    switch (type2 -> kind) {
+        case IntegerLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharacterLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case FloatLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case SizeofType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case SizeofExpr:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case Address:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case ShortIntType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case IntType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case LongIntType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case UnsignedCharType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case UnsignedShortIntType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case UnsignedIntType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case UnsignedLongIntType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case StructType:
+            throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+            break;
+        case UnionType:
+            throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+            break;
+        case FloatType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case DoubleType:
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        default:
+            break;
+    }
+}
+
+void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    ASTNode * temp = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
+    switch (type2 -> kind) {
+        case IntegerLiteral:
+            if (type1 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case CharacterLiteral:
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case FloatLiteral:
+            if (type1 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else
+                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            break;
+        case SizeofType:
+            if (type1 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case SizeofExpr:
+            if (type1 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case Address:
+            if (type1 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
+            throwSemanticError(fileChecking, type1 -> line, "void type operand not allowed");
+            break;
+        case CharType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case ShortIntType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(ShortIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case IntType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case LongIntType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedCharType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(CharType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedShortIntType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedShortIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedIntType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case UnsignedLongIntType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case StructType:
+            throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+            break;
+        case UnionType:
+            throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+            break;
+        case FloatType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        case DoubleType:
+            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type2;
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
+                temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+                temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
+                ptrs[0] = temp;
+                ptrs[1] = type1;
+                parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    
 }
 
 void throwSemanticError(const char * file, int line, char * content) {
