@@ -6,7 +6,7 @@ struct qqq {
 	int sdq;
 };
 
-struct qqq qeqeqe;
+struct qqq *** qeqeqe;
 
 int a = ss[32][2] + b * cc.sb + (as * aasdww)-- + *ptr % (&asse << asdq) / (ssaaaq -> ppsss);
 int dd = (double)2 + aasssdf;
