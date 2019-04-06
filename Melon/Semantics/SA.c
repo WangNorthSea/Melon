@@ -379,13 +379,67 @@ ASTNode * exprCheck(ASTNode * node) {
                 break;
         }
     }
-    else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral)
+    else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral || node -> kind == SizeofType || node -> kind == SizeofExpr)
         return node;
     else if (node -> kind == BinaryOp) {
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);
         
         typeChecker(node, type1, type2);
+        
+        if (type1 -> kind == Cast)
+            return type2;
+        else if (type2 -> kind == Cast)
+            return type1;
+        else if (type1 -> kind == IntegerLiteral || type1 -> kind == CharacterLiteral || type1 -> kind == StringLiteral || type1 -> kind == FloatLiteral || type1 -> kind == SizeofType || type1 -> kind == SizeofExpr)
+            return type2;
+        else
+            return type1;
+    }
+    else if (node -> kind == SuffixOp) {
+        
+    }
+    else if (node -> kind == ArrayRef) {
+        
+    }
+    else if (node -> kind == OpAssign) {
+        
+    }
+    else if (node -> kind == Assign) {
+        
+    }
+    else if (node -> kind == CondExpr) {
+        
+    }
+    else if (node -> kind == LogicOr) {
+        
+    }
+    else if (node -> kind == LogicAnd) {
+        
+    }
+    else if (node -> kind == PrefixOp) {
+        
+    }
+    else if (node -> kind == UnaryOp) {
+        
+    }
+    else if (node -> kind == Dereference) {
+        
+    }
+    else if (node -> kind == Address) {      //可能需要改动typeChecker相关代码以及BinaryOp分支
+        
+    }
+    else if (node -> kind == SizeofType) {
+        
+    }
+    else if (node -> kind == SizeofExpr) {
+        
+    }
+    else if (node -> kind == Member) {
+        
+    }
+    else if (node -> kind == PtrMember) {
+        
     }
     
     return NULL;
