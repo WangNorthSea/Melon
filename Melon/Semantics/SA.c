@@ -14,6 +14,7 @@
 #include "../ASTNode/constructor.h"
 #include "binoptc.h"
 #include "opassigntc.h"
+#include "assigntc.h"
 
 void iterator(ASTNode * node);
 
@@ -60,6 +61,8 @@ void SuffixOpTypeChecker(ASTNode * type);
 void ArrayRefTypeChecker(ASTNode * type);
 
 void OpAssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void AssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 void BinaryOpTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
@@ -409,7 +412,7 @@ ASTNode * exprCheck(ASTNode * node) {
             return type2;
         else if (type2 -> kind == Cast)
             return type1;
-        else if (type1 -> kind == IntegerLiteral || type1 -> kind == CharacterLiteral || type1 -> kind == StringLiteral || type1 -> kind == FloatLiteral || type1 -> kind == SizeofType || type1 -> kind == SizeofExpr)
+        else if (type1 -> kind == IntegerLiteral || type1 -> kind == CharacterLiteral || type1 -> kind == StringLiteral || type1 -> kind == FloatLiteral)
             return type2;
         else
             return type1;
@@ -445,10 +448,26 @@ ASTNode * exprCheck(ASTNode * node) {
         return type1;
     }
     else if (node -> kind == Assign) {
+        ASTNode * type1 = exprCheck(node -> ptrs[0]);
+        ASTNode * type2 = exprCheck(node -> ptrs[1]);
         
+        AssignTypeChecker(node, type1, type2);
+        
+        return type1;
     }
     else if (node -> kind == CondExpr) {
+        ASTNode * type1 = exprCheck(node -> ptrs[0]);
+        type1 = exprCheck(node -> ptrs[1]);
+        ASTNode * type2 = exprCheck(node -> ptrs[2]);
         
+        if (type1 -> kind == Cast)
+            return type2;
+        else if (type2 -> kind == Cast)
+            return type1;
+        else if (type1 -> kind == IntegerLiteral || type1 -> kind == CharacterLiteral || type1 -> kind == StringLiteral || type1 -> kind == FloatLiteral)
+            return type2;
+        else
+            return type1;
     }
     else if (node -> kind == LogicOr) {
         
@@ -649,6 +668,64 @@ void OpAssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             opAssignDoubleType(parent, type1, type2);
+            break;
+        default:
+            break;
+    }
+}
+
+void AssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    switch (type1 -> kind) {
+        case IntegerLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            break;
+        case CharacterLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            break;
+        case FloatLiteral:
+            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            break;
+        case VoidType:
+            assignVoidType(parent, type1, type2);
+            break;
+        case CharType:
+            assignCharType(parent, type1, type2);
+            break;
+        case ShortIntType:
+            assignShortIntType(parent, type1, type2);
+            break;
+        case IntType:
+            assignIntType(parent, type1, type2);
+            break;
+        case LongIntType:
+            assignLongIntType(parent, type1, type2);
+            break;
+        case UnsignedCharType:
+            assignUnsignedCharType(parent, type1, type2);
+            break;
+        case UnsignedShortIntType:
+            assignUnsignedShortIntType(parent, type1, type2);
+            break;
+        case UnsignedIntType:
+            assignUnsignedIntType(parent, type1, type2);
+            break;
+        case UnsignedLongIntType:
+            assignUnsignedLongIntType(parent, type1, type2);
+            break;
+        case StructType:
+            assignStructType(parent, type1, type2);
+            break;
+        case UnionType:
+            assignUnionType(parent, type1, type2);
+            break;
+        case FloatType:
+            assignFloatType(parent, type1, type2);
+            break;
+        case DoubleType:
+            assignDoubleType(parent, type1, type2);
             break;
         default:
             break;

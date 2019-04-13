@@ -12,6 +12,7 @@
 		303B9099224691E8008B3BEF /* DumpAST.c in Sources */ = {isa = PBXBuildFile; fileRef = 303B9098224691E8008B3BEF /* DumpAST.c */; };
 		30798C6A2260DF700059614D /* BinOpTC.c in Sources */ = {isa = PBXBuildFile; fileRef = 30798C692260DF700059614D /* BinOpTC.c */; };
 		30798C6C2260DF7D0059614D /* OpAssignTC.c in Sources */ = {isa = PBXBuildFile; fileRef = 30798C6B2260DF7C0059614D /* OpAssignTC.c */; };
+		307A504E22617BA800C415FA /* AssignTC.c in Sources */ = {isa = PBXBuildFile; fileRef = 307A504D22617BA800C415FA /* AssignTC.c */; };
 		30A6C56C224C775400096B6D /* SA.c in Sources */ = {isa = PBXBuildFile; fileRef = 30A6C56B224C775400096B6D /* SA.c */; };
 		30AB0CE4223D3B2800DC2A35 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CE3223D3B2800DC2A35 /* main.c */; };
 		30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 30AB0CEB223D3B5500DC2A35 /* Lexer.c */; };
@@ -42,6 +43,8 @@
 		30798C6B2260DF7C0059614D /* OpAssignTC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = OpAssignTC.c; sourceTree = "<group>"; };
 		30798C6D2260DF880059614D /* binoptc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = binoptc.h; sourceTree = "<group>"; };
 		30798C6E2260DF950059614D /* opassigntc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = opassigntc.h; sourceTree = "<group>"; };
+		307A504D22617BA800C415FA /* AssignTC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = AssignTC.c; sourceTree = "<group>"; };
+		307A504F22617BB200C415FA /* assigntc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = assigntc.h; sourceTree = "<group>"; };
 		30A6C56B224C775400096B6D /* SA.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SA.c; sourceTree = "<group>"; };
 		30A6C56D224C776500096B6D /* semantics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = semantics.h; sourceTree = "<group>"; };
 		30AB0CE0223D3B2800DC2A35 /* Melon */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Melon; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,6 +100,8 @@
 				30798C692260DF700059614D /* BinOpTC.c */,
 				30798C6E2260DF950059614D /* opassigntc.h */,
 				30798C6B2260DF7C0059614D /* OpAssignTC.c */,
+				307A504F22617BB200C415FA /* assigntc.h */,
+				307A504D22617BA800C415FA /* AssignTC.c */,
 			);
 			path = Semantics;
 			sourceTree = "<group>";
@@ -222,6 +227,7 @@
 				30A6C56C224C775400096B6D /* SA.c in Sources */,
 				303B9099224691E8008B3BEF /* DumpAST.c in Sources */,
 				30BBA9882243DF8A00508A4D /* Constructor.c in Sources */,
+				307A504E22617BA800C415FA /* AssignTC.c in Sources */,
 				30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */,
 				30AB0CE4223D3B2800DC2A35 /* main.c in Sources */,
 				30EBAC1E223FEE5E00A2D96E /* Parser.c in Sources */,
