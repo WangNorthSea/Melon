@@ -470,10 +470,30 @@ ASTNode * exprCheck(ASTNode * node) {
             return type1;
     }
     else if (node -> kind == LogicOr) {
+        ASTNode * type1 = exprCheck(node -> ptrs[0]);
+        ASTNode * type2 = exprCheck(node -> ptrs[1]);
         
+        if (type1 -> kind == Cast)
+            return type2;
+        else if (type2 -> kind == Cast)
+            return type1;
+        else if (type1 -> kind == IntegerLiteral || type1 -> kind == CharacterLiteral || type1 -> kind == StringLiteral || type1 -> kind == FloatLiteral)
+            return type2;
+        else
+            return type1;
     }
     else if (node -> kind == LogicAnd) {
+        ASTNode * type1 = exprCheck(node -> ptrs[0]);
+        ASTNode * type2 = exprCheck(node -> ptrs[1]);
         
+        if (type1 -> kind == Cast)
+            return type2;
+        else if (type2 -> kind == Cast)
+            return type1;
+        else if (type1 -> kind == IntegerLiteral || type1 -> kind == CharacterLiteral || type1 -> kind == StringLiteral || type1 -> kind == FloatLiteral)
+            return type2;
+        else
+            return type1;
     }
     else if (node -> kind == PrefixOp) {
         
