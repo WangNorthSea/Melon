@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "../Lexer/tokenkind.h"
 #include "../ASTNode/node.h"
 #include "../SymbolTable/hashtable.h"
 #include "../SymbolTable/scope.h"
@@ -65,6 +67,8 @@ void OpAssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 void AssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 void BinaryOpTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
+
+void UnaryOpTypeChecker(ASTNode * type, int kind);
 
 void newScope(void);
 
@@ -496,10 +500,21 @@ ASTNode * exprCheck(ASTNode * node) {
             return type1;
     }
     else if (node -> kind == PrefixOp) {
+        ASTNode * type = exprCheck(node -> ptrs[0]);
         
+        SuffixOpTypeChecker(type);           //似乎和后缀运算符没有区别
+        
+        return type;
     }
     else if (node -> kind == UnaryOp) {
+        ASTNode * type = exprCheck(node -> ptrs[0]);
         
+        if (!strcmp(node -> image, "!"))
+            UnaryOpTypeChecker(type, LOGICNOT);
+        else
+            UnaryOpTypeChecker(type, NOT);
+        
+        return type;
     }
     else if (node -> kind == Dereference) {
         
@@ -517,6 +532,9 @@ ASTNode * exprCheck(ASTNode * node) {
         
     }
     else if (node -> kind == PtrMember) {
+        
+    }
+    else if (node -> kind == Cast) {
         
     }
     
@@ -804,6 +822,100 @@ void BinaryOpTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             doubleType(parent, type1, type2);
+            break;
+        default:
+            break;
+    }
+}
+
+void UnaryOpTypeChecker(ASTNode * type, int kind) {
+    switch (type -> kind) {
+        case IntegerLiteral:
+            break;
+        case CharacterLiteral:
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type -> line, "string literal operand not allowed");
+            break;
+        case FloatLiteral:
+            if (kind == NOT)
+                throwSemanticError(fileChecking, type -> line, "float literal operand not allowed");
+            break;
+        case VoidType:
+            if (kind == NOT)
+                throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            break;
+        case CharType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case ShortIntType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case IntType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case LongIntType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case UnsignedCharType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case UnsignedShortIntType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case UnsignedIntType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case UnsignedLongIntType:
+            if (type -> listLen != 0) {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case StructType:
+            if (type -> listLen == 0)
+                throwSemanticError(fileChecking, type -> line, "struct type operand not allowed");
+            else {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case UnionType:
+            if (type -> listLen == 0)
+                throwSemanticError(fileChecking, type -> line, "union type operand not allowed");
+            else {
+                if (kind == NOT)
+                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+            }
+            break;
+        case FloatType:
+            if (kind == NOT)
+                throwSemanticError(fileChecking, type -> line, "float type operand not allowed");
+            break;
+        case DoubleType:
+            if (kind == NOT)
+                throwSemanticError(fileChecking, type -> line, "double type operand not allowed");
             break;
         default:
             break;
