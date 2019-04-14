@@ -24,7 +24,7 @@ Scope * scope;
 
 const char * fileChecking = NULL;
 
-int arrayRefCount = 0;
+int refCount = 0;
 
 void definedFunc(ASTNode * node);
 
@@ -429,12 +429,12 @@ ASTNode * exprCheck(ASTNode * node) {
         return type;
     }
     else if (node -> kind == ArrayRef) {
-        arrayRefCount++;
+        refCount++;
         ASTNode * refType = exprCheck(node -> ptrs[0]);
         
-        if (arrayRefCount > refType -> listLen)
+        if (refCount > refType -> listLen)
             throwSemanticError(fileChecking, node -> line, "too many times array reference");
-        arrayRefCount = 0;
+        refCount = 0;
         
         ASTNode * exprType = exprCheck(node -> ptrs[1]);
         
@@ -517,7 +517,15 @@ ASTNode * exprCheck(ASTNode * node) {
         return type;
     }
     else if (node -> kind == Dereference) {
+        refCount++;
+        ASTNode * type = exprCheck(node -> ptrs[0]);
         
+        if (refCount > type -> listLen)
+            throwSemanticError(fileChecking, node -> line, "too many times dereference");
+        refCount = 0;
+        
+        type -> listLen--;
+        return type;
     }
     else if (node -> kind == Address) {      //可能需要改动BinaryOpTypeChecker相关代码以及BinaryOp分支
         
