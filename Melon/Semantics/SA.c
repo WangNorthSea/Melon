@@ -70,6 +70,8 @@ void BinaryOpTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 void UnaryOpTypeChecker(ASTNode * type, int kind);
 
+void AddressTypeChecker(ASTNode * type);
+
 void newScope(void);
 
 void throwSemanticError(const char * file, int line, char * content);
@@ -528,7 +530,26 @@ ASTNode * exprCheck(ASTNode * node) {
         return type;
     }
     else if (node -> kind == Address) {      //可能需要改动BinaryOpTypeChecker相关代码以及BinaryOp分支
+        ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+        ASTNode * temp = NodeConstructor(PtrRef, fileChecking, node -> line, NULL, ptrs);
         
+        switch (node -> ptrs[0] -> kind) {
+            case Identifier:
+            case Member:
+            case PtrMember:
+            case ArrayRef:
+            case Dereference:
+                break;
+            default:
+                throwSemanticError(fileChecking, node -> line, "can not take the address of an rvalue");
+                break;
+        }
+        
+        ASTNode * type = exprCheck(node -> ptrs[0]);
+        type -> append(type, *temp);
+        free(temp);
+        
+        return type;
     }
     else if (node -> kind == SizeofType) {
         
@@ -928,6 +949,10 @@ void UnaryOpTypeChecker(ASTNode * type, int kind) {
         default:
             break;
     }
+}
+
+void AddressTypeChecker(ASTNode * type) {
+    
 }
 
 void newScope(void) {

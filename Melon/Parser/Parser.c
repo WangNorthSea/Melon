@@ -932,14 +932,11 @@ ASTNode * fixedParams(void) {
     Node -> append(Node, *ptrs[0]);
     free(ptrs[0]);
     
-    Token * lookahead1 = token;
-    Token * lookahead2 = token -> next -> next;     //有隐患
-    token -> next -> next = NULL;
+    Token * lookahead = token;
     
     do {                                     //(LOOKAHEAD(2) "," param())* 区分, ...
         if (match(COMMA) && !match(DOT)) {
-            token = lookahead1;
-            token -> next -> next = lookahead2;
+            token = lookahead;
             if (match(COMMA))
                 ;
             ptrs[0] = param();
@@ -956,14 +953,11 @@ ASTNode * fixedParams(void) {
             free(ptrs[0]);
         }
         else {
-            token = lookahead1;
-            token -> next -> next = lookahead2;
+            token = lookahead;
             goto jumpout;
         }
         
-        lookahead1 = token;
-        lookahead2 = token -> next -> next;     //有隐患
-        token -> next -> next = NULL;
+        lookahead = token;
     } while (1);
 jumpout:
     
@@ -3170,8 +3164,7 @@ jumpout:
 ASTNode * unary(void) {
     ASTNode * Node = NULL;
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
-    Token * lookahead1 = NULL;
-    Token * lookahead2 = NULL;
+    Token * lookahead = NULL;
     
     switch (token -> kind) {
         case SELFSUM:
@@ -3260,15 +3253,12 @@ ASTNode * unary(void) {
             break;
         case SIZEOF:
             token = token -> next;
-            lookahead1 = token;
-            lookahead2 = token -> next -> next;
-            token -> next -> next = NULL;
+            lookahead = token;
             
             prelooking++;
             if (match(LEFTPARENTHESE) && type() != NULL) {
                 prelooking--;
-                token = lookahead1;
-                token -> next -> next = lookahead2;
+                token = lookahead;
                 
                 if (!match(LEFTPARENTHESE)) {
                     if (prelooking)
@@ -3300,8 +3290,7 @@ ASTNode * unary(void) {
             }
             else {
                 prelooking--;
-                token = lookahead1;
-                token -> next -> next = lookahead2;
+                token = lookahead;
                 
                 ptrs[0] = unary();
                 
