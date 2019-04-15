@@ -529,7 +529,7 @@ ASTNode * exprCheck(ASTNode * node) {
         type -> listLen--;
         return type;
     }
-    else if (node -> kind == Address) {      //可能需要改动BinaryOpTypeChecker相关代码以及BinaryOp分支
+    else if (node -> kind == Address) {
         ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
         ASTNode * temp = NodeConstructor(PtrRef, fileChecking, node -> line, NULL, ptrs);
         
@@ -552,13 +552,22 @@ ASTNode * exprCheck(ASTNode * node) {
         return type;
     }
     else if (node -> kind == SizeofType) {
+        ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+        ASTNode * type = NodeConstructor(IntegerLiteral, fileChecking, node -> line, "4", ptrs);
         
+        //返回的值具体应该是多少现在先不管，这里只负责类型的检查
+        return type;
     }
     else if (node -> kind == SizeofExpr) {
+        ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+        ASTNode * type = exprCheck(node -> ptrs[0]);
+        type = NodeConstructor(IntegerLiteral, fileChecking, node -> line, "4", ptrs);
         
+        //跟SizeofType一样，这里先不管返回的值具体应该是多少
+        return type;
     }
     else if (node -> kind == Member) {
-        
+        //需要改一下struct的作用域机制
     }
     else if (node -> kind == PtrMember) {
         

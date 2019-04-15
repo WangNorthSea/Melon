@@ -1,12 +1,5 @@
-//#include <stdio.h>
-
 int main(void) {
-	int a = sizeof(4343131231231412545);
-	a = sizeof(struct aab);
+	int c = stdd.fuck.sa;
+	c = spd -> sqer -> ss;
 	return 0;
-}
-
-void fuck(void* a) {
-	;
-
 }
