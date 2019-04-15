@@ -22,6 +22,8 @@ void iterator(ASTNode * node);
 
 Scope * scope;
 
+Hashtable * StruUnionScope;
+
 const char * fileChecking = NULL;
 
 int refCount = 0;
@@ -70,7 +72,11 @@ void BinaryOpTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 void UnaryOpTypeChecker(ASTNode * type, int kind);
 
-void AddressTypeChecker(ASTNode * type);
+void MemberTypeChecker(ASTNode * type);
+
+void PtrMemberTypeChecker(ASTNode * type);
+
+ASTNode * getTargetType(ASTNode * target);
 
 void newScope(void);
 
@@ -79,6 +85,7 @@ void throwSemanticError(const char * file, int line, char * content);
 void semanticAnalyze(ASTNode * root, const char * file) {
     fileChecking = file;
     scope = ScopeConstructor(NULL);
+    StruUnionScope = HashtableConstructor();
     iterator(root);
 }
 
@@ -100,11 +107,9 @@ void iterator(ASTNode * node) {
             funcPtrParam(node);
             break;
         case DefinedStruct:
-            needRollBackScope = 1;
             definedStruct(node);
             break;
         case DefinedUnion:
-            needRollBackScope = 1;
             definedUnion(node);
             break;
         case FuncPtr:
@@ -155,6 +160,17 @@ void iterator(ASTNode * node) {
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
     if (scope -> lookup(scope, node -> ptrs[2] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function redefined");
+    
+    if (node -> ptrs[1] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[1] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
     newScope();
 }
@@ -163,31 +179,64 @@ void definedStruct(ASTNode * node) {
     if (scope -> lookup(scope, node -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "struct redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
-    newScope();
+    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, ScopeConstructor(NULL));
 }
 
 void definedUnion(ASTNode * node) {
     if (scope -> lookup(scope, node -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "union redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
-    newScope();
+    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, ScopeConstructor(NULL));
 }
 
 void normalParam(ASTNode * node) {
     if (scope -> lookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    
+    if (node -> ptrs[0] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[0] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void constParam(ASTNode * node) {
     if (scope -> lookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    
+    if (node -> ptrs[0] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[0] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void funcPtrParam(ASTNode * node) {
     if (scope -> lookup(scope, node -> ptrs[1] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    
+    if (node -> ptrs[0] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[0] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node);
 }
 
@@ -195,6 +244,16 @@ void funcPtr(ASTNode * node) {
     int name = 2;
     if (node -> ptrs[1] -> kind == Name)
         name = 1;
+    
+    if (node -> ptrs[name - 1] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[name - 1] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
     
     if (scope -> lookup(scope, node -> ptrs[name] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function pointer redefined");
@@ -227,19 +286,35 @@ void variable(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "void type variable not allowed");
     }
     
+    if (node -> ptrs[type] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[type] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
     if (scope -> lookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
 }
 
 void constFuncPtr(ASTNode * node) {
-    int name = 2;
-    if (node -> ptrs[1] -> kind == Name)
-        name = 1;
+    if (node -> ptrs[1] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
     
-    if (scope -> lookup(scope, node -> ptrs[name] -> image) != NULL)
+    if (node -> ptrs[1] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
+    if (scope -> lookup(scope, node -> ptrs[2] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "const function pointer redefined");
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
 }
 
 void constVariable(ASTNode * node) {
@@ -268,6 +343,16 @@ void constVariable(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "void type const variable not allowed");
     }
     
+    if (node -> ptrs[type] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[type] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
     if (scope -> lookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "const variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
@@ -276,6 +361,17 @@ void constVariable(ASTNode * node) {
 void funcStmt(ASTNode * node) {
     if (scope -> lookup(scope, node -> ptrs[2] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function redefined");
+    
+    if (node -> ptrs[1] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+    }
+    
+    if (node -> ptrs[1] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+            throwSemanticError(fileChecking, node -> line, "union type undefined");
+    }
+    
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
 }
 
@@ -347,64 +443,7 @@ ASTNode * exprCheck(ASTNode * node) {
             exit(-1);
         }
         
-        switch (target -> kind) {
-            case DefinedFunc:
-                return target -> ptrs[1];
-                break;
-            case DefinedStruct:
-                return target;
-                break;
-            case DefinedUnion:
-                return target;
-                break;
-            case NormalParam:
-                return target -> ptrs[0];
-                break;
-            case ConstParam:
-                return target -> ptrs[0];
-                break;
-            case FuncPtrParam:
-                return target -> ptrs[0];
-                break;
-            case FuncPtr:
-                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
-                    return target -> ptrs[1];
-                else
-                    return target -> ptrs[0];
-                break;
-            case ConstFuncPtr:
-                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
-                    return target -> ptrs[1];
-                else
-                    return target -> ptrs[0];
-                break;
-            case Variable:
-                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
-                    return target -> ptrs[1];
-                else
-                    return target -> ptrs[0];
-                break;
-            case ConstVariable:
-                if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
-                    return target -> ptrs[1];
-                else
-                    return target -> ptrs[0];
-                break;
-            case FuncStmt:
-                return target -> ptrs[1];
-                break;
-            case ExternFunc:
-                return target -> ptrs[0] -> ptrs[1];
-                break;
-            case ExternVar:
-                return target -> ptrs[0] -> ptrs[1];
-                break;
-            case ExternConst:
-                return target -> ptrs[0] -> ptrs[1];
-                break;
-            default:
-                break;
-        }
+        return getTargetType(target);
     }
     else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral || node -> kind == SizeofType || node -> kind == SizeofExpr)
         return node;
@@ -567,13 +606,45 @@ ASTNode * exprCheck(ASTNode * node) {
         return type;
     }
     else if (node -> kind == Member) {
-        //需要改一下struct的作用域机制
+        switch (node -> ptrs[0] -> kind) {
+            case Identifier:
+            case Member:
+            case PtrMember:
+            case ArrayRef:
+            case Dereference:
+                break;
+            default:
+                throwSemanticError(fileChecking, node -> line, "member reference base type is not a structure or union");
+                break;
+        }
+        
+        ASTNode * type = exprCheck(node -> ptrs[0]);
+        
+        MemberTypeChecker(type);
+        
+        Scope * localScope = StruUnionScope -> get(StruUnionScope, type -> image);
+        ASTNode * member = localScope -> lookup(localScope, node -> ptrs[1] -> image);
+        
+        if (member == NULL)
+            throwSemanticError(fileChecking, node -> line, "no such member");
+        
+        return getTargetType(member);
     }
     else if (node -> kind == PtrMember) {
+        ASTNode * type = exprCheck(node -> ptrs[0]);
         
+        PtrMemberTypeChecker(type);
+        
+        Scope * localScope = StruUnionScope -> get(StruUnionScope, type -> image);
+        ASTNode * member = localScope -> lookup(localScope, node -> ptrs[1] -> image);
+        
+        if (member == NULL)
+            throwSemanticError(fileChecking, node -> line, "no such member");
+        
+        return getTargetType(member);
     }
     else if (node -> kind == Cast) {
-        
+        return node -> ptrs[0];
     }
     
     return NULL;
@@ -960,8 +1031,248 @@ void UnaryOpTypeChecker(ASTNode * type, int kind) {
     }
 }
 
-void AddressTypeChecker(ASTNode * type) {
-    
+void MemberTypeChecker(ASTNode * type) {
+    switch (type -> kind) {
+        case IntegerLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case CharacterLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case FloatLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case VoidType:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            break;
+        case CharType:
+            if (type -> listLen != 0)
+                    throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case ShortIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case IntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case LongIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case UnsignedCharType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case UnsignedShortIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case UnsignedIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case UnsignedLongIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case StructType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            break;
+        case UnionType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            break;
+        case FloatType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case DoubleType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        default:
+            break;
+    }
+}
+
+void PtrMemberTypeChecker(ASTNode * type) {
+    switch (type -> kind) {
+        case IntegerLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case CharacterLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case StringLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case FloatLiteral:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case VoidType:
+            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            break;
+        case CharType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case ShortIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case IntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case LongIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case UnsignedCharType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case UnsignedShortIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case UnsignedIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case UnsignedLongIntType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case StructType:
+            if (type -> listLen != 0) {
+                if (type -> listLen != 1)
+                    throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            }
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case UnionType:
+            if (type -> listLen != 0) {
+                if (type -> listLen != 1)
+                    throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            }
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case FloatType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        case DoubleType:
+            if (type -> listLen != 0)
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            else
+                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            break;
+        default:
+            break;
+    }
+}
+
+ASTNode * getTargetType(ASTNode * target) {
+    switch (target -> kind) {
+        case DefinedFunc:
+            return target -> ptrs[1];
+            break;
+        case NormalParam:
+            return target -> ptrs[0];
+            break;
+        case ConstParam:
+            return target -> ptrs[0];
+            break;
+        case FuncPtrParam:
+            return target -> ptrs[0];
+            break;
+        case FuncPtr:
+            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                return target -> ptrs[1];
+            else
+                return target -> ptrs[0];
+            break;
+        case ConstFuncPtr:
+            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                return target -> ptrs[1];
+            else
+                return target -> ptrs[0];
+            break;
+        case Variable:
+            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                return target -> ptrs[1];
+            else
+                return target -> ptrs[0];
+            break;
+        case ConstVariable:
+            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+                return target -> ptrs[1];
+            else
+                return target -> ptrs[0];
+            break;
+        case FuncStmt:
+            return target -> ptrs[1];
+            break;
+        case ExternFunc:
+            return target -> ptrs[0] -> ptrs[1];
+            break;
+        case ExternVar:
+            return target -> ptrs[0] -> ptrs[1];
+            break;
+        case ExternConst:
+            return target -> ptrs[0] -> ptrs[1];
+            break;
+        default:
+            return NULL;
+            break;
+    }
 }
 
 void newScope(void) {

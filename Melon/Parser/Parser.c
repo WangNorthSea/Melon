@@ -3396,13 +3396,13 @@ ASTNode * postfix(void) {
                 token = token -> next;
                 
                 ptrs[0] = Node;
-                ptrs[1] = unary();
+                ptrs[1] = name();
                 
                 if (ptrs[1] == NULL) {
                     if (prelooking)
                         return NULL;
                     else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
+                        throwSyntaxError(parsingFile, token -> beginLine, "identifier");
                     }
                 }
                 

@@ -27,7 +27,7 @@ unsigned int ELFHash(char * str) {
     return hash & 0x7fffffff;
 }
 
-void put(Hashtable * table, char * key, ASTNode * value) {
+void put(Hashtable * table, char * key, void * value) {
     unsigned int hashValue = ELFHash(key);
     int arrayLoc = hashValue % TableArraySize;
     Value * temp = NULL;
@@ -48,7 +48,7 @@ void put(Hashtable * table, char * key, ASTNode * value) {
     }
 }
 
-ASTNode * get(struct Hashtable * table, char * key) {
+void * get(struct Hashtable * table, char * key) {
     unsigned int hashValue = ELFHash(key);
     int arrayLoc = hashValue % TableArraySize;
     Value * temp = &table -> tableArray[arrayLoc];

@@ -12,15 +12,15 @@
 #define TableArraySize 1024
 
 struct Value {
-    ASTNode * target;
+    void * target;
     char * key;
     struct Value * next;
 };
 
 struct Hashtable {
     struct Value tableArray[TableArraySize];
-    void (*put)(struct Hashtable * table, char * key, ASTNode * value);
-    ASTNode * (*get)(struct Hashtable * table, char * key);
+    void (*put)(struct Hashtable * table, char * key, void * value);
+    void * (*get)(struct Hashtable * table, char * key);
 };
 
 typedef struct Value Value;
