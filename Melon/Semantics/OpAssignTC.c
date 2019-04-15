@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include "../ASTNode/node.h"
 #include "../ASTNode/constructor.h"
+#include "../SymbolTable/hashtable.h"
+#include "../SymbolTable/scope.h"
 #include "semantics.h"
 
 //void类型必定是void指针，单独的void类型非法

@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include "../ASTNode/node.h"
 #include "../ASTNode/constructor.h"
+#include "../SymbolTable/hashtable.h"
+#include "../SymbolTable/scope.h"
 #include "semantics.h"
 
 void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {

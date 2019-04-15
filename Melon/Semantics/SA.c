@@ -50,13 +50,13 @@ void constVariable(ASTNode * node);
 
 void funcStmt(ASTNode * node);
 
-void externFunc(ASTNode * node);
-
 void externVar(ASTNode * node);
 
 void externConst(ASTNode * node);
 
-void funcall(ASTNode * node);
+void label(ASTNode * node);
+
+void goto_(ASTNode * node);
 
 ASTNode * exprCheck(ASTNode * node);
 
@@ -91,6 +91,7 @@ void semanticAnalyze(ASTNode * root, const char * file) {
 
 void iterator(ASTNode * node) {
     int i = 0, needRollBackScope = 0;
+    ASTNode * temp = NULL;
     
     switch (node -> kind) {
         case DefinedFunc:
@@ -107,9 +108,11 @@ void iterator(ASTNode * node) {
             funcPtrParam(node);
             break;
         case DefinedStruct:
+            needRollBackScope = 1;
             definedStruct(node);
             break;
         case DefinedUnion:
+            needRollBackScope = 1;
             definedUnion(node);
             break;
         case FuncPtr:
@@ -132,7 +135,7 @@ void iterator(ASTNode * node) {
             funcStmt(node);
             break;
         case ExternFunc:
-            externFunc(node);
+            funcStmt(node -> ptrs[0]);
             break;
         case ExternVar:
             externVar(node);
@@ -140,8 +143,28 @@ void iterator(ASTNode * node) {
         case ExternConst:
             externConst(node);
             break;
+        case Label:
+            label(node);
+            break;
+        case Goto:
+            goto_(node);
+            break;
         case Funcall:
-            //funcall(node);
+            temp = exprCheck(node);
+            break;
+        case Assign:
+            temp = exprCheck(node);
+            break;
+        case OpAssign:
+            temp = exprCheck(node);
+            break;
+        case PrefixOp:
+            temp = exprCheck(node);
+            break;
+        case SuffixOp:
+            temp = exprCheck(node);
+            break;
+        default:
             break;
     }
     
@@ -158,7 +181,7 @@ void iterator(ASTNode * node) {
 }
 
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
-    if (scope -> lookup(scope, node -> ptrs[2] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[2] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function redefined");
     
     if (node -> ptrs[1] -> kind == StructType) {
@@ -176,21 +199,23 @@ void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
 }
 
 void definedStruct(ASTNode * node) {
-    if (scope -> lookup(scope, node -> ptrs[0] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "struct redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
-    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, ScopeConstructor(NULL));
+    newScope();
+    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
 }
 
 void definedUnion(ASTNode * node) {
-    if (scope -> lookup(scope, node -> ptrs[0] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "union redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
-    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, ScopeConstructor(NULL));
+    newScope();
+    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
 }
 
 void normalParam(ASTNode * node) {
-    if (scope -> lookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "parameter redefined");
     
     if (node -> ptrs[0] -> kind == StructType) {
@@ -207,7 +232,7 @@ void normalParam(ASTNode * node) {
 }
 
 void constParam(ASTNode * node) {
-    if (scope -> lookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "parameter redefined");
     
     if (node -> ptrs[0] -> kind == StructType) {
@@ -224,7 +249,7 @@ void constParam(ASTNode * node) {
 }
 
 void funcPtrParam(ASTNode * node) {
-    if (scope -> lookup(scope, node -> ptrs[1] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[1] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "parameter redefined");
     
     if (node -> ptrs[0] -> kind == StructType) {
@@ -255,7 +280,7 @@ void funcPtr(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (scope -> lookup(scope, node -> ptrs[name] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function pointer redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
 }
@@ -296,7 +321,7 @@ void variable(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (scope -> lookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
 }
@@ -312,7 +337,7 @@ void constFuncPtr(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (scope -> lookup(scope, node -> ptrs[2] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[2] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "const function pointer redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
 }
@@ -353,13 +378,13 @@ void constVariable(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (scope -> lookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "const variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
 }
 
 void funcStmt(ASTNode * node) {
-    if (scope -> lookup(scope, node -> ptrs[2] -> image) != NULL)
+    if (scope -> localLookup(scope, node -> ptrs[2] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function redefined");
     
     if (node -> ptrs[1] -> kind == StructType) {
@@ -373,12 +398,6 @@ void funcStmt(ASTNode * node) {
     }
     
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
-}
-
-void externFunc(ASTNode * node) {
-    if (scope -> lookup(scope, node -> ptrs[0] -> ptrs[2] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "function redefined");
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> ptrs[2] -> image, node);
 }
 
 void externVar(ASTNode * node) {
@@ -395,44 +414,16 @@ void externConst(ASTNode * node) {
         constFuncPtr(&(node -> ptrs[0] -> list[0]));
 }
 
-/*void funcall(ASTNode * node) {
-    int params = 3;
-    ASTNode * targetFunc = scope -> lookup(scope, node -> ptrs[0] -> image);
-    if (targetFunc == NULL || (targetFunc -> kind != DefinedFunc && targetFunc -> kind != FuncStmt && targetFunc -> kind != FuncPtr && targetFunc -> kind != ConstFuncPtr && targetFunc -> kind != ExternFunc))
-        throwSemanticError(fileChecking, node -> line, "function undefined");
-    
-    if (targetFunc -> ptrs[2] -> kind == ParamsNode)
-        params = 2;
-    
-    if (targetFunc -> ptrs[params] -> listLen > 0) {
-        if (targetFunc -> ptrs[params] -> list[targetFunc -> ptrs[params] -> listLen - 1].kind == UnlimitedParams) {
-            
-        }
-        else {
-            int targetArgs = targetFunc -> ptrs[params] -> listLen;
-            int nodeArgs = node -> ptrs[1] -> listLen;
-            if (targetArgs > nodeArgs) {
-                printf("Melon: %s: semantic \033[31merror\033[0m in line %d too few arguments, expected %d got %d\n", fileChecking, node -> line, targetArgs, nodeArgs);
-                exit(-1);
-            }
-            else if (targetArgs < nodeArgs) {
-                printf("Melon: %s: semantic \033[31merror\033[0m in line %d too many arguments, expected %d got %d\n", fileChecking, node -> line, targetArgs, nodeArgs);
-                exit(-1);
-            }
-            else {
-                int i;
-                ASTNode * 
-                for (i = 0; i < targetArgs; i++) {
-                    if (targetFunc -> ptrs[params] -> list[i].kind != node -> ptrs[1] -> list[i].kind)
-                        throwSemanticError(fileChecking, node -> line, "argument type mismatched");
-                }
-            }
-        }
-    }
-    else {
-        
-    }
-}*/
+void label(ASTNode * node) {
+    if (scope -> localLookup(scope, node -> image) != NULL)
+        throwSemanticError(fileChecking, node -> line, "label relocated");
+    scope -> symbolTable -> put(scope -> symbolTable, node -> image, node);
+}
+
+void goto_(ASTNode * node) {
+    if (scope -> lookup(scope, node -> image) == NULL)
+        throwSemanticError(fileChecking, node -> line, "label undefined");
+}
 
 //从表达式节点出发，检查表达式各部分的类型，进行隐式类型转换，并返回表达式最终得到的类型，基本上是语义分析的核心
 ASTNode * exprCheck(ASTNode * node) {
@@ -623,7 +614,7 @@ ASTNode * exprCheck(ASTNode * node) {
         MemberTypeChecker(type);
         
         Scope * localScope = StruUnionScope -> get(StruUnionScope, type -> image);
-        ASTNode * member = localScope -> lookup(localScope, node -> ptrs[1] -> image);
+        ASTNode * member = localScope -> localLookup(localScope, node -> ptrs[1] -> image);
         
         if (member == NULL)
             throwSemanticError(fileChecking, node -> line, "no such member");
@@ -636,7 +627,7 @@ ASTNode * exprCheck(ASTNode * node) {
         PtrMemberTypeChecker(type);
         
         Scope * localScope = StruUnionScope -> get(StruUnionScope, type -> image);
-        ASTNode * member = localScope -> lookup(localScope, node -> ptrs[1] -> image);
+        ASTNode * member = localScope -> localLookup(localScope, node -> ptrs[1] -> image);
         
         if (member == NULL)
             throwSemanticError(fileChecking, node -> line, "no such member");
@@ -645,6 +636,70 @@ ASTNode * exprCheck(ASTNode * node) {
     }
     else if (node -> kind == Cast) {
         return node -> ptrs[0];
+    }
+    else if (node -> kind == Funcall) {
+        if (node -> ptrs[0] -> kind != Identifier)
+            throwSemanticError(fileChecking, node -> line, "invalid function call");
+        
+        int params = 3;
+        
+        ASTNode * targetFunc = scope -> lookup(scope, node -> ptrs[0] -> image);
+        if (targetFunc == NULL || (targetFunc -> kind != DefinedFunc && targetFunc -> kind != FuncStmt && targetFunc -> kind != FuncPtr && targetFunc -> kind != ConstFuncPtr))
+            throwSemanticError(fileChecking, node -> line, "function undefined");
+        
+        if (targetFunc -> ptrs[2] -> kind == ParamsNode)
+            params = 2;
+        
+        if (targetFunc -> ptrs[params] -> listLen > 0) {
+            if (targetFunc -> ptrs[params] -> list[targetFunc -> ptrs[params] -> listLen - 1].kind == UnlimitedParams) {
+                int i;
+                ASTNode * targetType;
+                ASTNode * inputType;
+                for (i = 0; i < targetFunc -> ptrs[params] -> listLen - 1; i++) {
+                    inputType = exprCheck(&(node -> ptrs[1] -> list[i]));
+                    targetType = exprCheck(&(targetFunc -> ptrs[params] -> list[i]));
+                    
+                    if (inputType -> kind != targetType -> kind || inputType -> listLen != targetType -> listLen)
+                        throwSemanticError(fileChecking, node -> line, "argument type mismatched");
+                }
+            }
+            else {
+                int targetArgs = targetFunc -> ptrs[params] -> listLen;
+                int nodeArgs;
+                if (node -> ptrs[1] == NULL)
+                    nodeArgs = 0;
+                else
+                    nodeArgs = node -> ptrs[1] -> listLen;
+                if (targetArgs > nodeArgs) {
+                    printf("Melon: %s: semantic \033[31merror\033[0m in line %d too few arguments, expected %d got %d\n", fileChecking, node -> line, targetArgs, nodeArgs);
+                    exit(-1);
+                }
+                else if (targetArgs < nodeArgs) {
+                    printf("Melon: %s: semantic \033[31merror\033[0m in line %d too many arguments, expected %d got %d\n", fileChecking, node -> line, targetArgs, nodeArgs);
+                    exit(-1);
+                }
+                else {
+                    int i;
+                    ASTNode * targetType;
+                    ASTNode * inputType;
+                    for (i = 0; i < targetArgs; i++) {
+                        inputType = exprCheck(&(node -> ptrs[1] -> list[i]));
+                        targetType = exprCheck(&(targetFunc -> ptrs[params] -> list[i]));
+                        
+                        if (inputType -> kind != targetType -> kind || inputType -> listLen != targetType -> listLen)
+                            throwSemanticError(fileChecking, node -> line, "argument type mismatched");
+                    }
+                }
+            }
+        }
+        else {
+            if (node -> ptrs[1] != NULL) {
+                printf("Melon: %s: semantic \033[31merror\033[0m in line %d too many arguments, expected 0 got %d\n", fileChecking, node -> line, node -> ptrs[1] -> listLen);
+                exit(-1);
+            }
+        }
+        
+        return getTargetType(targetFunc);
     }
     
     return NULL;
@@ -1220,6 +1275,8 @@ void PtrMemberTypeChecker(ASTNode * type) {
 }
 
 ASTNode * getTargetType(ASTNode * target) {
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
     switch (target -> kind) {
         case DefinedFunc:
             return target -> ptrs[1];
@@ -1246,28 +1303,73 @@ ASTNode * getTargetType(ASTNode * target) {
                 return target -> ptrs[0];
             break;
         case Variable:
-            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static) {
+                int i;
+                ASTNode * temp = NULL;
+                for (i = 0; i < target -> ptrs[2] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    target -> ptrs[1] -> append(target -> ptrs[1], *temp);
+                    free(temp);
+                }
                 return target -> ptrs[1];
-            else
+            }
+            else {
+                int i;
+                ASTNode * temp = NULL;
+                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    target -> ptrs[0] -> append(target -> ptrs[0], *temp);
+                    free(temp);
+                }
                 return target -> ptrs[0];
+            }
             break;
         case ConstVariable:
-            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static)
+            if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static) {
+                int i;
+                ASTNode * temp = NULL;
+                for (i = 0; i < target -> ptrs[2] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    target -> ptrs[1] -> append(target -> ptrs[1], *temp);
+                    free(temp);
+                }
                 return target -> ptrs[1];
-            else
+            }
+            else {
+                int i;
+                ASTNode * temp = NULL;
+                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    target -> ptrs[0] -> append(target -> ptrs[0], *temp);
+                    free(temp);
+                }
                 return target -> ptrs[0];
+            }
             break;
         case FuncStmt:
             return target -> ptrs[1];
             break;
-        case ExternFunc:
+        case ExternVar: {
+            int i;
+            ASTNode * temp = NULL;
+            for (i = 0; i < target -> ptrs[0] -> ptrs[2] -> listLen; i++) {
+                temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                target -> ptrs[0] -> ptrs[1] -> append(target -> ptrs[0] -> ptrs[1], *temp);
+                free(temp);
+            }
             return target -> ptrs[0] -> ptrs[1];
+        }
             break;
-        case ExternVar:
+        case ExternConst: {
+            int i;
+            ASTNode * temp = NULL;
+            for (i = 0; i < target -> ptrs[0] -> ptrs[2] -> listLen; i++) {
+                temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                target -> ptrs[0] -> ptrs[1] -> append(target -> ptrs[0] -> ptrs[1], *temp);
+                free(temp);
+            }
             return target -> ptrs[0] -> ptrs[1];
-            break;
-        case ExternConst:
-            return target -> ptrs[0] -> ptrs[1];
+        }
             break;
         default:
             return NULL;

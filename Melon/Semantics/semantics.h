@@ -13,5 +13,6 @@ extern void semanticAnalyze(ASTNode * root, const char * file);
 extern void throwSemanticError(const char * file, int line, char * content);
 
 extern const char * fileChecking;
+extern Scope * scope;
 
 #endif /* semantics_h */

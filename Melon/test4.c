@@ -1,13 +1,11 @@
 
-struct asshole {
-	char fuck;
-	int damn;
-	double cocksucker;
-};
+void fuck(int ss, int cce) {
+	int adfuck = ss + cce;
+}
 
 int main(void) {
-	struct asshole sdqe;
-	int c = sqeqr.sqsaddc.sdsedf;
-	c = spd -> sqer -> ss;
+	int aa[10][20];
+	int sdqe[];
+	struct fuck sa;
 	return 0;
 }

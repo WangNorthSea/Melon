@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3013F7062264E5F900DA1836 /* DumpScope.c in Sources */ = {isa = PBXBuildFile; fileRef = 3013F7052264E5F900DA1836 /* DumpScope.c */; };
 		3038183A2249C37C000A768B /* Scope.c in Sources */ = {isa = PBXBuildFile; fileRef = 303818392249C37C000A768B /* Scope.c */; };
 		3038183E2249C402000A768B /* Hashtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 3038183D2249C402000A768B /* Hashtable.c */; };
 		303B9099224691E8008B3BEF /* DumpAST.c in Sources */ = {isa = PBXBuildFile; fileRef = 303B9098224691E8008B3BEF /* DumpAST.c */; };
@@ -33,6 +34,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3013F7042264E5EF00DA1836 /* scopedumper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = scopedumper.h; sourceTree = "<group>"; };
+		3013F7052264E5F900DA1836 /* DumpScope.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DumpScope.c; sourceTree = "<group>"; };
 		303818392249C37C000A768B /* Scope.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Scope.c; sourceTree = "<group>"; };
 		3038183B2249C385000A768B /* scope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = scope.h; sourceTree = "<group>"; };
 		3038183C2249C3F3000A768B /* hashtable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hashtable.h; sourceTree = "<group>"; };
@@ -76,6 +79,8 @@
 			children = (
 				303B909A224691F1008B3BEF /* ASTdumper.h */,
 				303B9098224691E8008B3BEF /* DumpAST.c */,
+				3013F7042264E5EF00DA1836 /* scopedumper.h */,
+				3013F7052264E5F900DA1836 /* DumpScope.c */,
 			);
 			path = Dumper;
 			sourceTree = "<group>";
@@ -227,6 +232,7 @@
 				30A6C56C224C775400096B6D /* SA.c in Sources */,
 				303B9099224691E8008B3BEF /* DumpAST.c in Sources */,
 				30BBA9882243DF8A00508A4D /* Constructor.c in Sources */,
+				3013F7062264E5F900DA1836 /* DumpScope.c in Sources */,
 				307A504E22617BA800C415FA /* AssignTC.c in Sources */,
 				30AB0CEC223D3B5500DC2A35 /* Lexer.c in Sources */,
 				30AB0CE4223D3B2800DC2A35 /* main.c in Sources */,

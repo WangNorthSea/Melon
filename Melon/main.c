@@ -8,11 +8,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "./Lexer/token.h"
-#include "./Lexer/lexer.h"
-#include "./ASTNode/node.h"
-#include "./Parser/parser.h"
+#include "Lexer/token.h"
+#include "Lexer/lexer.h"
+#include "ASTNode/node.h"
+#include "Parser/parser.h"
+#include "SymbolTable/hashtable.h"
+#include "SymbolTable/scope.h"
+#include "Semantics/semantics.h"
 #include "Dumper/ASTdumper.h"
+#include "Dumper/scopedumper.h"
 
 typedef struct {
     int line;
@@ -46,6 +50,16 @@ int main(int argc, const char * argv[]) {
     
     parsingFile = argv[1];
     ASTNode * rootNode = compilationUnit(headToken2);
+    dumpAST(rootNode);
+    
+    semanticAnalyze(rootNode, parsingFile);
+    
+    printf("\nAfter semantic analysis...\nScope:\n");
+    
+    dumpScope(scope);
+    
+    printf("\nAST:\n");
+    
     dumpAST(rootNode);
     
     return 0;
