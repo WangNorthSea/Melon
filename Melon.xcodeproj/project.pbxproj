@@ -11,6 +11,7 @@
 		3038183A2249C37C000A768B /* Scope.c in Sources */ = {isa = PBXBuildFile; fileRef = 303818392249C37C000A768B /* Scope.c */; };
 		3038183E2249C402000A768B /* Hashtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 3038183D2249C402000A768B /* Hashtable.c */; };
 		303B9099224691E8008B3BEF /* DumpAST.c in Sources */ = {isa = PBXBuildFile; fileRef = 303B9098224691E8008B3BEF /* DumpAST.c */; };
+		304DE37D2265E83B00034834 /* GraphNode.c in Sources */ = {isa = PBXBuildFile; fileRef = 304DE37C2265E83B00034834 /* GraphNode.c */; };
 		30798C6A2260DF700059614D /* BinOpTC.c in Sources */ = {isa = PBXBuildFile; fileRef = 30798C692260DF700059614D /* BinOpTC.c */; };
 		30798C6C2260DF7D0059614D /* OpAssignTC.c in Sources */ = {isa = PBXBuildFile; fileRef = 30798C6B2260DF7C0059614D /* OpAssignTC.c */; };
 		307A504E22617BA800C415FA /* AssignTC.c in Sources */ = {isa = PBXBuildFile; fileRef = 307A504D22617BA800C415FA /* AssignTC.c */; };
@@ -42,6 +43,8 @@
 		3038183D2249C402000A768B /* Hashtable.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Hashtable.c; sourceTree = "<group>"; };
 		303B9098224691E8008B3BEF /* DumpAST.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DumpAST.c; sourceTree = "<group>"; };
 		303B909A224691F1008B3BEF /* ASTdumper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ASTdumper.h; sourceTree = "<group>"; };
+		304DE37C2265E83B00034834 /* GraphNode.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = GraphNode.c; sourceTree = "<group>"; };
+		304DE37E2265E84800034834 /* graphnode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graphnode.h; sourceTree = "<group>"; };
 		30798C692260DF700059614D /* BinOpTC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BinOpTC.c; sourceTree = "<group>"; };
 		30798C6B2260DF7C0059614D /* OpAssignTC.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = OpAssignTC.c; sourceTree = "<group>"; };
 		30798C6D2260DF880059614D /* binoptc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = binoptc.h; sourceTree = "<group>"; };
@@ -107,6 +110,8 @@
 				30798C6B2260DF7C0059614D /* OpAssignTC.c */,
 				307A504F22617BB200C415FA /* assigntc.h */,
 				307A504D22617BA800C415FA /* AssignTC.c */,
+				304DE37E2265E84800034834 /* graphnode.h */,
+				304DE37C2265E83B00034834 /* GraphNode.c */,
 			);
 			path = Semantics;
 			sourceTree = "<group>";
@@ -240,6 +245,7 @@
 				30798C6A2260DF700059614D /* BinOpTC.c in Sources */,
 				30798C6C2260DF7D0059614D /* OpAssignTC.c in Sources */,
 				3038183E2249C402000A768B /* Hashtable.c in Sources */,
+				304DE37D2265E83B00034834 /* GraphNode.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

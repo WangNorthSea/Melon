@@ -723,10 +723,11 @@ ASTNode * type(void) {
             Node = NodeConstructor(UnionType, parsingFile, token -> beginLine, label, ptrs);
             break;
         default:
-            temp = getType(token -> image);
-            if (temp != NULL)
+            Node = getType(token -> image);
+            if (Node != NULL)
                 token = token -> next;
-            return temp;
+            else
+                return Node;
             break;
     }
     
@@ -1417,6 +1418,29 @@ ASTNode * stmt(void) {
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
+    else if (getType(token -> image) != NULL){
+        prelooking++;
+        storage();
+        if (type() != NULL) {
+            prelooking--;
+            token = lookahead;
+            ptrs[0] = defvars();
+            
+            if (ptrs[0] == NULL) {
+                if (prelooking)
+                    return NULL;
+                else {
+                    throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
+                }
+            }
+            
+            Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
+        }
+        else {
+            prelooking--;
+            token = lookahead;
+        }
+    }
     else if (token -> kind == LEFTPARENTHESE || token -> kind == SELFSUM || token -> kind == SELFSUB || token -> kind == SUM || token -> kind == SUB || token -> kind == LOGICNOT || token -> kind == NOT || token -> kind == MUL || token -> kind == AND || token -> kind == SIZEOF || token -> kind == INTEGER || token -> kind == CHARACTER || token -> kind == STRING || token -> kind == IDENTIFIER) {
         ptrs[0] = expr();
         
@@ -1649,8 +1673,12 @@ ASTNode * slot(void) {
     ASTNode * Node = NULL;
     ASTNode * temp = NULL;
     int isFuncPtr = 0;
+    int isConst = 0;
     
     Node = NodeConstructor(Slot, parsingFile, token -> beginLine, NULL, ptrs);
+    
+    if (match(CONST))
+        isConst = 1;
     
     ptrs[0] = type();
     
@@ -1733,14 +1761,20 @@ ASTNode * slot(void) {
             }
         }
         
-        temp = NodeConstructor(FuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
+        if (isConst == 1)
+            temp = NodeConstructor(ConstFuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
+        else
+            temp = NodeConstructor(FuncPtr, parsingFile, token -> beginLine, NULL, ptrs);
         Node -> append(Node, *temp);
         free(temp);
         
         return Node;
     }
     
-    temp = NodeConstructor(Variable, parsingFile, token -> beginLine, NULL, ptrs);
+    if (isConst == 1)
+        temp = NodeConstructor(ConstVariable, parsingFile, token -> beginLine, NULL, ptrs);
+    else
+        temp = NodeConstructor(Variable, parsingFile, token -> beginLine, NULL, ptrs);
     Node -> append(Node, *temp);
     free(temp);
     
@@ -1756,7 +1790,10 @@ ASTNode * slot(void) {
                 }
             }
             
-            temp = NodeConstructor(Variable, parsingFile, token -> beginLine, NULL, ptrs);
+            if (isConst == 1)
+                temp = NodeConstructor(ConstVariable, parsingFile, token -> beginLine, NULL, ptrs);
+            else
+                temp = NodeConstructor(Variable, parsingFile, token -> beginLine, NULL, ptrs);
             Node -> append(Node, *temp);
             free(temp);
         }

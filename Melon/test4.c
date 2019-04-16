@@ -1,7 +1,13 @@
+
+typedef struct ffuck fff;
+
+struct ffuck {
+	int aa;
+	fff * eqeq;
+};
+
 int main(void) {
-	char a;
-	short b;
-	int c;
-	a += b + c;
+	int dam = 3;
+	fff sqe;
 	return 0;
 }

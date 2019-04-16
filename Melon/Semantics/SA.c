@@ -17,6 +17,7 @@
 #include "binoptc.h"
 #include "opassigntc.h"
 #include "assigntc.h"
+#include "graphnode.h"
 
 void iterator(ASTNode * node);
 
@@ -24,9 +25,13 @@ Scope * scope;
 
 Hashtable * StruUnionScope;
 
+GNode * lastStop = NULL;
+
 const char * fileChecking = NULL;
 
 int refCount = 0;
+
+int inStructOrUnion = 0;
 
 void definedFunc(ASTNode * node);
 
@@ -111,10 +116,12 @@ void iterator(ASTNode * node) {
             break;
         case DefinedStruct:
             needRollBackScope = 1;
+            inStructOrUnion = 1;
             definedStruct(node);
             break;
         case DefinedUnion:
             needRollBackScope = 1;
+            inStructOrUnion = 1;
             definedUnion(node);
             break;
         case FuncPtr:
@@ -151,21 +158,6 @@ void iterator(ASTNode * node) {
         case Goto:
             goto_(node);
             break;
-        /*case Funcall:
-            temp = exprCheck(node);
-            break;
-        case Assign:
-            temp = exprCheck(node);
-            break;
-        case OpAssign:
-            temp = exprCheck(node);
-            break;
-        case PrefixOp:
-            temp = exprCheck(node);
-            break;
-        case SuffixOp:
-            temp = exprCheck(node);
-            break;*/
         default:
             temp = exprCheck(node);
             break;
@@ -181,6 +173,12 @@ void iterator(ASTNode * node) {
     
     if (needRollBackScope)
         scope = scope -> upperLevel;
+    
+    if (node -> kind == DefinedStruct || node -> kind == DefinedUnion) {
+        inStructOrUnion = 0;
+        if (checkClosure() == 1)
+            throwSemanticError(fileChecking, node -> line, "recursively defined");
+    }
 }
 
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
@@ -202,19 +200,25 @@ void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
 }
 
 void definedStruct(ASTNode * node) {
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
     if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "struct redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
     newScope();
     StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
+    lastStop = GNodeConstructor(NULL, NodeConstructor(StructType, fileChecking, node -> line, node -> ptrs[0] -> image, ptrs));
 }
 
 void definedUnion(ASTNode * node) {
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    
     if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "union redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
     newScope();
     StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
+    lastStop = GNodeConstructor(NULL, NodeConstructor(UnionType, fileChecking, node -> line, node -> ptrs[0] -> image, ptrs));
 }
 
 void normalParam(ASTNode * node) {
@@ -270,6 +274,7 @@ void funcPtrParam(ASTNode * node) {
 
 void funcPtr(ASTNode * node) {
     int name = 2;
+    GNode * tempGnode = NULL;
     if (node -> ptrs[1] -> kind == Name)
         name = 1;
     
@@ -283,17 +288,18 @@ void funcPtr(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
+    if (inStructOrUnion == 1)
+        tempGnode = GNodeConstructor(lastStop, node -> ptrs[name - 1]);
+    
     if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function pointer redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
 }
 
 void variable(ASTNode * node) {
-    int i;
     int type = 0;
     int varname = 2;
-    ASTNode * temp = NULL;
-    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    GNode * tempGnode = NULL;
     
     if (node -> ptrs[1] -> kind == Varname)
         varname = 1;
@@ -302,12 +308,6 @@ void variable(ASTNode * node) {
         type = 1;
     else if (node -> ptrs[0] -> kind == Static)
         type = 1;
-    
-    for (i = 1; i <= node -> ptrs[varname] -> listLen; i++) {
-        temp = NodeConstructor(PtrRef, fileChecking, node -> line, NULL, ptrs);
-        node -> ptrs[varname] -> append(node -> ptrs[type], *temp);
-        free(temp);
-    }
     
     if (node -> ptrs[type] -> kind == VoidType) {
         if (node -> ptrs[type] -> listLen == 0)
@@ -324,33 +324,42 @@ void variable(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
+    if (inStructOrUnion == 1)
+        tempGnode = GNodeConstructor(lastStop, node -> ptrs[type]);
+    
     if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
 }
 
 void constFuncPtr(ASTNode * node) {
-    if (node -> ptrs[1] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+    int name = 2;
+    GNode * tempGnode = NULL;
+    if (node -> ptrs[1] -> kind == Name)
+        name = 1;
+    
+    if (node -> ptrs[name - 1] -> kind == StructType) {
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
             throwSemanticError(fileChecking, node -> line, "struct type undefined");
     }
     
-    if (node -> ptrs[1] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
+    if (node -> ptrs[name - 1] -> kind == UnionType) {
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (scope -> localLookup(scope, node -> ptrs[2] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "const function pointer redefined");
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
+    if (inStructOrUnion == 1)
+        tempGnode = GNodeConstructor(lastStop, node -> ptrs[name - 1]);
+    
+    if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL)
+        throwSemanticError(fileChecking, node -> line, "function pointer redefined");
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
 }
 
 void constVariable(ASTNode * node) {
-    int i;
     int type = 0;
     int varname = 2;
-    ASTNode * temp = NULL;
-    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    GNode * tempGnode = NULL;
     
     if (node -> ptrs[1] -> kind == Varname)
         varname = 1;
@@ -359,12 +368,6 @@ void constVariable(ASTNode * node) {
         type = 1;
     else if (node -> ptrs[0] -> kind == Static)
         type = 1;
-    
-    for (i = 1; i <= node -> ptrs[varname] -> listLen; i++) {
-        temp = NodeConstructor(PtrRef, fileChecking, node -> line, NULL, ptrs);
-        node -> ptrs[varname] -> append(node -> ptrs[type], *temp);
-        free(temp);
-    }
     
     if (node -> ptrs[type] -> kind == VoidType) {
         if (node -> ptrs[type] -> listLen == 0)
@@ -380,6 +383,9 @@ void constVariable(ASTNode * node) {
         if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
+    
+    if (inStructOrUnion == 1)
+        tempGnode = GNodeConstructor(lastStop, node -> ptrs[type]);
     
     if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "const variable redefined");
@@ -1323,44 +1329,76 @@ ASTNode * getTargetType(ASTNode * target) {
             if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static) {
                 int i;
                 ASTNode * temp = NULL;
-                for (i = 0; i < target -> ptrs[2] -> listLen; i++) {
+                ASTNode * new = NodeConstructor(target -> ptrs[1] -> kind, fileChecking, target -> line, target -> ptrs[1] -> image, ptrs);
+                
+                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
                     temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
-                    target -> ptrs[1] -> append(target -> ptrs[1], *temp);
+                    new -> append(new, *temp);
                     free(temp);
                 }
-                return target -> ptrs[1];
+                
+                for (i = 0; i < target -> ptrs[2] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    new -> append(new, *temp);
+                    free(temp);
+                }
+                return new;
             }
             else {
                 int i;
                 ASTNode * temp = NULL;
-                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
+                ASTNode * new = NodeConstructor(target -> ptrs[0] -> kind, fileChecking, target -> line, target -> ptrs[0] -> image, ptrs);
+                
+                for (i = 0; i < target -> ptrs[0] -> listLen; i++) {
                     temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
-                    target -> ptrs[0] -> append(target -> ptrs[0], *temp);
+                    new -> append(new, *temp);
                     free(temp);
                 }
-                return target -> ptrs[0];
+                
+                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    new -> append(new, *temp);
+                    free(temp);
+                }
+                return new;
             }
             break;
         case ConstVariable:
             if (target -> ptrs[0] == NULL || target -> ptrs[0] -> kind == Static) {
                 int i;
                 ASTNode * temp = NULL;
-                for (i = 0; i < target -> ptrs[2] -> listLen; i++) {
+                ASTNode * new = NodeConstructor(target -> ptrs[1] -> kind, fileChecking, target -> line, target -> ptrs[1] -> image, ptrs);
+                
+                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
                     temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
-                    target -> ptrs[1] -> append(target -> ptrs[1], *temp);
+                    new -> append(new, *temp);
                     free(temp);
                 }
-                return target -> ptrs[1];
+                
+                for (i = 0; i < target -> ptrs[2] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    new -> append(new, *temp);
+                    free(temp);
+                }
+                return new;
             }
             else {
                 int i;
                 ASTNode * temp = NULL;
-                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
+                ASTNode * new = NodeConstructor(target -> ptrs[0] -> kind, fileChecking, target -> line, target -> ptrs[0] -> image, ptrs);
+                
+                for (i = 0; i < target -> ptrs[0] -> listLen; i++) {
                     temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
-                    target -> ptrs[0] -> append(target -> ptrs[0], *temp);
+                    new -> append(new, *temp);
                     free(temp);
                 }
-                return target -> ptrs[0];
+                
+                for (i = 0; i < target -> ptrs[1] -> listLen; i++) {
+                    temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                    new -> append(new, *temp);
+                    free(temp);
+                }
+                return new;
             }
             break;
         case FuncStmt:
@@ -1369,23 +1407,39 @@ ASTNode * getTargetType(ASTNode * target) {
         case ExternVar: {
             int i;
             ASTNode * temp = NULL;
-            for (i = 0; i < target -> ptrs[0] -> ptrs[2] -> listLen; i++) {
+            ASTNode * new = NodeConstructor(target -> ptrs[0] -> ptrs[1] -> kind, fileChecking, target -> line, target -> ptrs[0] -> ptrs[1] -> image, ptrs);
+            
+            for (i = 0; i < target -> ptrs[0] -> ptrs[1] -> listLen; i++) {
                 temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
-                target -> ptrs[0] -> ptrs[1] -> append(target -> ptrs[0] -> ptrs[1], *temp);
+                new -> append(new, *temp);
                 free(temp);
             }
-            return target -> ptrs[0] -> ptrs[1];
+            
+            for (i = 0; i < target -> ptrs[0] -> ptrs[2] -> listLen; i++) {
+                temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                new -> append(new, *temp);
+                free(temp);
+            }
+            return new;
         }
             break;
         case ExternConst: {
             int i;
             ASTNode * temp = NULL;
-            for (i = 0; i < target -> ptrs[0] -> ptrs[2] -> listLen; i++) {
+            ASTNode * new = NodeConstructor(target -> ptrs[0] -> ptrs[1] -> kind, fileChecking, target -> line, target -> ptrs[0] -> ptrs[1] -> image, ptrs);
+            
+            for (i = 0; i < target -> ptrs[0] -> ptrs[1] -> listLen; i++) {
                 temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
-                target -> ptrs[0] -> ptrs[1] -> append(target -> ptrs[0] -> ptrs[1], *temp);
+                new -> append(new, *temp);
                 free(temp);
             }
-            return target -> ptrs[0] -> ptrs[1];
+            
+            for (i = 0; i < target -> ptrs[0] -> ptrs[2] -> listLen; i++) {
+                temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
+                new -> append(new, *temp);
+                free(temp);
+            }
+            return new;
         }
             break;
         default:
