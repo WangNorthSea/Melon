@@ -33,6 +33,12 @@ int refCount = 0;
 
 int inStructOrUnion = 0;
 
+int inFunc = 0;
+
+int returned = 0;
+
+ASTNode * funcReturnType = NULL;
+
 void definedFunc(ASTNode * node);
 
 void definedStruct(ASTNode * node);
@@ -65,6 +71,8 @@ void label(ASTNode * node);
 
 void goto_(ASTNode * node);
 
+void return_(ASTNode * node);
+
 ASTNode * exprCheck(ASTNode * node);
 
 void SuffixOpTypeChecker(ASTNode * type);
@@ -82,6 +90,8 @@ void UnaryOpTypeChecker(ASTNode * type, int kind);
 void MemberTypeChecker(ASTNode * type);
 
 void PtrMemberTypeChecker(ASTNode * type);
+
+void ReturnTypeChecker(ASTNode * type1, ASTNode * type2);
 
 ASTNode * getTargetType(ASTNode * target);
 
@@ -103,6 +113,8 @@ void iterator(ASTNode * node) {
     switch (node -> kind) {
         case DefinedFunc:
             needRollBackScope = 1;
+            inFunc = 1;
+            funcReturnType = node -> ptrs[1];
             definedFunc(node);
             break;
         case NormalParam:
@@ -158,6 +170,10 @@ void iterator(ASTNode * node) {
         case Goto:
             goto_(node);
             break;
+        case Return:
+            return_(node);
+            returned = 1;
+            break;
         default:
             temp = exprCheck(node);
             break;
@@ -178,6 +194,14 @@ void iterator(ASTNode * node) {
         inStructOrUnion = 0;
         if (checkClosure() == 1)
             throwSemanticError(fileChecking, node -> line, "recursively defined");
+    }
+    else if (node -> kind == DefinedFunc) {
+        inFunc = 0;
+        if (returned == 0) {
+            if (funcReturnType -> kind != VoidType || funcReturnType -> listLen != 0)
+                throwSemanticError(fileChecking, node -> line, "control reaches end of non-void function");
+        }
+        returned = 0;
     }
 }
 
@@ -437,6 +461,21 @@ void label(ASTNode * node) {
 void goto_(ASTNode * node) {
     if (scope -> lookup(scope, node -> image) == NULL)
         throwSemanticError(fileChecking, node -> line, "label undefined");
+}
+
+void return_(ASTNode * node) {
+    if (inFunc == 0)
+        throwSemanticError(fileChecking, node -> line, "not in the definition of a function");
+    
+    if (node -> ptrs[0] == NULL) {
+        if (funcReturnType -> kind != VoidType || funcReturnType -> listLen != 0)
+            throwSemanticError(fileChecking, node -> line, "non-void function should return a value");
+    }
+    else {
+        ASTNode * returnType = exprCheck(node -> ptrs[0]);
+        if (returnType -> kind != funcReturnType -> kind || returnType -> listLen != funcReturnType -> listLen)
+            throwSemanticError(fileChecking, node -> line, "return value type conflicting with function definition");
+    }
 }
 
 //从表达式节点出发，检查表达式各部分的类型，进行隐式类型转换，并返回表达式最终得到的类型，基本上是语义分析的核心
@@ -1295,6 +1334,10 @@ void PtrMemberTypeChecker(ASTNode * type) {
         default:
             break;
     }
+}
+
+void ReturnTypeChecker(ASTNode * type1, ASTNode * type2) {
+    
 }
 
 ASTNode * getTargetType(ASTNode * target) {
