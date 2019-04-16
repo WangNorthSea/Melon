@@ -57,7 +57,7 @@ void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -65,7 +65,7 @@ void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -154,7 +154,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -164,7 +164,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -174,7 +174,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -184,7 +184,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -194,7 +194,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -204,7 +204,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -214,7 +214,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -224,7 +224,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -246,7 +246,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
@@ -282,7 +282,7 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -290,7 +290,7 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -298,7 +298,7 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -308,7 +308,7 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -316,7 +316,7 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -324,7 +324,7 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -369,7 +369,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -379,7 +379,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -387,13 +387,13 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -401,19 +401,19 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(ShortIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -421,19 +421,19 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -441,13 +441,13 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -455,13 +455,13 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -469,19 +469,19 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(ShortIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -489,19 +489,19 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -509,13 +509,13 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -525,7 +525,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -535,7 +535,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -546,13 +546,13 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -563,13 +563,13 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -594,7 +594,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -604,7 +604,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -612,19 +612,19 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(ShortIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -632,13 +632,13 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -646,19 +646,19 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -666,13 +666,13 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -680,19 +680,19 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedShortIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -700,13 +700,13 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -714,19 +714,19 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -734,13 +734,13 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -750,7 +750,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -760,7 +760,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -771,13 +771,13 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -788,13 +788,13 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -819,7 +819,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -829,7 +829,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -837,19 +837,19 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -857,19 +857,19 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -877,13 +877,13 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -891,13 +891,13 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -905,19 +905,19 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -925,19 +925,19 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -945,13 +945,13 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -959,13 +959,13 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -975,7 +975,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -985,7 +985,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -996,13 +996,13 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1013,13 +1013,13 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1044,7 +1044,7 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -1056,13 +1056,13 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1070,13 +1070,13 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1084,13 +1084,13 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1100,13 +1100,13 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1114,13 +1114,13 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1128,13 +1128,13 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1155,7 +1155,7 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1166,7 +1166,7 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1191,7 +1191,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -1201,7 +1201,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1209,13 +1209,13 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1223,19 +1223,19 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedShortIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1243,19 +1243,19 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1263,13 +1263,13 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1277,13 +1277,13 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1291,19 +1291,19 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedShortIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1311,19 +1311,19 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1331,13 +1331,13 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1347,7 +1347,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1357,7 +1357,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1368,13 +1368,13 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1385,13 +1385,13 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1416,7 +1416,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -1426,7 +1426,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1434,19 +1434,19 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(ShortIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1454,13 +1454,13 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1468,19 +1468,19 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1488,13 +1488,13 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1502,19 +1502,19 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedShortIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1522,13 +1522,13 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1536,19 +1536,19 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1556,13 +1556,13 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1572,7 +1572,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1582,7 +1582,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1593,13 +1593,13 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1610,13 +1610,13 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1641,7 +1641,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -1651,7 +1651,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1659,19 +1659,19 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1679,19 +1679,19 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(IntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1699,13 +1699,13 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1713,13 +1713,13 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1727,19 +1727,19 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1747,19 +1747,19 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1767,13 +1767,13 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1781,13 +1781,13 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1797,7 +1797,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1807,7 +1807,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1818,13 +1818,13 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1835,13 +1835,13 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1866,7 +1866,7 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -1878,13 +1878,13 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1892,13 +1892,13 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1906,13 +1906,13 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1922,13 +1922,13 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1936,13 +1936,13 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1950,13 +1950,13 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -1977,7 +1977,7 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -1988,7 +1988,7 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -2026,7 +2026,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2036,7 +2036,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2046,7 +2046,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2060,7 +2060,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2070,7 +2070,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2080,7 +2080,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2138,7 +2138,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2148,7 +2148,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2158,7 +2158,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2172,7 +2172,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2182,7 +2182,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2192,7 +2192,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2230,7 +2230,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2238,7 +2238,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2249,7 +2249,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
@@ -2263,7 +2263,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2271,7 +2271,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2279,7 +2279,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2287,7 +2287,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2295,7 +2295,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2303,7 +2303,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2313,7 +2313,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2321,7 +2321,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2329,7 +2329,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2337,7 +2337,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2345,7 +2345,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2353,7 +2353,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2361,7 +2361,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2371,7 +2371,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2397,7 +2397,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type1;
+                ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             break;
@@ -2415,7 +2415,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2423,7 +2423,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2442,7 +2442,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2450,7 +2450,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2458,7 +2458,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2466,7 +2466,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2474,7 +2474,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2482,7 +2482,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2492,7 +2492,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2500,7 +2500,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2508,7 +2508,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2516,7 +2516,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2524,7 +2524,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2532,7 +2532,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
@@ -2540,7 +2540,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2550,7 +2550,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;
@@ -2570,7 +2570,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
-                ptrs[1] = type2;
+                ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             break;

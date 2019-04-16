@@ -1,11 +1,7 @@
-
-void fuck(int ss, int cce) {
-	int adfuck = ss + cce;
-}
-
 int main(void) {
-	int aa[10][20];
-	int sdqe[];
-	struct fuck sa;
+	char a;
+	short b;
+	int c;
+	a += b + c;
 	return 0;
 }

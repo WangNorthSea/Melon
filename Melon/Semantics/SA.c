@@ -48,6 +48,8 @@ void constFuncPtr(ASTNode * node);
 
 void constVariable(ASTNode * node);
 
+void blockScope(ASTNode * node);
+
 void funcStmt(ASTNode * node);
 
 void externVar(ASTNode * node);
@@ -129,7 +131,7 @@ void iterator(ASTNode * node) {
             break;
         case Block:
             needRollBackScope = 1;
-            newScope();
+            blockScope(node);
             break;
         case FuncStmt:
             funcStmt(node);
@@ -149,7 +151,7 @@ void iterator(ASTNode * node) {
         case Goto:
             goto_(node);
             break;
-        case Funcall:
+        /*case Funcall:
             temp = exprCheck(node);
             break;
         case Assign:
@@ -163,8 +165,9 @@ void iterator(ASTNode * node) {
             break;
         case SuffixOp:
             temp = exprCheck(node);
-            break;
+            break;*/
         default:
+            temp = exprCheck(node);
             break;
     }
     
@@ -381,6 +384,11 @@ void constVariable(ASTNode * node) {
     if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "const variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+}
+
+void blockScope(ASTNode * node) {
+    scope -> symbolTable -> put(scope -> symbolTable, "<<Block>>", node);
+    newScope();
 }
 
 void funcStmt(ASTNode * node) {
@@ -638,6 +646,8 @@ ASTNode * exprCheck(ASTNode * node) {
         return node -> ptrs[0];
     }
     else if (node -> kind == Funcall) {
+        ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+        
         if (node -> ptrs[0] -> kind != Identifier)
             throwSemanticError(fileChecking, node -> line, "invalid function call");
         
@@ -680,11 +690,18 @@ ASTNode * exprCheck(ASTNode * node) {
                 }
                 else {
                     int i;
+                    ASTNode * temp = NULL;
                     ASTNode * targetType;
                     ASTNode * inputType;
                     for (i = 0; i < targetArgs; i++) {
                         inputType = exprCheck(&(node -> ptrs[1] -> list[i]));
-                        targetType = exprCheck(&(targetFunc -> ptrs[params] -> list[i]));
+                        
+                        if (targetFunc -> ptrs[params] -> list[i].ptrs[1] -> kind == Name)
+                            temp = NodeConstructor(Identifier, fileChecking, node -> line, targetFunc -> ptrs[params] -> list[i].ptrs[1] -> image, ptrs);
+                        else
+                            temp = NodeConstructor(Identifier, fileChecking, node -> line, targetFunc -> ptrs[params] -> list[i].ptrs[1] -> ptrs[0] -> image, ptrs);
+                        targetType = exprCheck(temp);
+                        free(temp);
                         
                         if (inputType -> kind != targetType -> kind || inputType -> listLen != targetType -> listLen)
                             throwSemanticError(fileChecking, node -> line, "argument type mismatched");
