@@ -20,6 +20,12 @@
 #include "returntc.h"
 #include "graphnode.h"
 
+//待解决的问题:
+//1.funcStmt与DefinedFunc冲突   很严重，必须解决
+//2.funcPtr(constFuncPtr)的赋值与运算类型检查
+//3.break、continue的上下文检查
+//4.const类型的赋值检查
+
 void iterator(ASTNode * node);
 
 Scope * scope;
@@ -325,6 +331,9 @@ void variable(ASTNode * node) {
     int type = 0;
     int varname = 2;
     GNode * tempGnode = NULL;
+    ASTNode * assignType = NULL;
+    ASTNode * temp = NULL;
+    ASTNode * varType = NULL;
     
     if (node -> ptrs[1] -> kind == Varname)
         varname = 1;
@@ -355,6 +364,16 @@ void variable(ASTNode * node) {
     if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+    
+    if (node -> ptrs[varname + 1] != NULL) {
+        assignType = exprCheck(node -> ptrs[varname + 1]);
+        temp = node -> ptrs[1];
+        varType = node -> ptrs[type];
+        node -> ptrs[1] = node -> ptrs[varname + 1];
+        AssignTypeChecker(node, varType, assignType);
+        node -> ptrs[varname + 1] = node -> ptrs[1];
+        node -> ptrs[1] = temp;
+    }
 }
 
 void constFuncPtr(ASTNode * node) {
@@ -385,6 +404,9 @@ void constVariable(ASTNode * node) {
     int type = 0;
     int varname = 2;
     GNode * tempGnode = NULL;
+    ASTNode * assignType = NULL;
+    ASTNode * temp = NULL;
+    ASTNode * varType = NULL;
     
     if (node -> ptrs[1] -> kind == Varname)
         varname = 1;
@@ -415,6 +437,16 @@ void constVariable(ASTNode * node) {
     if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "const variable redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+    
+    if (node -> ptrs[varname + 1] != NULL) {
+        assignType = exprCheck(node -> ptrs[varname + 1]);
+        temp = node -> ptrs[1];
+        varType = node -> ptrs[type];
+        node -> ptrs[1] = node -> ptrs[varname + 1];
+        AssignTypeChecker(node, varType, assignType);
+        node -> ptrs[varname + 1] = node -> ptrs[1];
+        node -> ptrs[1] = temp;
+    }
 }
 
 void blockScope(ASTNode * node) {
@@ -529,6 +561,21 @@ ASTNode * exprCheck(ASTNode * node) {
         return refType;
     }
     else if (node -> kind == OpAssign) {
+        if (node -> ptrs[0] -> kind == Cast)
+            throwSemanticError(fileChecking, node -> line, "assignment to cast is illegal, lvalue casts are not supported");
+        
+        switch (node -> ptrs[0] -> kind) {
+            case Identifier:
+            case Member:
+            case PtrMember:
+            case ArrayRef:
+            case Dereference:
+                break;
+            default:
+                throwSemanticError(fileChecking, node -> line, "expression is not assignable");
+                break;
+        }
+        
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[2]);
         
@@ -537,6 +584,21 @@ ASTNode * exprCheck(ASTNode * node) {
         return type1;
     }
     else if (node -> kind == Assign) {
+        if (node -> ptrs[0] -> kind == Cast)
+            throwSemanticError(fileChecking, node -> line, "assignment to cast is illegal, lvalue casts are not supported");
+        
+        switch (node -> ptrs[0] -> kind) {
+            case Identifier:
+            case Member:
+            case PtrMember:
+            case ArrayRef:
+            case Dereference:
+                break;
+            default:
+                throwSemanticError(fileChecking, node -> line, "expression is not assignable");
+                break;
+        }
+        
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);
         

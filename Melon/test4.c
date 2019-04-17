@@ -1,9 +1,13 @@
 
-int test(char a) {
-	return a + 2;
+void fuck(void) {
+	return;
 }
 
 int main(void) {
-	int dam = 3;
+	short * abc;
+ 	char ssq;
+	void (*ptr)(void);
+	ptr = fuck;
 	return 0;
 }
+
