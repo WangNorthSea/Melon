@@ -17,6 +17,7 @@
 #include "binoptc.h"
 #include "opassigntc.h"
 #include "assigntc.h"
+#include "returntc.h"
 #include "graphnode.h"
 
 void iterator(ASTNode * node);
@@ -91,7 +92,7 @@ void MemberTypeChecker(ASTNode * type);
 
 void PtrMemberTypeChecker(ASTNode * type);
 
-void ReturnTypeChecker(ASTNode * type1, ASTNode * type2);
+void ReturnTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 ASTNode * getTargetType(ASTNode * target);
 
@@ -207,7 +208,7 @@ void iterator(ASTNode * node) {
 
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
     if (scope -> localLookup(scope, node -> ptrs[2] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "function redefined");
+        throwSemanticError(fileChecking, node -> line, "function redefined");  //有问题，和funcStmt冲突
     
     if (node -> ptrs[1] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
@@ -473,8 +474,7 @@ void return_(ASTNode * node) {
     }
     else {
         ASTNode * returnType = exprCheck(node -> ptrs[0]);
-        if (returnType -> kind != funcReturnType -> kind || returnType -> listLen != funcReturnType -> listLen)
-            throwSemanticError(fileChecking, node -> line, "return value type conflicting with function definition");
+        ReturnTypeChecker(node, funcReturnType, returnType);
     }
 }
 
@@ -1336,8 +1336,50 @@ void PtrMemberTypeChecker(ASTNode * type) {
     }
 }
 
-void ReturnTypeChecker(ASTNode * type1, ASTNode * type2) {
-    
+void ReturnTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
+    switch (type1 -> kind) {
+        case VoidType:
+            returnVoidType(parent, type1, type2);
+            break;
+        case CharType:
+            returnCharType(parent, type1, type2);
+            break;
+        case ShortIntType:
+            returnShortIntType(parent, type1, type2);
+            break;
+        case IntType:
+            returnIntType(parent, type1, type2);
+            break;
+        case LongIntType:
+            returnLongIntType(parent, type1, type2);
+            break;
+        case UnsignedCharType:
+            returnUnsignedCharType(parent, type1, type2);
+            break;
+        case UnsignedShortIntType:
+            returnUnsignedShortIntType(parent, type1, type2);
+            break;
+        case UnsignedIntType:
+            returnUnsignedIntType(parent, type1, type2);
+            break;
+        case UnsignedLongIntType:
+            returnUnsignedLongIntType(parent, type1, type2);
+            break;
+        case StructType:
+            returnStructType(parent, type1, type2);
+            break;
+        case UnionType:
+            returnUnionType(parent, type1, type2);
+            break;
+        case FloatType:
+            returnFloatType(parent, type1, type2);
+            break;
+        case DoubleType:
+            returnDoubleType(parent, type1, type2);
+            break;
+        default:
+            break;
+    }
 }
 
 ASTNode * getTargetType(ASTNode * target) {

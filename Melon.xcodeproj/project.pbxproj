@@ -113,10 +113,10 @@
 				30798C6B2260DF7C0059614D /* OpAssignTC.c */,
 				307A504F22617BB200C415FA /* assigntc.h */,
 				307A504D22617BA800C415FA /* AssignTC.c */,
-				304DE37E2265E84800034834 /* graphnode.h */,
-				304DE37C2265E83B00034834 /* GraphNode.c */,
 				30234760226620F800D8FD9E /* returntc.h */,
 				3023475E226620EE00D8FD9E /* ReturnTC.c */,
+				304DE37E2265E84800034834 /* graphnode.h */,
+				304DE37C2265E83B00034834 /* GraphNode.c */,
 			);
 			path = Semantics;
 			sourceTree = "<group>";

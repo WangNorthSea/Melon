@@ -1,6 +1,6 @@
 
 int test(char a) {
-	return (int)a;
+	return a + 2;
 }
 
 int main(void) {
