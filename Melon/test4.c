@@ -1,6 +1,6 @@
 
-void test(int a) {
-	int s;
+int test(char a) {
+	return (int)a;
 }
 
 int main(void) {
