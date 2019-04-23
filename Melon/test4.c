@@ -1,13 +1,13 @@
 
-void fuck(void) {
-	return;
-}
+struct ass {
+	int fuck;
+
+};
 
 int main(void) {
-	short * abc;
- 	char ssq;
-	void (*ptr)(void);
-	ptr = fuck;
+	int i, j, k, l;
+	struct ass aee;
+	aee.fuck = i = j = k = l;
 	return 0;
 }
 

@@ -25,6 +25,7 @@
 //2.funcPtr(constFuncPtr)的赋值与运算类型检查
 //3.break、continue的上下文检查
 //4.const类型的赋值检查
+//5.if, while, for等作用域机制
 
 void iterator(ASTNode * node);
 
@@ -455,8 +456,12 @@ void blockScope(ASTNode * node) {
 }
 
 void funcStmt(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[2] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "function redefined");
+    ASTNode * target = scope -> localLookup(scope, node -> ptrs[2] -> image);
+    
+    if (target != NULL) {
+        if (target -> kind == FuncStmt)
+            throwSemanticError(fileChecking, node -> line, "function redefined");
+    }
     
     if (node -> ptrs[1] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)

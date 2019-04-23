@@ -1647,7 +1647,13 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken -> next -> endLine = line;
             tailToken -> next -> kind = EOF_;
             
-            buffer[bufferIndex] = ch;
+            buffer[bufferIndex] = 'E';
+            bufferIndex++;
+            
+            buffer[bufferIndex] = 'O';
+            bufferIndex++;
+            
+            buffer[bufferIndex] = 'F';
             bufferIndex++;
             
             buffer[bufferIndex] = '\0';

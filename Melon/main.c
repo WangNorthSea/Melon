@@ -42,7 +42,7 @@ int main(int argc, const char * argv[]) {
     Token * headToken = lexicalAnalyze(fp);
     Token * headToken2 = headToken;
     while (headToken -> next != NULL) {
-        printf("line: %d  value: %s  kind: %d\n", headToken -> next -> beginLine, headToken -> next -> image, headToken -> next -> kind);
+        printf("line: %d\tvalue: %s\tkind: %d\n", headToken -> next -> beginLine, headToken -> next -> image, headToken -> next -> kind);
         headToken = headToken -> next;
     }
     
