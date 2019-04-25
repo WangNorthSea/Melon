@@ -1,6 +1,8 @@
 int main(void) {	
 	int i;
-	for (i = 0; i < 5; i++)
-		continue;
+	i = 5;
+	goto fuck;
+fuck:
+	i = 6;
 	return 0;
 }

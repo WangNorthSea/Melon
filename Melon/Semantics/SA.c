@@ -82,8 +82,6 @@ void externConst(ASTNode * node);
 
 void label(ASTNode * node);
 
-void goto_(ASTNode * node);
-
 void return_(ASTNode * node);
 
 ASTNode * exprCheck(ASTNode * node);
@@ -188,9 +186,6 @@ void iterator(ASTNode * node) {
             break;
         case Label:
             label(node);
-            break;
-        case Goto:
-            goto_(node);
             break;
         case Return:
             return_(node);
@@ -543,11 +538,6 @@ void label(ASTNode * node) {
     if (scope -> localLookup(scope, node -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "label relocated");
     scope -> symbolTable -> put(scope -> symbolTable, node -> image, node);
-}
-
-void goto_(ASTNode * node) {
-    if (scope -> lookup(scope, node -> image) == NULL)
-        throwSemanticError(fileChecking, node -> line, "label undefined");
 }
 
 void return_(ASTNode * node) {

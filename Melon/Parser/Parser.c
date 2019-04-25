@@ -2380,13 +2380,8 @@ ASTNode * case_clause(void) {
     
     ptrs[0] = cases();
     
-    if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'case\'");
-        }
-    }
+    if (ptrs[0] == NULL)
+        return NULL;
     
     ptrs[1] = case_body();
     
@@ -2437,11 +2432,7 @@ ASTNode * cases(void) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
     if (!match(CASE)) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'case\'");
-        }
+        return NULL;
     }
     
     ptrs[0] = primary();
