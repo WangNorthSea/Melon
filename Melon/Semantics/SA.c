@@ -21,11 +21,9 @@
 #include "graphnode.h"
 
 //待解决的问题:
-//1.funcStmt与DefinedFunc冲突   很严重，必须解决
-//2.funcPtr(constFuncPtr)的赋值与运算类型检查
-//3.break、continue的上下文检查
-//4.const类型的赋值检查
-//5.if, while, for等作用域机制
+//1.funcPtr(constFuncPtr)的赋值与运算类型检查，不能在Assign，OpAssign语句出现
+//2.break、continue的上下文检查
+//3.const类型的赋值检查，不能在Assign，OpAssign语句出现
 
 void iterator(ASTNode * node);
 
@@ -42,6 +40,8 @@ int refCount = 0;
 int inStructOrUnion = 0;
 
 int inFunc = 0;
+
+int inFuncStmt = 0;
 
 int returned = 0;
 
@@ -103,6 +103,10 @@ void ReturnTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2);
 
 ASTNode * getTargetType(ASTNode * target);
 
+void funcCompare(ASTNode * func1, ASTNode * func2);
+
+int paramsCompare(ASTNode * paramNode1, ASTNode * paramNode2);
+
 void newScope(void);
 
 void throwSemanticError(const char * file, int line, char * content);
@@ -161,9 +165,11 @@ void iterator(ASTNode * node) {
             blockScope(node);
             break;
         case FuncStmt:
+            inFuncStmt = 1;
             funcStmt(node);
             break;
         case ExternFunc:
+            inFuncStmt = 1;
             funcStmt(node -> ptrs[0]);
             break;
         case ExternVar:
@@ -211,11 +217,18 @@ void iterator(ASTNode * node) {
         }
         returned = 0;
     }
+    else if (node -> kind == FuncStmt || node -> kind == ExternFunc)
+        inFuncStmt = 0;
 }
 
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
-    if (scope -> localLookup(scope, node -> ptrs[2] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "function redefined");  //有问题，和funcStmt冲突
+    ASTNode * target = scope -> localLookup(scope, node -> ptrs[2] -> image);
+    if (target != NULL) {
+        if (target -> kind == DefinedFunc)
+            throwSemanticError(fileChecking, node -> line, "function redefined");
+        else
+            funcCompare(target, node);
+    }
     
     if (node -> ptrs[1] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
@@ -254,8 +267,10 @@ void definedUnion(ASTNode * node) {
 }
 
 void normalParam(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    if (inFuncStmt == 0) {
+        if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
+            throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    }
     
     if (node -> ptrs[0] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
@@ -267,12 +282,15 @@ void normalParam(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
+    if (inFuncStmt == 0)
+        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void constParam(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    if (inFuncStmt == 0) {
+        if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
+            throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    }
     
     if (node -> ptrs[0] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
@@ -284,12 +302,15 @@ void constParam(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
+    if (inFuncStmt == 0)
+        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void funcPtrParam(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[1] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    if (inFuncStmt == 0) {
+        if (scope -> localLookup(scope, node -> ptrs[1] -> image) != NULL)
+            throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    }
     
     if (node -> ptrs[0] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
@@ -301,7 +322,8 @@ void funcPtrParam(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node);
+    if (inFuncStmt == 0)
+        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node);
 }
 
 void funcPtr(ASTNode * node) {
@@ -458,10 +480,8 @@ void blockScope(ASTNode * node) {
 void funcStmt(ASTNode * node) {
     ASTNode * target = scope -> localLookup(scope, node -> ptrs[2] -> image);
     
-    if (target != NULL) {
-        if (target -> kind == FuncStmt)
-            throwSemanticError(fileChecking, node -> line, "function redefined");
-    }
+    if (target != NULL)
+        funcCompare(target, node);
     
     if (node -> ptrs[1] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
@@ -1598,6 +1618,59 @@ ASTNode * getTargetType(ASTNode * target) {
             return NULL;
             break;
     }
+}
+
+void funcCompare(ASTNode * func1, ASTNode * func2) {
+    //check static
+    if ((func1 -> ptrs[0] != NULL && func2 -> ptrs[0] == NULL) || (func1 -> ptrs[0] == NULL && func2 -> ptrs[0] != NULL))
+        throwSemanticError(fileChecking, func2 -> line, "conflicting function types");
+    
+    //check return value type
+    if (func1 -> ptrs[1] -> kind != func2 -> ptrs[1] -> kind || func1 -> ptrs[1] -> listLen != func2 -> ptrs[1] -> listLen)
+        throwSemanticError(fileChecking, func2 -> line, "conflicting function types");
+    
+    //check parameters
+    if (paramsCompare(func1 -> ptrs[3], func2 -> ptrs[3]))
+        throwSemanticError(fileChecking, func2 -> line, "conflicting function types");
+}
+
+int paramsCompare(ASTNode * paramNode1, ASTNode * paramNode2) {
+    if ((paramNode1 != NULL && paramNode2 == NULL) || (paramNode1 == NULL && paramNode2 != NULL))
+        return 1;
+    else if (paramNode1 != NULL) {
+        if (paramNode1 -> listLen != paramNode2 -> listLen)
+            return 1;
+        
+        int i;
+        for (i = 0; i < paramNode1 -> listLen; i++) {
+            //check NormalParam, ConstParam or FuncPtrParam
+            if (paramNode1 -> list[i].kind != paramNode2 -> list[i].kind)
+                return 1;
+            
+            if (paramNode1 -> list[i].kind == UnlimitedParams)
+                continue;
+            
+            //check parameter type
+            if (paramNode1 -> list[i].ptrs[0] -> kind != paramNode2 -> list[i].ptrs[0] -> kind || paramNode1 -> list[i].ptrs[0] -> listLen != paramNode2 -> list[i].ptrs[0] -> listLen)
+                return 1;
+            
+            if (paramNode1 -> list[i].kind == FuncPtrParam) {
+                //check function pointer name
+                if (strcmp(paramNode1 -> list[i].ptrs[1] -> image, paramNode2 -> list[i].ptrs[1] -> image))
+                    return 1;
+                
+                //check function pointer parameters
+                if (paramsCompare(paramNode1 -> list[i].ptrs[2], paramNode2 -> list[i].ptrs[2]))
+                    return 1;
+            }
+            else {
+                if (strcmp(paramNode1 -> list[i].ptrs[1] -> ptrs[0] -> image, paramNode2 -> list[i].ptrs[1] -> ptrs[0] -> image) || paramNode1 -> list[i].ptrs[1] -> listLen != paramNode2 -> list[i].ptrs[1] -> listLen)
+                    return 1;
+            }
+        }
+    }
+    
+    return 0;
 }
 
 void newScope(void) {

@@ -1,13 +1,12 @@
 
-struct ass {
-	int fuck;
-
-};
+void fuck(int a ,...);
+void fuck(int a, ...);
 
 int main(void) {
-	int i, j, k, l;
-	struct ass aee;
-	aee.fuck = i = j = k = l;
 	return 0;
 }
 
+void fuck(int a, int c, ...) {
+	;
+
+}

@@ -30,6 +30,22 @@ void dumpASTNode(int dumplevel, ASTNode * node) {
             printf("\t");
         printf("image: %s\n", node -> image);
     }
+    
+    if (node -> kind != Block && node -> kind != DefinedFunc && node -> kind != DefinedStruct && node -> kind != DefinedUnion) {
+        for (j = 0; j < 6; j++) {
+            if (node -> ptrs[j] != NULL)
+                dumpASTNode(dumplevel + 1, node -> ptrs[j]);
+        }
+    
+        for (j = 0; j < node -> listLen; j++)
+            dumpASTNode(dumplevel + 1, node -> list + j);
+    }
+    else if (node -> kind == DefinedFunc) {
+        for (j = 0; j < 4; j++) {
+            if (node -> ptrs[j] != NULL)
+                dumpASTNode(dumplevel + 1, node -> ptrs[j]);
+        }
+    }
 }
 
 //仍然有问题
