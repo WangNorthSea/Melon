@@ -1,11 +1,6 @@
-
-void fuck(int a, void (*ptr)(int a, int b, int (*fq)(int b)));
-
-int main(void) {
+int main(void) {	
+	int i;
+	for (i = 0; i < 5; i++)
+		continue;
 	return 0;
-}
-
-void fuck(int a, void (*ptr)(int a, int b, int (*fq)(int b))) {
-
-	;
 }

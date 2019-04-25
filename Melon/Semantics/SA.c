@@ -21,9 +21,8 @@
 #include "graphnode.h"
 
 //待解决的问题:
-//1.funcPtr(constFuncPtr)的赋值与运算类型检查，不能在Assign，OpAssign语句出现
-//2.break、continue的上下文检查
-//3.const类型的赋值检查，不能在Assign，OpAssign语句出现
+//1.funcPtr(constFuncPtr)的赋值与运算类型检查
+//2.const类型的赋值检查，不能在Assign，OpAssign语句出现
 
 void iterator(ASTNode * node);
 
@@ -40,6 +39,14 @@ int refCount = 0;
 int inStructOrUnion = 0;
 
 int inFunc = 0;
+
+int inFor = 0;
+
+int inWhile = 0;
+
+int inDoWhile = 0;
+
+int inSwitch = 0;
 
 int returned = 0;
 
@@ -189,6 +196,26 @@ void iterator(ASTNode * node) {
             return_(node);
             returned = 1;
             break;
+        case For:
+            inFor++;
+            break;
+        case While:
+            inWhile++;
+            break;
+        case DoWhile:
+            inDoWhile++;
+            break;
+        case Switch:
+            inSwitch++;
+            break;
+        case Break:
+            if (inFor == 0 && inWhile == 0 && inDoWhile == 0 && inSwitch == 0)
+                throwSemanticError(fileChecking, node -> line, "'break' appeared not in a loop or switch");
+            break;
+        case Continue:
+            if (inFor == 0 && inWhile == 0 && inDoWhile == 0)
+                throwSemanticError(fileChecking, node -> line, "'continue' appeared not in a loop");
+            break;
         default:
             temp = exprCheck(node);
             break;
@@ -218,6 +245,14 @@ void iterator(ASTNode * node) {
         }
         returned = 0;
     }
+    else if (node -> kind == For)
+        inFor--;
+    else if (node -> kind == While)
+        inWhile--;
+    else if (node -> kind == DoWhile)
+        inDoWhile--;
+    else if (node -> kind == Switch)
+        inSwitch--;
 }
 
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]

@@ -63,7 +63,7 @@ void dumpScope(Scope * scope) {
                     printf("\t");
                 printf("key: %s\n", next -> key);
                 dumpASTNode(dumpScopeLevel, (ASTNode *)next -> target);
-                if (((ASTNode *)next -> target) -> kind == DefinedFunc || ((ASTNode *)next -> target) -> kind == DefinedStruct || ((ASTNode *)next -> target) -> kind == DefinedUnion || ((ASTNode *)next -> target) -> kind == Block) {
+                if (((ASTNode *)next -> target) -> kind == DefinedFunc || ((ASTNode *)next -> target) -> kind == DefinedStruct || ((ASTNode *)next -> target) -> kind == DefinedUnion || ((ASTNode *)next -> target) -> kind == Block || ((ASTNode *)next -> target) -> kind == FuncPtrParam) {
                     dumpScope(scope -> lowerLevel[branch]);
                     branch++;
                 }
