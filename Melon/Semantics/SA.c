@@ -41,8 +41,6 @@ int inStructOrUnion = 0;
 
 int inFunc = 0;
 
-int inFuncStmt = 0;
-
 int returned = 0;
 
 ASTNode * funcReturnType = NULL;
@@ -136,6 +134,7 @@ void iterator(ASTNode * node) {
             constParam(node);
             break;
         case FuncPtrParam:
+            needRollBackScope = 1;
             funcPtrParam(node);
             break;
         case DefinedStruct:
@@ -149,12 +148,14 @@ void iterator(ASTNode * node) {
             definedUnion(node);
             break;
         case FuncPtr:
+            needRollBackScope = 1;
             funcPtr(node);
             break;
         case Variable:
             variable(node);
             break;
         case ConstFuncPtr:
+            needRollBackScope = 1;
             constFuncPtr(node);
             break;
         case ConstVariable:
@@ -165,11 +166,11 @@ void iterator(ASTNode * node) {
             blockScope(node);
             break;
         case FuncStmt:
-            inFuncStmt = 1;
+            needRollBackScope = 1;
             funcStmt(node);
             break;
         case ExternFunc:
-            inFuncStmt = 1;
+            needRollBackScope = 1;
             funcStmt(node -> ptrs[0]);
             break;
         case ExternVar:
@@ -217,8 +218,6 @@ void iterator(ASTNode * node) {
         }
         returned = 0;
     }
-    else if (node -> kind == FuncStmt || node -> kind == ExternFunc)
-        inFuncStmt = 0;
 }
 
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
@@ -267,10 +266,8 @@ void definedUnion(ASTNode * node) {
 }
 
 void normalParam(ASTNode * node) {
-    if (inFuncStmt == 0) {
-        if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
-            throwSemanticError(fileChecking, node -> line, "parameter redefined");
-    }
+    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
+        throwSemanticError(fileChecking, node -> line, "parameter redefined");
     
     if (node -> ptrs[0] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
@@ -282,15 +279,12 @@ void normalParam(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (inFuncStmt == 0)
-        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void constParam(ASTNode * node) {
-    if (inFuncStmt == 0) {
-        if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
-            throwSemanticError(fileChecking, node -> line, "parameter redefined");
-    }
+    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
+        throwSemanticError(fileChecking, node -> line, "parameter redefined");
     
     if (node -> ptrs[0] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
@@ -302,15 +296,12 @@ void constParam(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (inFuncStmt == 0)
-        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void funcPtrParam(ASTNode * node) {
-    if (inFuncStmt == 0) {
-        if (scope -> localLookup(scope, node -> ptrs[1] -> image) != NULL)
-            throwSemanticError(fileChecking, node -> line, "parameter redefined");
-    }
+    if (scope -> localLookup(scope, node -> ptrs[1] -> image) != NULL)
+        throwSemanticError(fileChecking, node -> line, "parameter redefined");
     
     if (node -> ptrs[0] -> kind == StructType) {
         if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
@@ -322,8 +313,8 @@ void funcPtrParam(ASTNode * node) {
             throwSemanticError(fileChecking, node -> line, "union type undefined");
     }
     
-    if (inFuncStmt == 0)
-        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node);
+    newScope();
 }
 
 void funcPtr(ASTNode * node) {
@@ -348,6 +339,7 @@ void funcPtr(ASTNode * node) {
     if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function pointer redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
+    newScope();
 }
 
 void variable(ASTNode * node) {
@@ -421,6 +413,7 @@ void constFuncPtr(ASTNode * node) {
     if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL)
         throwSemanticError(fileChecking, node -> line, "function pointer redefined");
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
+    newScope();
 }
 
 void constVariable(ASTNode * node) {
@@ -494,6 +487,7 @@ void funcStmt(ASTNode * node) {
     }
     
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
+    newScope();
 }
 
 void externVar(ASTNode * node) {
