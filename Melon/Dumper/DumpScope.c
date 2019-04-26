@@ -48,7 +48,6 @@ void dumpASTNode(int dumplevel, ASTNode * node) {
     }
 }
 
-//仍然有问题
 void dumpScope(Scope * scope) {
     int i, branch = 0;
     
