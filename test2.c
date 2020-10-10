@@ -10,6 +10,6 @@ int main(void) {
     aa  = 1;
 	int c = (aa++ + 2) * (3 - 4);
 	int ** ptr[6][2];
-	c++;
+	c += 2;
 	return 0;
 }
