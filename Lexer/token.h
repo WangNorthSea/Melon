@@ -9,13 +9,14 @@
 #ifndef token_h
 #define token_h
 
+#include "../List/list.h"
+
 struct Token {
+    struct list_head list;
     int kind;
     int beginLine;
     int endLine;
     char * image;
-    struct Token * next;
-    struct Token * specialToken;
 };
 
 typedef struct Token Token;

@@ -40,16 +40,15 @@ int main(int argc, const char * argv[]) {
     }
     
     Token * headToken = lexicalAnalyze(fp);
-    Token * headToken2 = headToken;
-    while (headToken -> next != NULL) {
-        printf("line: %d\tvalue: %s\tkind: %d\n", headToken -> next -> beginLine, headToken -> next -> image, headToken -> next -> kind);
-        headToken = headToken -> next;
+    Token * pos = NULL;
+    list_for_each_entry(pos, &headToken -> list, list) {
+        printf("line: %d\tvalue: %s\tkind: %d\n", pos -> beginLine, pos -> image, pos -> kind);
     }
     
     printf("\nAST:\n");
     
     parsingFile = argv[1];
-    ASTNode * rootNode = compilationUnit(headToken2);
+    ASTNode * rootNode = compilationUnit(headToken);
     dumpAST(rootNode);
     
     semanticAnalyze(rootNode, parsingFile);

@@ -4,7 +4,7 @@ int main(int argc, const char * argv[]) {
 		printf("Nice!\n");
 	/*
 
-	块注释测试 *    /*    */
+	块注释测试 *    /*   */
 /////////
 
 /**/
@@ -18,6 +18,7 @@ int main(int argc, const char * argv[]) {
 
 
 			*/
+	/***/	
 	label:
 	int a = 0xaff109;
 	int bc = 0XADDee12a;

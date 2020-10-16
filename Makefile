@@ -1,17 +1,12 @@
-src = $(wildcard ASTNode/*.c) $(wildcard Dumper/*.c) $(wildcard Parser/*.c) $(wildcard Lexer/*.c) $(wildcard SymbolTable/*.c) $(wildcard Semantics/*.c) $(wildcard IR/*.c) $(wildcard main.c)
-obj = $(patsubst %.c, %.o, $(src))
+src = ASTNode/*.c Dumper/*.c Parser/*.c Lexer/*.c SymbolTable/*.c Semantics/*.c IR/*.c main.c
+obj = ASTNode/*.o Dumper/*.o Parser/*.o Lexer/*.o SymbolTable/*.o Semantics/*.o IR/*.o *.o
+CFLAGS = -O2
 target = Melon
-CC = gcc
+CC = clang
 
-$(target): $(obj)
-	$(CC) $(obj) -o $(target)
-
-%.o: %.c
-	$(CC) -O2 -c $< -o $@
-
-.PHONY: clean all
-clean:
-	rm -f $(obj)
+.PHONY: all clean
 all:
-	@echo $(src)
-	@echo $(obj)
+	${CC} ${CFLAGS} ${src} -o ${target}
+
+clean:
+	rm -f ${obj}

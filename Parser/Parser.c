@@ -141,7 +141,7 @@ Hashtable * typeDefList = NULL;
 
 ASTNode * compilationUnit(Token * headToken) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
-    token = headToken -> next;
+    token = list_entry(headToken -> list.next, Token, list);
     typeDefList = HashtableConstructor();
     
     if (token == NULL)
@@ -209,7 +209,7 @@ ASTNode * topDefs(void) {
             prelooking--;
             token = lookahead1;
             
-            if (token -> kind != TYPEDEF && token -> kind != EXTERN && token -> kind != CONST && token -> next -> next -> kind != LEFTBRACE) {
+            if (token -> kind != TYPEDEF && token -> kind != EXTERN && token -> kind != CONST && (list_entry((list_entry(token -> list.next, Token, list)) -> list.next, Token, list)) -> kind != LEFTBRACE) {
                 ptrs[0] = defvars();
                 
                 if (ptrs[0] == NULL) {
@@ -642,50 +642,50 @@ ASTNode * type(void) {
     switch (token -> kind) {
         case VOID:
             Node = NodeConstructor(VoidType, parsingFile, token -> beginLine, NULL, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case CHAR:
             Node = NodeConstructor(CharType, parsingFile, token -> beginLine, NULL, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case SHORT:
             Node = NodeConstructor(ShortIntType, parsingFile, token -> beginLine, NULL, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case INT:
             Node = NodeConstructor(IntType, parsingFile, token -> beginLine, NULL, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case LONG:
             Node = NodeConstructor(LongIntType, parsingFile, token -> beginLine, NULL, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case FLOAT:
             Node = NodeConstructor(FloatType, parsingFile, token -> beginLine, NULL, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case DOUBLE:
             Node = NodeConstructor(DoubleType, parsingFile, token -> beginLine, NULL, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case UNSIGNED:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             switch (token -> kind) {
                 case CHAR:
                     Node = NodeConstructor(UnsignedCharType, parsingFile, token -> beginLine, NULL, ptrs);
-                    token = token -> next;
+                    token = list_entry(token -> list.next, Token, list);
                     break;
                 case SHORT:
                     Node = NodeConstructor(UnsignedShortIntType, parsingFile, token -> beginLine, NULL, ptrs);
-                    token = token -> next;
+                    token = list_entry(token -> list.next, Token, list);
                     break;
                 case INT:
                     Node = NodeConstructor(UnsignedIntType, parsingFile, token -> beginLine, NULL, ptrs);
-                    token = token -> next;
+                    token = list_entry(token -> list.next, Token, list);
                     break;
                 case LONG:
                     Node = NodeConstructor(UnsignedLongIntType, parsingFile, token -> beginLine, NULL, ptrs);
-                    token = token -> next;
+                    token = list_entry(token -> list.next, Token, list);
                     break;
                 default:
                     if (prelooking)
@@ -697,7 +697,7 @@ ASTNode * type(void) {
             }
             break;
         case STRUCT:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             label = token -> image;
             if (!match(IDENTIFIER)) {
                 if (prelooking)
@@ -710,7 +710,7 @@ ASTNode * type(void) {
             Node = NodeConstructor(StructType, parsingFile, token -> beginLine, label, ptrs);
             break;
         case UNION:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             label = token -> image;
             if (!match(IDENTIFIER)) {
                 if (prelooking)
@@ -725,7 +725,7 @@ ASTNode * type(void) {
         default:
             Node = getType(token -> image);
             if (Node != NULL)
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
             else
                 return Node;
             break;
@@ -1405,7 +1405,7 @@ ASTNode * stmt(void) {
     if (match(SEMICOLON)) {
         Node = NodeConstructor(EmptyStmt, parsingFile, token -> beginLine, NULL, ptrs);
     }
-    else if (token -> kind == IDENTIFIER && token -> next -> kind == COLON) {
+    else if (token -> kind == IDENTIFIER && (list_entry(token -> list.next, Token, list)) -> kind == COLON) {
         ptrs[0] = labeled_stmt();
         
         if (ptrs[0] == NULL) {
@@ -1850,7 +1850,7 @@ ASTNode * array(void) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     char * label = NULL;
     
-    if (token -> kind == LEFTBRACKET && token -> next -> kind == RIGHTBRACKET) {
+    if (token -> kind == LEFTBRACKET && (list_entry(token -> list.next, Token, list)) -> kind == RIGHTBRACKET) {
         match(LEFTBRACKET);
         match(RIGHTBRACKET);
         
@@ -2496,26 +2496,26 @@ ASTNode * primary(void) {
     switch (token -> kind) {
         case INTEGER:
             Node = NodeConstructor(IntegerLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case CHARACTER:
             Node = NodeConstructor(CharacterLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case FLOAT_:
             Node = NodeConstructor(FloatLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case STRING:
             Node = NodeConstructor(StringLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case IDENTIFIER:
             Node = NodeConstructor(Identifier, parsingFile, token -> beginLine, token -> image, ptrs);
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             break;
         case LEFTPARENTHESE:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = expr();
             
             if (Node == NULL) {
@@ -2617,43 +2617,43 @@ ASTNode * opassign_op(void) {
     
     switch (token -> kind) {
         case SUMASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "+", ptrs);
             break;
         case SUBASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "-", ptrs);
             break;
         case MULASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "*", ptrs);
             break;
         case DIVASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "/", ptrs);
             break;
         case RESASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "%", ptrs);
             break;
         case ANDASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "&", ptrs);
             break;
         case ORASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "|", ptrs);
             break;
         case XORASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "^", ptrs);
             break;
         case LSHASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "<<", ptrs);
             break;
         case RSHASSIGN:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, ">>", ptrs);
             break;
         default:
@@ -2812,7 +2812,7 @@ ASTNode * expr7(void) {
     do {  //(">" expr6() | "<" expr6() | ">=" expr6() | "<=" expr6() | "==" expr6() | "!=" expr6())*
         switch (token -> kind) {
             case GREATERTHAN:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 ptrs[0] = Node;
                 ptrs[1] = expr6();
                 
@@ -2827,7 +2827,7 @@ ASTNode * expr7(void) {
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, ">", ptrs);
                 break;
             case LESSTHAN:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 ptrs[0] = Node;
                 ptrs[1] = expr6();
                 
@@ -2842,7 +2842,7 @@ ASTNode * expr7(void) {
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "<", ptrs);
                 break;
             case GREATERANDEQUAL:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 ptrs[0] = Node;
                 ptrs[1] = expr6();
                 
@@ -2857,7 +2857,7 @@ ASTNode * expr7(void) {
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, ">=", ptrs);
                 break;
             case LESSANDEQUAL:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 ptrs[0] = Node;
                 ptrs[1] = expr6();
                 
@@ -2872,7 +2872,7 @@ ASTNode * expr7(void) {
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "<=", ptrs);
                 break;
             case EQUAL:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 ptrs[0] = Node;
                 ptrs[1] = expr6();
                 
@@ -2887,7 +2887,7 @@ ASTNode * expr7(void) {
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "==", ptrs);
                 break;
             case NOTEQUAL:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 ptrs[0] = Node;
                 ptrs[1] = expr6();
                 
@@ -3196,7 +3196,7 @@ ASTNode * unary(void) {
     
     switch (token -> kind) {
         case SELFSUM:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             ptrs[0] = unary();
             
             if (ptrs[0] == NULL) {
@@ -3210,7 +3210,7 @@ ASTNode * unary(void) {
             Node = NodeConstructor(PrefixOp, parsingFile, token -> beginLine, "++", ptrs);
             break;
         case SELFSUB:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             ptrs[0] = unary();
             
             if (ptrs[0] == NULL) {
@@ -3224,7 +3224,7 @@ ASTNode * unary(void) {
             Node = NodeConstructor(PrefixOp, parsingFile, token -> beginLine, "--", ptrs);
             break;
         case LOGICNOT:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
@@ -3238,7 +3238,7 @@ ASTNode * unary(void) {
             Node = NodeConstructor(UnaryOp, parsingFile, token -> beginLine, "!", ptrs);
             break;
         case NOT:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
@@ -3252,7 +3252,7 @@ ASTNode * unary(void) {
             Node = NodeConstructor(UnaryOp, parsingFile, token -> beginLine, "~", ptrs);
             break;
         case MUL:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
@@ -3266,7 +3266,7 @@ ASTNode * unary(void) {
             Node = NodeConstructor(Dereference, parsingFile, token -> beginLine, NULL, ptrs);
             break;
         case AND:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
@@ -3280,7 +3280,7 @@ ASTNode * unary(void) {
             Node = NodeConstructor(Address, parsingFile, token -> beginLine, NULL, ptrs);
             break;
         case SIZEOF:
-            token = token -> next;
+            token = list_entry(token -> list.next, Token, list);
             lookahead = token;
             
             prelooking++;
@@ -3365,7 +3365,7 @@ ASTNode * postfix(void) {
     do {    //("++"|"--"|"["expr()"]"|"."name()|"->"name()|"("args()")")*
         switch (token -> kind) {
             case SELFSUM:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 
                 ptrs[0] = Node;
                 ptrs[1] = NULL;
@@ -3373,7 +3373,7 @@ ASTNode * postfix(void) {
                 Node = NodeConstructor(SuffixOp, parsingFile, token -> beginLine, "++", ptrs);
                 break;
             case SELFSUB:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 
                 ptrs[0] = Node;
                 ptrs[1] = NULL;
@@ -3381,7 +3381,7 @@ ASTNode * postfix(void) {
                 Node = NodeConstructor(SuffixOp, parsingFile, token -> beginLine, "--", ptrs);
                 break;
             case LEFTBRACKET:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 
                 ptrs[0] = Node;
                 ptrs[1] = expr();
@@ -3405,7 +3405,7 @@ ASTNode * postfix(void) {
                 }
                 break;
             case DOT:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 
                 ptrs[0] = Node;
                 ptrs[1] = name();
@@ -3421,7 +3421,7 @@ ASTNode * postfix(void) {
                 Node = NodeConstructor(Member, parsingFile, token -> beginLine, NULL, ptrs);
                 break;
             case ARROW:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 
                 ptrs[0] = Node;
                 ptrs[1] = name();
@@ -3437,7 +3437,7 @@ ASTNode * postfix(void) {
                 Node = NodeConstructor(PtrMember, parsingFile, token -> beginLine, NULL, ptrs);
                 break;
             case LEFTPARENTHESE:
-                token = token -> next;
+                token = list_entry(token -> list.next, Token, list);
                 
                 ptrs[0] = Node;
                 
@@ -3538,7 +3538,7 @@ ASTNode * extern_(void) {
         prelooking--;
         token = lookahead;
         
-        if (token -> kind != CONST && token -> next -> next -> kind != LEFTBRACE) {
+        if (token -> kind != CONST && (list_entry((list_entry(token -> list.next, Token, list)) -> list.next, Token, list)) -> kind != LEFTBRACE) {
             ptrs[0] = defvars();
             
             if (ptrs[0] == NULL) {
@@ -3582,7 +3582,7 @@ int match(int kind) {
         return 0;
     
     if (token -> kind == kind) {
-        token = token -> next;
+        token = list_entry(token -> list.next, Token, list);
         return 1;
     }
     else
