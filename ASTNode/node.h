@@ -9,7 +9,11 @@
 #ifndef node_h
 #define node_h
 
+#include "../List/list.h"
+
 struct ASTNode {
+    struct list_head child_list;
+    struct list_head brother_list;
     int kind;
     int listLen;
     char * file;

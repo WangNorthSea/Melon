@@ -14,6 +14,7 @@
 #include "../ASTNode/node.h"
 #include "../ASTNode/constructor.h"
 #include "../SymbolTable/hashtable.h"
+#include "../Report/error.h"
 
 ASTNode * importStmts(void);
 
@@ -129,21 +130,24 @@ ASTNode * getType(char * key);
 
 int match(int kind);
 
-void throwSyntaxError(const char * file, int line, char * expected);
+void throwSyntaxError(char * file, int line, char * expected, Token * token);
 
 Token * token = NULL;
 
-const char * parsingFile = NULL;
+char * parsingFile = NULL;
 
 int prelooking = 0;
 
 Hashtable * typeDefList = NULL;
 
+error_t * err_list = NULL;
+
 ASTNode * compilationUnit(Token * headToken) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     token = list_entry(headToken -> list.next, Token, list);
     typeDefList = HashtableConstructor();
-    
+    err_list = ErrorConstructor(0, 0, NULL, NULL, NULL);
+
     if (token == NULL)
         return NodeConstructor(Root, parsingFile, 1, NULL, ptrs);
     
@@ -3589,7 +3593,9 @@ int match(int kind) {
         return 0;
 }
 
-void throwSyntaxError(const char * file, int line, char * expected) {
-    printf("Melon: %s: syntax \033[31merror\033[0m in line %d expected %s\n", file, line, expected);
-    exit(-1);
+void throwSyntaxError(char * file, int line, char * expected, Token * token) {
+    error_t * new_err = ErrorConstructor(line, SYNTAX, file, expected, token);
+    list_add_tail(&new_err -> list, &err_list -> list);
+    //printf("Melon: %s: syntax \033[31merror\033[0m in line %d expected %s\n", file, line, expected);
+    //exit(-1);
 }

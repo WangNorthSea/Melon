@@ -15,8 +15,8 @@ struct Token {
     struct list_head list;
     int kind;
     int beginLine;
-    int endLine;
     char * image;
+    fpos_t fpos;    /* the next pos of the last byte of a Token */
 };
 
 typedef struct Token Token;

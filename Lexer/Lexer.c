@@ -15,9 +15,9 @@
 void tokenInit(Token * token) {
     init_list_head(&token -> list);
     token -> beginLine = 0;
-    token -> endLine = 0;
     token -> kind = 0;
     token -> image = NULL;
+    token -> fpos = 0;
 }
 
 void enlargeBuffer(char * buffer, int * bufferSize) {
@@ -60,7 +60,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             do {
                 if (bufferIndex == bufferSize - 1)
@@ -146,6 +145,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> kind = IDENTIFIER;
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -155,7 +155,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = CHARACTER;
             
             do {
@@ -206,6 +205,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -215,7 +215,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = STRING;
             
             do {
@@ -266,6 +265,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -275,7 +275,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = COMMA;
             
             buffer[bufferIndex] = ch;
@@ -290,6 +289,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -299,7 +299,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = SEMICOLON;
             
             buffer[bufferIndex] = ch;
@@ -314,6 +313,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -323,7 +323,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = DOT;
             
             buffer[bufferIndex] = ch;
@@ -338,6 +337,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -347,7 +347,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = COLON;
             
             buffer[bufferIndex] = ch;
@@ -362,6 +361,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -371,7 +371,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = QUESTION;
             
             buffer[bufferIndex] = ch;
@@ -386,6 +385,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -395,7 +395,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = LEFTPARENTHESE;
             
             buffer[bufferIndex] = ch;
@@ -410,6 +409,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -419,7 +419,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = RIGHTPARENTHESE;
             
             buffer[bufferIndex] = ch;
@@ -434,6 +433,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -443,7 +443,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = LEFTBRACKET;
             
             buffer[bufferIndex] = ch;
@@ -458,6 +457,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -467,7 +467,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = RIGHTBRACKET;
             
             buffer[bufferIndex] = ch;
@@ -482,6 +481,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -491,7 +491,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = LEFTBRACE;
             
             buffer[bufferIndex] = ch;
@@ -506,6 +505,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -515,7 +515,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = RIGHTBRACE;
             
             buffer[bufferIndex] = ch;
@@ -530,6 +529,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -539,7 +539,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             buffer[bufferIndex] = ch;
             bufferIndex++;
@@ -562,6 +561,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -583,7 +583,6 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken = (Token *)malloc(sizeof(Token));
                 tokenInit(tailToken);
                 tailToken -> beginLine = line;
-                tailToken -> endLine = line;
                 tailToken -> kind = DIVASSIGN;
                 
                 buffer[bufferIndex] = '=';
@@ -598,6 +597,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '*') {
@@ -629,7 +629,6 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken = (Token *)malloc(sizeof(Token));
                 tokenInit(tailToken);
                 tailToken -> beginLine = line;
-                tailToken -> endLine = line;
                 tailToken -> kind = DIV;
                 
                 buffer[bufferIndex] = '\0';
@@ -640,6 +639,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -650,7 +650,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -672,6 +671,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '=') {
@@ -692,6 +692,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch >= '0' && ch <= '9') {
@@ -726,6 +727,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
                 else {
@@ -739,6 +741,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
             }
@@ -756,6 +759,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -766,7 +770,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -788,6 +791,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '=') {
@@ -808,6 +812,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '>') {
@@ -828,6 +833,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch >= '0' && ch <= '9') {
@@ -862,6 +868,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
                 else {
@@ -875,6 +882,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
             }
@@ -892,6 +900,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -903,7 +912,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             if (ch == '0') {
                 ch = fgetc(fp);
@@ -957,6 +965,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else {
@@ -970,6 +979,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -980,7 +990,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1002,6 +1011,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else {
@@ -1018,6 +1028,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1028,7 +1039,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1050,6 +1060,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else {
@@ -1066,6 +1077,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1076,7 +1088,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1098,6 +1109,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '&') {
@@ -1118,6 +1130,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else {
@@ -1134,6 +1147,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1144,7 +1158,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1166,6 +1179,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '|') {
@@ -1186,6 +1200,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else {
@@ -1202,6 +1217,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1212,7 +1228,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1229,6 +1244,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         
@@ -1238,7 +1254,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1260,6 +1275,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else {
@@ -1276,6 +1292,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1286,7 +1303,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1308,6 +1324,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else {
@@ -1324,6 +1341,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1334,7 +1352,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1356,6 +1373,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '<') {
@@ -1382,6 +1400,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
                 else {
@@ -1401,6 +1420,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
             }
@@ -1418,6 +1438,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1428,7 +1449,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             
             ch = fgetc(fp);
             
@@ -1450,6 +1470,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
             else if (ch == '>') {
@@ -1476,6 +1497,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
                 else {
@@ -1495,6 +1517,7 @@ Token * lexicalAnalyze(FILE * fp) {
                         tailToken -> image[i] = buffer[i];
                     
                     bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
             }
@@ -1512,6 +1535,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> image[i] = buffer[i];
                 
                 bufferIndex = 0;
+                fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
         }
@@ -1522,7 +1546,6 @@ Token * lexicalAnalyze(FILE * fp) {
             tailToken = (Token *)malloc(sizeof(Token));
             tokenInit(tailToken);
             tailToken -> beginLine = line;
-            tailToken -> endLine = line;
             tailToken -> kind = EOF_;
             
             buffer[bufferIndex] = 'E';
@@ -1542,6 +1565,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 tailToken -> image[i] = buffer[i];
             
             bufferIndex = 0;
+            fgetpos(fp, &tailToken -> fpos);
             list_add_tail(&tailToken -> list, &headToken -> list);
         }
         

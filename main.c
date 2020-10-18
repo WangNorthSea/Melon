@@ -18,14 +18,6 @@
 #include "Dumper/ASTdumper.h"
 #include "Dumper/scopedumper.h"
 
-typedef struct {
-    int line;
-} Node;
-
-typedef struct {
-    Node line;
-} ExprNode;
-
 int main(int argc, const char * argv[]) {
     if (argc == 1) {
         printf("Melon: no input file\n");
@@ -42,10 +34,10 @@ int main(int argc, const char * argv[]) {
     Token * headToken = lexicalAnalyze(fp);
     Token * pos = NULL;
     list_for_each_entry(pos, &headToken -> list, list) {
-        printf("line: %d\tvalue: %s\tkind: %d\n", pos -> beginLine, pos -> image, pos -> kind);
+        printf("line: %d\t\tvalue: %s\t\tkind: %d   \t\tfpos: %lld\n", pos -> beginLine, pos -> image, pos -> kind, pos -> fpos);
     }
     
-    printf("\nAST:\n");
+    /*printf("\nAST:\n");
     
     parsingFile = argv[1];
     ASTNode * rootNode = compilationUnit(headToken);
@@ -59,7 +51,7 @@ int main(int argc, const char * argv[]) {
     
     printf("\nAST:\n");
     
-    dumpAST(rootNode);
+    dumpAST(rootNode);*/
     
     return 0;
 }
