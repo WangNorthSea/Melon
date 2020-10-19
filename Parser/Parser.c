@@ -130,7 +130,7 @@ ASTNode * getType(char * key);
 
 int match(int kind);
 
-void throwSyntaxError(char * file, int line, char * expected, Token * token);
+void throwSyntaxError(char * file, char * expected, Token * token);
 
 Token * token = NULL;
 
@@ -199,11 +199,11 @@ ASTNode * topDefs(void) {
             ptrs[0] = defun();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "function definition");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "function definition");
+                //}
             }
             
             Node -> append(Node, *ptrs[0]);
@@ -217,11 +217,11 @@ ASTNode * topDefs(void) {
                 ptrs[0] = defvars();
                 
                 if (ptrs[0] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "variable definition");
+                    //}
                 }
                 
                 Node -> append(Node, *ptrs[0]);
@@ -233,11 +233,11 @@ ASTNode * topDefs(void) {
                         ptrs[0] = defconst();
                         
                         if (ptrs[0] == NULL) {
-                            if (prelooking)
-                                return NULL;
-                            else {
-                                throwSyntaxError(parsingFile, token -> beginLine, "constant definition");
-                            }
+                            //if (prelooking)
+                            return NULL;
+                            //else {
+                                //throwSyntaxError(parsingFile, "constant definition");
+                            //}
                         }
                         
                         Node -> append(Node, *ptrs[0]);
@@ -247,11 +247,11 @@ ASTNode * topDefs(void) {
                         ptrs[0] = defstruct();
                         
                         if (ptrs[0] == NULL) {
-                            if (prelooking)
-                                return NULL;
-                            else {
-                                throwSyntaxError(parsingFile, token -> beginLine, "struct definition");
-                            }
+                            //if (prelooking)
+                            return NULL;
+                            //else {
+                                //throwSyntaxError(parsingFile, "struct definition");
+                            //}
                         }
                         
                         Node -> append(Node, *ptrs[0]);
@@ -261,11 +261,11 @@ ASTNode * topDefs(void) {
                         ptrs[0] = defunion();
                         
                         if (ptrs[0] == NULL) {
-                            if (prelooking)
-                                return NULL;
-                            else {
-                                throwSyntaxError(parsingFile, token -> beginLine, "union definition");
-                            }
+                            //if (prelooking)
+                            return NULL;
+                            //else {
+                                //throwSyntaxError(parsingFile, "union definition");
+                            //}
                         }
                         
                         Node -> append(Node, *ptrs[0]);
@@ -275,11 +275,11 @@ ASTNode * topDefs(void) {
                         ptrs[0] = typedef_();
                         
                         if (ptrs[0] == NULL) {
-                            if (prelooking)
-                                return NULL;
-                            else {
-                                throwSyntaxError(parsingFile, token -> beginLine, "typedef statement");
-                            }
+                            //if (prelooking)
+                            return NULL;
+                            //else {
+                                //throwSyntaxError(parsingFile, "typedef statement");
+                            //}
                         }
                         
                         Node -> append(Node, *ptrs[0]);
@@ -289,11 +289,11 @@ ASTNode * topDefs(void) {
                         ptrs[0] = extern_();
                         
                         if (ptrs[0] == NULL) {
-                            if (prelooking)
-                                return NULL;
-                            else {
-                                throwSyntaxError(parsingFile, token -> beginLine, "extern statement");
-                            }
+                            //if (prelooking)
+                            return NULL;
+                            //else {
+                                //throwSyntaxError(parsingFile, "extern statement");
+                            //}
                         }
                         
                         Node -> append(Node, *ptrs[0]);
@@ -325,11 +325,11 @@ ASTNode * importStmt(void) {
     ptrs[0] = name();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "identifier");
+        //}
     }
     
     Node -> append(Node, *ptrs[0]);
@@ -340,11 +340,11 @@ ASTNode * importStmt(void) {
             ptrs[0] = name();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "identifier");
+                //}
             }
             
             Node -> append(Node, *ptrs[0]);
@@ -358,7 +358,7 @@ ASTNode * importStmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -370,17 +370,14 @@ ASTNode * name(void) {
     char * label = NULL;
     
     label = token -> image;
-    if (match(IDENTIFIER)) {
-        return NodeConstructor(Name, parsingFile, token -> beginLine, label, ptrs);
-    }
-    else {
+    if (!match(IDENTIFIER)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
+            throwSyntaxError(parsingFile, "identifier", list_entry(token -> list.prev, Token, list));
         }
     }
-    return NULL;
+    return NodeConstructor(Name, parsingFile, token -> beginLine, label, ptrs);
 }
 
 ASTNode * storage(void) {
@@ -405,11 +402,11 @@ ASTNode * defvars(void) {
     ptrs[1] = type();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "variable type");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "variable type");
+        //}
     }
     
     if (match(LEFTPARENTHESE)) {        //函数指针
@@ -419,25 +416,25 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
+                throwSyntaxError(parsingFile, "\'*\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[2] = name();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "identifier");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -445,25 +442,25 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+                throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[3] = params();
         
         if (ptrs[3] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "parameters");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
     }
@@ -471,11 +468,11 @@ ASTNode * defvars(void) {
         ptrs[2] = varname();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "variable name");
+            //}
         }
     }
     
@@ -484,22 +481,22 @@ ASTNode * defvars(void) {
             ptrs[4] = expr();
             
             if (ptrs[4] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
         }
         else {
             ptrs[3] = expr();
             
             if (ptrs[3] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
         }
     }
@@ -509,7 +506,7 @@ ASTNode * defvars(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+                throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -529,11 +526,11 @@ ASTNode * defvars(void) {
             ptrs[2] = varname();
             
             if (ptrs[2] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "variable name");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "variable name");
+                //}
             }
             
             ptrs[3] = NULL;
@@ -542,11 +539,11 @@ ASTNode * defvars(void) {
                 ptrs[3] = expr();
                 
                 if (ptrs[3] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
             }
             
@@ -563,7 +560,7 @@ jumpout:
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -578,46 +575,46 @@ ASTNode * defun(void) {
     ptrs[1] = type();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "return value type");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "return value type");
+        //}
     }
     
     ptrs[2] = name();
     
     if (ptrs[2] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "identifier");
+        //}
     }
     
     if (!match(LEFTPARENTHESE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+            throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[3] = params();
     
     if (ptrs[3] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "parameters");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "parameters");
+        //}
     }
     
     if (!match(RIGHTPARENTHESE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+            throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -627,11 +624,11 @@ ASTNode * defun(void) {
     ptrs[4] = block();
     
     if (ptrs[4] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "block statements");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "block statements");
+        //}
     }
     
     return NodeConstructor(DefinedFunc, parsingFile, token -> beginLine, NULL, ptrs);
@@ -695,7 +692,7 @@ ASTNode * type(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "legitimate type");
+                        throwSyntaxError(parsingFile, "legitimate type", list_entry(token -> list.prev, Token, list));
                     }
                     break;
             }
@@ -707,7 +704,7 @@ ASTNode * type(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "identifier");
+                    throwSyntaxError(parsingFile, "identifier", list_entry(token -> list.prev, Token, list));
                 }
             }
             
@@ -720,7 +717,7 @@ ASTNode * type(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "identifier");
+                    throwSyntaxError(parsingFile, "identifier", list_entry(token -> list.prev, Token, list));
                 }
             }
             
@@ -760,29 +757,29 @@ ASTNode * expr(void) {
         ptrs[0] = term();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "term");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "term");
+            //}
         }
         
         if (!match(ASSIGN)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'=\'");
+                throwSyntaxError(parsingFile, "\'=\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[1] = expr();
         
         if (ptrs[1] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "expression");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "expression");
+            //}
         }
         
         return NodeConstructor(Assign, parsingFile, token -> beginLine, NULL, ptrs);
@@ -798,31 +795,31 @@ ASTNode * expr(void) {
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             ptrs[1] = opassign_op();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "assign operator");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "assign operator");
+                //}
             }
             
             ptrs[2] = expr();
             
             if (ptrs[2] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             return NodeConstructor(OpAssign, parsingFile, token -> beginLine, NULL, ptrs);
@@ -833,11 +830,11 @@ ASTNode * expr(void) {
             Node = expr10();
             
             if (Node == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             return Node;
@@ -860,7 +857,7 @@ ASTNode * params(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'void\'");
+                throwSyntaxError(parsingFile, "\'void\'", list_entry(token -> list.prev, Token, list));
             }
         }
     }
@@ -870,11 +867,11 @@ ASTNode * params(void) {
         Node = fixedParams();
         
         if (Node == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "parameters");
+            //}
         }
         
         if (match(COMMA)) {  //["," "..."]
@@ -882,7 +879,7 @@ ASTNode * params(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "\'...\'");
+                    throwSyntaxError(parsingFile, "\'...\'", list_entry(token -> list.prev, Token, list));
                 }
             }
             ASTNode * temp = NodeConstructor(UnlimitedParams, parsingFile, token -> beginLine, NULL, ptrs);
@@ -901,7 +898,7 @@ ASTNode * block(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'{\'");
+            throwSyntaxError(parsingFile, "\'{\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -911,7 +908,7 @@ ASTNode * block(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'}\'");
+            throwSyntaxError(parsingFile, "\'}\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -927,11 +924,11 @@ ASTNode * fixedParams(void) {
     ptrs[0] = param();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "parameter");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "parameter");
+        //}
     }
     
     Node -> append(Node, *ptrs[0]);
@@ -947,11 +944,11 @@ ASTNode * fixedParams(void) {
             ptrs[0] = param();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "parameter");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "parameter");
+                //}
             }
             
             Node -> append(Node, *ptrs[0]);
@@ -981,11 +978,11 @@ ASTNode * param(void) {
     ptrs[0] = type();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "parameter type");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "parameter type");
+        //}
     }
     
     if (match(LEFTPARENTHESE)) {        //函数指针
@@ -995,25 +992,25 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
+                throwSyntaxError(parsingFile, "\'*\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[1] = name();
         
         if (ptrs[1] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "identifier");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -1021,25 +1018,25 @@ ASTNode * param(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+                throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[2] = params();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "parameters");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
     }
@@ -1047,11 +1044,11 @@ ASTNode * param(void) {
         ptrs[1] = varname();
         
         if (ptrs[1] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "variable name");
+            //}
         }
     }
     
@@ -1077,7 +1074,7 @@ ASTNode * defconst(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'const\'");
+            throwSyntaxError(parsingFile, "\'const\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1088,11 +1085,11 @@ ASTNode * defconst(void) {
     ptrs[1] = type();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "data type");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "data type");
+        //}
     }
     
     if (match(LEFTPARENTHESE)) {        //函数指针
@@ -1102,25 +1099,25 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
+                throwSyntaxError(parsingFile, "\'*\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[2] = name();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "identifier");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -1128,25 +1125,25 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+                throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[3] = params();
         
         if (ptrs[3] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "parameters");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
     }
@@ -1154,11 +1151,11 @@ ASTNode * defconst(void) {
         ptrs[2] = varname();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "variable name");
+            //}
         }
     }
     
@@ -1167,22 +1164,22 @@ ASTNode * defconst(void) {
             ptrs[4] = expr();
             
             if (ptrs[4] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "\'=\'");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "\'=\'");
+                //}
             }
         }
         else {
             ptrs[3] = expr();
             
             if (ptrs[3] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
         }
     }
@@ -1192,7 +1189,7 @@ ASTNode * defconst(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+                throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -1212,11 +1209,11 @@ ASTNode * defconst(void) {
             ptrs[2] = varname();
             
             if (ptrs[2] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "variable name");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "variable name");
+                //}
             }
             
             ptrs[3] = NULL;
@@ -1225,11 +1222,11 @@ ASTNode * defconst(void) {
                 ptrs[3] = expr();
                 
                 if (ptrs[3] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
             }
             
@@ -1246,7 +1243,7 @@ jumpout:
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1260,35 +1257,35 @@ ASTNode * defstruct(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'struct\'");
+            throwSyntaxError(parsingFile, "\'struct\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[0] = name();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "identifier");
+        //}
     }
     
     ptrs[1] = member_list();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "members");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "members");
+        //}
     }
     
     if (!match(SEMICOLON)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1302,35 +1299,35 @@ ASTNode * defunion(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'union\'");
+            throwSyntaxError(parsingFile, "\'union\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[0] = name();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "identifier");
+        //}
     }
     
     ptrs[1] = member_list();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "members");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "members");
+        //}
     }
     
     if (!match(SEMICOLON)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1344,35 +1341,35 @@ ASTNode * typedef_(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'typedef\'");
+            throwSyntaxError(parsingFile, "\'typedef\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[0] = type();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "data type");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "data type");
+        //}
     }
     
     ptrs[1] = name();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "identifier");
+        //}
     }
     
     if (!match(SEMICOLON)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1413,11 +1410,11 @@ ASTNode * stmt(void) {
         ptrs[0] = labeled_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "label statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "label statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1431,11 +1428,11 @@ ASTNode * stmt(void) {
             ptrs[0] = defvars();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "variable definition");
+                //}
             }
             
             Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1449,18 +1446,18 @@ ASTNode * stmt(void) {
         ptrs[0] = expr();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "expression");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "expression");
+            //}
         }
         
         if (!match(SEMICOLON)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+                throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -1470,11 +1467,11 @@ ASTNode * stmt(void) {
         ptrs[0] = block();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
+            //if (prelooking)
                 return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "block statements");
-            }
+            //else {
+                //throwSyntaxError(parsingFile, "block statements");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1483,11 +1480,11 @@ ASTNode * stmt(void) {
         ptrs[0] = if_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
+            //if (prelooking)
                 return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'if\' statement");
-            }
+            //else {
+                //throwSyntaxError(parsingFile, "\'if\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1496,11 +1493,11 @@ ASTNode * stmt(void) {
         ptrs[0] = while_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
+            //if (prelooking)
                 return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'while\' statement");
-            }
+            //else {
+                //throwSyntaxError(parsingFile, "\'while\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1509,11 +1506,11 @@ ASTNode * stmt(void) {
         ptrs[0] = dowhile_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'do while\' statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "\'do while\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1522,11 +1519,11 @@ ASTNode * stmt(void) {
         ptrs[0] = for_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'for\' statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "\'for\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1535,11 +1532,11 @@ ASTNode * stmt(void) {
         ptrs[0] = switch_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'switch\' statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "\'switch\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1548,11 +1545,11 @@ ASTNode * stmt(void) {
         ptrs[0] = break_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'break\' statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "\'break\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1561,11 +1558,11 @@ ASTNode * stmt(void) {
         ptrs[0] = continue_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'continue\' statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "\'continue\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1574,11 +1571,11 @@ ASTNode * stmt(void) {
         ptrs[0] = goto_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'goto\' statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "\'goto\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1587,11 +1584,11 @@ ASTNode * stmt(void) {
         ptrs[0] = return_stmt();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'return\' statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "\'return\' statement");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1600,11 +1597,11 @@ ASTNode * stmt(void) {
         ptrs[0] = defconst();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "constant definition");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "constant definition");
+            //}
         }
         
         Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1618,11 +1615,11 @@ ASTNode * stmt(void) {
             ptrs[0] = defvars();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "variable definition");
+                //}
             }
             
             Node = NodeConstructor(Stmt, parsingFile, token -> beginLine, NULL, ptrs);
@@ -1646,7 +1643,7 @@ ASTNode * member_list(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'{\'");
+            throwSyntaxError(parsingFile, "\'{\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1665,7 +1662,7 @@ ASTNode * member_list(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'}\'");
+            throwSyntaxError(parsingFile, "\'}\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1696,25 +1693,25 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'*\'");
+                throwSyntaxError(parsingFile, "\'*\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[1] = name();
         
         if (ptrs[1] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "identifier");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -1722,25 +1719,25 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+                throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[2] = params();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "parameters");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "parameters");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
     }
@@ -1748,11 +1745,11 @@ ASTNode * slot(void) {
         ptrs[1] = varname();
         
         if (ptrs[1] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "variable name");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "variable name");
+            //}
         }
     }
     
@@ -1761,7 +1758,7 @@ ASTNode * slot(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+                throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
@@ -1787,11 +1784,11 @@ ASTNode * slot(void) {
             ptrs[1] = varname();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "variable name");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "variable name");
+                //}
             }
             
             if (isConst == 1)
@@ -1810,7 +1807,7 @@ jumpout:
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1827,11 +1824,11 @@ ASTNode * varname(void) {
     ptrs[0] = name();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "identifier");
+        //}
     }
     
     Node -> ptrs[0] = ptrs[0];
@@ -1871,7 +1868,7 @@ ASTNode * array(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "\']\'");
+                        throwSyntaxError(parsingFile, "\']\'", list_entry(token -> list.prev, Token, list));
                     }
                 }
             }
@@ -1879,7 +1876,7 @@ ASTNode * array(void) {
                 if (prelooking)
                     return NULL;
                 else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "integer literal");
+                    throwSyntaxError(parsingFile, "integer literal", list_entry(token -> list.prev, Token, list));
                 }
             }
         }
@@ -1899,7 +1896,7 @@ ASTNode * labeled_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
+            throwSyntaxError(parsingFile, "identifier", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1907,18 +1904,18 @@ ASTNode * labeled_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
+            throwSyntaxError(parsingFile, "\':\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[0] = stmt();                   //label其实记录的是这条语句的地址
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "statement");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "statement");
+        //}
     }
     
     return NodeConstructor(Label, parsingFile, token -> beginLine, label, ptrs);
@@ -1931,7 +1928,7 @@ ASTNode * if_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'if\'");
+            throwSyntaxError(parsingFile, "\'if\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1939,7 +1936,7 @@ ASTNode * if_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+            throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -1947,40 +1944,40 @@ ASTNode * if_stmt(void) {
         ptrs[0] = expr();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     if (!match(RIGHTPARENTHESE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+            throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[1] = stmt();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "statement");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "statement");
+        //}
     }
     
     if (match(ELSE)) {     //[LOOKAHEAD(1) <ELSE> stmt()]
         ptrs[2] = stmt();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "statement");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "statement");
+            //}
         }
     }
     
@@ -1994,7 +1991,7 @@ ASTNode * while_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'while\'");
+            throwSyntaxError(parsingFile, "\'while\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2002,7 +1999,7 @@ ASTNode * while_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+            throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2010,29 +2007,29 @@ ASTNode * while_stmt(void) {
         ptrs[0] = expr();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     if (!match(RIGHTPARENTHESE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+            throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[1] = stmt();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "statement");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "statement");
+        //}
     }
     
     return NodeConstructor(While, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2045,25 +2042,25 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'do\'");
+            throwSyntaxError(parsingFile, "\'do\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[0] = stmt();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "statement");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "statement");
+        //}
     }
     
     if (!match(WHILE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'while\'");
+            throwSyntaxError(parsingFile, "\'while\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2071,7 +2068,7 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+            throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2079,18 +2076,18 @@ ASTNode * dowhile_stmt(void) {
         ptrs[1] = expr();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     if (!match(RIGHTPARENTHESE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+            throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2098,7 +2095,7 @@ ASTNode * dowhile_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2112,7 +2109,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'for\'");
+            throwSyntaxError(parsingFile, "\'for\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2120,7 +2117,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+            throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2130,7 +2127,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2140,7 +2137,7 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2150,18 +2147,18 @@ ASTNode * for_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+            throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[3] = stmt();
     
     if (ptrs[3] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "statement");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "statement");
+        //}
     }
     
     return NodeConstructor(For, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2174,7 +2171,7 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'switch\'");
+            throwSyntaxError(parsingFile, "\'switch\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2182,7 +2179,7 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+            throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2190,18 +2187,18 @@ ASTNode * switch_stmt(void) {
         ptrs[0] = expr();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     if (!match(RIGHTPARENTHESE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+            throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2209,25 +2206,25 @@ ASTNode * switch_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'{\'");
+            throwSyntaxError(parsingFile, "\'{\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[1] = case_clauses();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "case clauses");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "case clauses");
+        //}
     }
     
     if (!match(RIGHTBRACE)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'}\'");
+            throwSyntaxError(parsingFile, "\'}\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2241,7 +2238,7 @@ ASTNode * break_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'break\'");
+            throwSyntaxError(parsingFile, "\'break\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2249,7 +2246,7 @@ ASTNode * break_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2263,7 +2260,7 @@ ASTNode * continue_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'continue\'");
+            throwSyntaxError(parsingFile, "\'continue\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2271,7 +2268,7 @@ ASTNode * continue_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2286,7 +2283,7 @@ ASTNode * goto_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'goto\'");
+            throwSyntaxError(parsingFile, "\'goto\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2295,7 +2292,7 @@ ASTNode * goto_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "identifier");
+            throwSyntaxError(parsingFile, "identifier", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2303,7 +2300,7 @@ ASTNode * goto_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+            throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2317,7 +2314,7 @@ ASTNode * return_stmt(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'return\'");
+            throwSyntaxError(parsingFile, "\'return\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2327,18 +2324,18 @@ ASTNode * return_stmt(void) {
         ptrs[0] = expr();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "expression");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "expression");
+            //}
         }
         
         if (!match(SEMICOLON)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\';\'");
+                throwSyntaxError(parsingFile, "\';\'", list_entry(token -> list.prev, Token, list));
             }
         }
     }
@@ -2366,11 +2363,11 @@ jumpout:
     ptrs[0] = default_clause();         //必需
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
+        //if (prelooking)
             return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "default clause");
-        }
+        //else {
+            //throwSyntaxError(parsingFile, "default clause");
+        //}
     }
     
     Node -> append(Node, *ptrs[0]);
@@ -2390,11 +2387,11 @@ ASTNode * case_clause(void) {
     ptrs[1] = case_body();
     
     if (ptrs[1] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "case body");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "case body");
+        //}
     }
     
     return NodeConstructor(CaseClause, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2407,7 +2404,7 @@ ASTNode * default_clause(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'default\'");
+            throwSyntaxError(parsingFile, "\'default\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2415,18 +2412,18 @@ ASTNode * default_clause(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
+            throwSyntaxError(parsingFile, "\':\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
     ptrs[0] = case_body();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "default body");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "default body");
+        //}
     }
     
     return NodeConstructor(DefaultClause, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2442,18 +2439,18 @@ ASTNode * cases(void) {
     ptrs[0] = primary();
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "case situation");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "case situation");
+        //}
     }
     
     if (!match(COLON)) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
+            throwSyntaxError(parsingFile, "\':\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -2469,11 +2466,11 @@ ASTNode * case_body(void) {
     ptrs[0] = stmt();            //至少有一个stmt()
     
     if (ptrs[0] == NULL) {
-        if (prelooking)
+        //if (prelooking)
             return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "statement");
-        }
+        //else {
+            //throwSyntaxError(parsingFile, "statement");
+        //}
     }
     
     Node -> append(Node, *ptrs[0]);
@@ -2523,27 +2520,28 @@ ASTNode * primary(void) {
             Node = expr();
             
             if (Node == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             if (!match(RIGHTPARENTHESE)) {
                 if (prelooking)
                     return NULL;
                 else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                    throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
                 }
             }
             break;
         default:
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "literal, identifier or \'(\'");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "literal, identifier or \'(\'");
+            //}
+            break;
     }
     
     return Node;
@@ -2563,36 +2561,36 @@ ASTNode * term(void) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+                throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[0] = type();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "data type");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "data type");
+            //}
         }
         
         if (!match(RIGHTPARENTHESE)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[1] = term();
         
         if (ptrs[1] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "term");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "term");
+            //}
         }
         
         Node = NodeConstructor(Cast, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2604,11 +2602,11 @@ ASTNode * term(void) {
         Node = unary();
         
         if (Node == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "unary operation");
+            //}
         }
     }
     
@@ -2661,11 +2659,11 @@ ASTNode * opassign_op(void) {
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, ">>", ptrs);
             break;
         default:
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "assign operator");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "assign operator");
+            //}
             break;
     }
     
@@ -2679,11 +2677,11 @@ ASTNode * expr10(void) {
     Node = expr9();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
 
     //可选           ["?" expr() ":" expr10()]
@@ -2692,29 +2690,29 @@ ASTNode * expr10(void) {
         ptrs[1] = expr();
         
         if (ptrs[1] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "expression");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "expression");
+            //}
         }
         
         if (!match(COLON)) {
             if (prelooking)
                 return NULL;
             else {
-                throwSyntaxError(parsingFile, token -> beginLine, "\':\'");
+                throwSyntaxError(parsingFile, "\':\'", list_entry(token -> list.prev, Token, list));
             }
         }
         
         ptrs[2] = expr10();
         
         if (ptrs[2] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "expression");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "expression");
+            //}
         }
         
         return NodeConstructor(CondExpr, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2730,11 +2728,11 @@ ASTNode * expr9(void) {
     Node = expr8();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     //("||" expr8())*
@@ -2744,11 +2742,11 @@ ASTNode * expr9(void) {
             ptrs[1] = expr8();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(LogicOr, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2768,11 +2766,11 @@ ASTNode * expr8(void) {
     Node = expr7();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     //("&&" expr7())*
@@ -2782,11 +2780,11 @@ ASTNode * expr8(void) {
             ptrs[1] = expr7();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(LogicAnd, parsingFile, token -> beginLine, NULL, ptrs);
@@ -2806,11 +2804,11 @@ ASTNode * expr7(void) {
     Node = expr6();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     do {  //(">" expr6() | "<" expr6() | ">=" expr6() | "<=" expr6() | "==" expr6() | "!=" expr6())*
@@ -2821,11 +2819,11 @@ ASTNode * expr7(void) {
                 ptrs[1] = expr6();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, ">", ptrs);
@@ -2836,11 +2834,11 @@ ASTNode * expr7(void) {
                 ptrs[1] = expr6();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "<", ptrs);
@@ -2851,11 +2849,11 @@ ASTNode * expr7(void) {
                 ptrs[1] = expr6();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, ">=", ptrs);
@@ -2866,11 +2864,11 @@ ASTNode * expr7(void) {
                 ptrs[1] = expr6();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "<=", ptrs);
@@ -2881,11 +2879,11 @@ ASTNode * expr7(void) {
                 ptrs[1] = expr6();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "==", ptrs);
@@ -2896,11 +2894,11 @@ ASTNode * expr7(void) {
                 ptrs[1] = expr6();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "!=", ptrs);
@@ -2921,11 +2919,11 @@ ASTNode * expr6(void) {
     Node = expr5();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     do {        //("|" expr5())*
@@ -2934,11 +2932,11 @@ ASTNode * expr6(void) {
             ptrs[1] = expr5();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "|", ptrs);
@@ -2958,11 +2956,11 @@ ASTNode * expr5(void) {
     Node = expr4();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     do {        //("^" expr4())*
@@ -2971,11 +2969,11 @@ ASTNode * expr5(void) {
             ptrs[1] = expr4();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "^", ptrs);
@@ -2995,11 +2993,11 @@ ASTNode * expr4(void) {
     Node = expr3();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     do {        //("&" expr3())*
@@ -3008,11 +3006,11 @@ ASTNode * expr4(void) {
             ptrs[1] = expr3();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
+                //if (prelooking)
                     return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "&", ptrs);
@@ -3032,11 +3030,11 @@ ASTNode * expr3(void) {
     Node = expr2();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     do {       //(">>" expr2() | "<<" expr2())*
@@ -3045,11 +3043,11 @@ ASTNode * expr3(void) {
             ptrs[1] = expr2();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, ">>", ptrs);
@@ -3059,11 +3057,11 @@ ASTNode * expr3(void) {
             ptrs[1] = expr2();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "<<", ptrs);
@@ -3084,11 +3082,11 @@ ASTNode * expr2(void) {
     Node = expr1();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "expression");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "expression");
+        //}
     }
     
     do {       //("+" expr1() | "-" expr1())*
@@ -3097,11 +3095,11 @@ ASTNode * expr2(void) {
             ptrs[1] = expr1();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "+", ptrs);
@@ -3111,11 +3109,11 @@ ASTNode * expr2(void) {
             ptrs[1] = expr1();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "-", ptrs);
@@ -3135,11 +3133,11 @@ ASTNode * expr1(void) {
     Node = term();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "term");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "term");
+        //}
     }
     
     do {       //("*" term() | "/" term() | "%" term())*
@@ -3148,11 +3146,11 @@ ASTNode * expr1(void) {
             ptrs[1] = term();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "*", ptrs);
@@ -3162,11 +3160,11 @@ ASTNode * expr1(void) {
             ptrs[1] = term();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "/", ptrs);
@@ -3176,11 +3174,11 @@ ASTNode * expr1(void) {
             ptrs[1] = term();
             
             if (ptrs[1] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             Node = NodeConstructor(BinaryOp, parsingFile, token -> beginLine, "%", ptrs);
@@ -3204,11 +3202,11 @@ ASTNode * unary(void) {
             ptrs[0] = unary();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "unary operation");
+                //}
             }
             
             Node = NodeConstructor(PrefixOp, parsingFile, token -> beginLine, "++", ptrs);
@@ -3218,11 +3216,11 @@ ASTNode * unary(void) {
             ptrs[0] = unary();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "unary operation");
+                //}
             }
             
             Node = NodeConstructor(PrefixOp, parsingFile, token -> beginLine, "--", ptrs);
@@ -3232,11 +3230,11 @@ ASTNode * unary(void) {
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
+                //if (prelooking)
                     return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             Node = NodeConstructor(UnaryOp, parsingFile, token -> beginLine, "!", ptrs);
@@ -3246,11 +3244,11 @@ ASTNode * unary(void) {
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             Node = NodeConstructor(UnaryOp, parsingFile, token -> beginLine, "~", ptrs);
@@ -3260,11 +3258,11 @@ ASTNode * unary(void) {
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
+                //if (prelooking)
                     return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             Node = NodeConstructor(Dereference, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3274,11 +3272,11 @@ ASTNode * unary(void) {
             ptrs[0] = term();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
+                //if (prelooking)
                     return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "term");
-                }
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
             }
             
             Node = NodeConstructor(Address, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3296,25 +3294,25 @@ ASTNode * unary(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "\'(\'");
+                        throwSyntaxError(parsingFile, "\'(\'", list_entry(token -> list.prev, Token, list));
                     }
                 }
                 
                 ptrs[0] = type();
                 
                 if (ptrs[0] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "data type");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "data type");
+                    //}
                 }
                 
                 if (!match(RIGHTPARENTHESE)) {
                     if (prelooking)
                         return NULL;
                     else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                        throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
                     }
                 }
                 
@@ -3327,11 +3325,11 @@ ASTNode * unary(void) {
                 ptrs[0] = unary();
                 
                 if (ptrs[0] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "unary operation");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "unary operation");
+                    //}
                 }
                 
                 Node = NodeConstructor(SizeofExpr, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3341,11 +3339,11 @@ ASTNode * unary(void) {
             Node = postfix();
             
             if (Node == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "postfix operation");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "postfix operation");
+                //}
             }
     }
     
@@ -3359,11 +3357,11 @@ ASTNode * postfix(void) {
     Node = primary();
     
     if (Node == NULL) {
-        if (prelooking)
-            return NULL;
-        else {
-            throwSyntaxError(parsingFile, token -> beginLine, "literal, identifier or \'(\'");
-        }
+        //if (prelooking)
+        return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "literal, identifier or \'(\'");
+        //}
     }
     
     do {    //("++"|"--"|"["expr()"]"|"."name()|"->"name()|"("args()")")*
@@ -3391,11 +3389,11 @@ ASTNode * postfix(void) {
                 ptrs[1] = expr();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node = NodeConstructor(ArrayRef, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3404,7 +3402,7 @@ ASTNode * postfix(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "\']\'");
+                        throwSyntaxError(parsingFile, "\']\'", list_entry(token -> list.prev, Token, list));
                     }
                 }
                 break;
@@ -3415,11 +3413,11 @@ ASTNode * postfix(void) {
                 ptrs[1] = name();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "identifier");
+                    //}
                 }
                 
                 Node = NodeConstructor(Member, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3431,11 +3429,11 @@ ASTNode * postfix(void) {
                 ptrs[1] = name();
                 
                 if (ptrs[1] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "identifier");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "identifier");
+                    //}
                 }
                 
                 Node = NodeConstructor(PtrMember, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3454,7 +3452,7 @@ ASTNode * postfix(void) {
                     if (prelooking)
                         return NULL;
                     else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "\')\'");
+                        throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
                     }
                 }
                 break;
@@ -3487,11 +3485,11 @@ ASTNode * args(void) {
                 ptrs[0] = expr();
                 
                 if (ptrs[0] == NULL) {
-                    if (prelooking)
-                        return NULL;
-                    else {
-                        throwSyntaxError(parsingFile, token -> beginLine, "expression");
-                    }
+                    //if (prelooking)
+                    return NULL;
+                    //else {
+                        //throwSyntaxError(parsingFile, "expression");
+                    //}
                 }
                 
                 Node -> append(Node, *ptrs[0]);
@@ -3515,7 +3513,7 @@ ASTNode * extern_(void) {
         if (prelooking)
             return NULL;
         else {
-            throwSyntaxError(parsingFile, token -> beginLine, "\'extern\'");
+            throwSyntaxError(parsingFile, "\'extern\'", list_entry(token -> list.prev, Token, list));
         }
     }
     
@@ -3529,11 +3527,11 @@ ASTNode * extern_(void) {
         ptrs[0] = defun();
         
         if (ptrs[0] == NULL) {
-            if (prelooking)
-                return NULL;
-            else {
-                throwSyntaxError(parsingFile, token -> beginLine, "function definition");
-            }
+            //if (prelooking)
+            return NULL;
+            //else {
+                //throwSyntaxError(parsingFile, "function definition");
+            //}
         }
         
         return NodeConstructor(ExternFunc, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3546,11 +3544,11 @@ ASTNode * extern_(void) {
             ptrs[0] = defvars();
             
             if (ptrs[0] == NULL) {
-                if (prelooking)
-                    return NULL;
-                else {
-                    throwSyntaxError(parsingFile, token -> beginLine, "variable definition");
-                }
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "variable definition");
+                //}
             }
             
             return NodeConstructor(ExternVar, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3561,11 +3559,11 @@ ASTNode * extern_(void) {
                     ptrs[0] = defconst();
                     
                     if (ptrs[0] == NULL) {
-                        if (prelooking)
-                            return NULL;
-                        else {
-                            throwSyntaxError(parsingFile, token -> beginLine, "constant definition");
-                        }
+                        //if (prelooking)
+                        return NULL;
+                        //else {
+                            //throwSyntaxError(parsingFile, "constant definition");
+                        //}
                     }
                     
                     return NodeConstructor(ExternConst, parsingFile, token -> beginLine, NULL, ptrs);
@@ -3593,8 +3591,8 @@ int match(int kind) {
         return 0;
 }
 
-void throwSyntaxError(char * file, int line, char * expected, Token * token) {
-    error_t * new_err = ErrorConstructor(line, SYNTAX, file, expected, token);
+void throwSyntaxError(char * file, char * expected, Token * token) {
+    error_t * new_err = ErrorConstructor(token -> beginLine, SYNTAX, file, expected, token);
     list_add_tail(&new_err -> list, &err_list -> list);
     //printf("Melon: %s: syntax \033[31merror\033[0m in line %d expected %s\n", file, line, expected);
     //exit(-1);

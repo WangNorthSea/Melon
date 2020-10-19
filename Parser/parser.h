@@ -9,8 +9,11 @@
 #ifndef parser_h
 #define parser_h
 
+#include "../Report/error.h"
+
 extern ASTNode * compilationUnit(Token * headToken);
 
 extern const char * parsingFile;
+extern error_t * err_list;
 
 #endif /* parser_h */

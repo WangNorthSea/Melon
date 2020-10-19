@@ -37,21 +37,29 @@ int main(int argc, const char * argv[]) {
         printf("line: %d\t\tvalue: %s\t\tkind: %d   \t\tfpos: %lld\n", pos -> beginLine, pos -> image, pos -> kind, pos -> fpos);
     }
     
-    /*printf("\nAST:\n");
+    printf("\nAST:\n");
     
     parsingFile = argv[1];
     ASTNode * rootNode = compilationUnit(headToken);
-    dumpAST(rootNode);
+
+    if (!list_empty(&err_list -> list)) {
+        error_t * p = NULL;
+        list_for_each_entry(p, &err_list -> list, list) {
+            printf("Melon: %s: syntax \033[31merror\033[0m in line %d expected %s\n", p -> file, p -> line, p -> expected);
+        }
+    }
+    else
+        dumpAST(rootNode);
     
-    semanticAnalyze(rootNode, parsingFile);
+    //semanticAnalyze(rootNode, parsingFile);
     
-    printf("\nAfter semantic analysis...\nScope:\n");
+    //printf("\nAfter semantic analysis...\nScope:\n");
     
-    dumpScope(scope);
+    //dumpScope(scope);
     
-    printf("\nAST:\n");
+    //printf("\nAST:\n");
     
-    dumpAST(rootNode);*/
+    //dumpAST(rootNode);
     
     return 0;
 }
