@@ -33,20 +33,17 @@ int main(int argc, const char * argv[]) {
     
     Token * headToken = lexicalAnalyze(fp);
     Token * pos = NULL;
-    list_for_each_entry(pos, &headToken -> list, list) {
+    /*list_for_each_entry(pos, &headToken -> list, list) {
         printf("line: %d\t\tvalue: %s\t\tkind: %d   \t\tfpos: %lld\n", pos -> beginLine, pos -> image, pos -> kind, pos -> fpos);
     }
     
-    printf("\nAST:\n");
+    printf("\nAST:\n");*/
     
     parsingFile = argv[1];
     ASTNode * rootNode = compilationUnit(headToken);
 
     if (!list_empty(&err_list -> list)) {
-        error_t * p = NULL;
-        list_for_each_entry(p, &err_list -> list, list) {
-            printf("Melon: %s: syntax \033[31merror\033[0m in line %d expected %s\n", p -> file, p -> line, p -> expected);
-        }
+        dumpErrorList(err_list, fp);
     }
     else
         dumpAST(rootNode);

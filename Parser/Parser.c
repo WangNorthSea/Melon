@@ -727,8 +727,15 @@ ASTNode * type(void) {
             Node = getType(token -> image);
             if (Node != NULL)
                 token = list_entry(token -> list.next, Token, list);
-            else
-                return Node;
+            else {
+                Node = NodeConstructor(IntType, parsingFile, token -> beginLine, "Fake node", ptrs);
+                if (prelooking) {
+                    return NULL;
+                }
+                else {
+                    throwSyntaxError(parsingFile, "legitimate type", list_entry(token -> list.prev, Token, list));
+                }
+            }
             break;
     }
     
@@ -2536,14 +2543,15 @@ ASTNode * primary(void) {
             }
             break;
         default:
-            //if (prelooking)
-            return NULL;
-            //else {
-                //throwSyntaxError(parsingFile, "literal, identifier or \'(\'");
-            //}
+            Node = NodeConstructor(Identifier, parsingFile, token -> beginLine, "Fake node", ptrs);
+            if (prelooking)
+                return NULL;
+            else {
+                throwSyntaxError(parsingFile, "literal, identifier or \'(\'", list_entry(token -> list.prev, Token, list));
+            }
             break;
     }
-    
+
     return Node;
 }
 
@@ -2659,11 +2667,12 @@ ASTNode * opassign_op(void) {
             Node = NodeConstructor(Operator, parsingFile, token -> beginLine, ">>", ptrs);
             break;
         default:
-            //if (prelooking)
-            return NULL;
-            //else {
-                //throwSyntaxError(parsingFile, "assign operator");
-            //}
+            Node = NodeConstructor(Operator, parsingFile, token -> beginLine, "Fake node", ptrs);
+            if (prelooking)
+                return NULL;
+            else {
+                throwSyntaxError(parsingFile, "assign operator", list_entry(token -> list.prev, Token, list));
+            }
             break;
     }
     
