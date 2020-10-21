@@ -115,4 +115,8 @@ typedef struct ASTNode ASTNode;
 #define ConstFuncPtr 187
 #define ConstVariable 188
 
+//CACT
+#define BoolType 189
+#define BoolLiteral 190 
+
 #endif /* node_h */

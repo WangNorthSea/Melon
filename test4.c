@@ -1,8 +1,6 @@
 int main(void) {	
-	int i;
-	i = 5;
-	goto fuck;
-fuck:
-	i = 6;
+	bool a = true, b;
+	bool c = false;
+	b = true;
 	return 0;
 }

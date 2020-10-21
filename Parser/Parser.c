@@ -723,6 +723,10 @@ ASTNode * type(void) {
             
             Node = NodeConstructor(UnionType, parsingFile, token -> beginLine, label, ptrs);
             break;
+        case BOOL:
+            Node = NodeConstructor(BoolType, parsingFile, token -> beginLine, NULL, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
         default:
             Node = getType(token -> image);
             if (Node != NULL)
@@ -2541,6 +2545,10 @@ ASTNode * primary(void) {
                     throwSyntaxError(parsingFile, "\')\'", list_entry(token -> list.prev, Token, list));
                 }
             }
+            break;
+        case BOOL_:
+            Node = NodeConstructor(BoolLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
             break;
         default:
             Node = NodeConstructor(Identifier, parsingFile, token -> beginLine, "Fake node", ptrs);

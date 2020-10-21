@@ -138,6 +138,10 @@ Token * lexicalAnalyze(FILE * fp) {
                     tailToken -> kind = FLOAT;
                 else if (!strcmp(buffer, "double"))
                     tailToken -> kind = DOUBLE;
+                else if (!strcmp(buffer, "bool"))
+                    tailToken -> kind = BOOL;
+                else if (!strcmp(buffer, "true") || !strcmp(buffer, "false"))
+                    tailToken -> kind = BOOL_;
                 else
                     tailToken -> kind = IDENTIFIER;
             }

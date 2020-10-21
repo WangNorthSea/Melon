@@ -123,4 +123,8 @@
 //文件结尾
 #define EOF_ 83
 
+//CACT
+#define BOOL 84
+#define BOOL_ 85    //bool literal value
+
 #endif /* tokenkind_h */

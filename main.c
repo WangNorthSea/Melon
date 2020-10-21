@@ -33,11 +33,11 @@ int main(int argc, const char * argv[]) {
     
     Token * headToken = lexicalAnalyze(fp);
     Token * pos = NULL;
-    /*list_for_each_entry(pos, &headToken -> list, list) {
+    list_for_each_entry(pos, &headToken -> list, list) {
         printf("line: %d\t\tvalue: %s\t\tkind: %d   \t\tfpos: %lld\n", pos -> beginLine, pos -> image, pos -> kind, pos -> fpos);
     }
     
-    printf("\nAST:\n");*/
+    printf("\nAST:\n");
     
     parsingFile = argv[1];
     ASTNode * rootNode = compilationUnit(headToken);

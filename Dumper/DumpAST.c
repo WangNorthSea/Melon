@@ -277,6 +277,12 @@ void kindTable(int kind) {
         case 188:
             printf("ConstVariable");
             break;
+        case 189:
+            printf("BoolType");
+            break;
+        case 190:
+            printf("BoolLiteral");
+            break;
         default:
             break;
     }
