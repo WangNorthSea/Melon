@@ -1,5 +1,5 @@
 src = ASTNode/*.c Dumper/*.c Parser/*.c Lexer/*.c SymbolTable/*.c Semantics/*.c IR/*.c Report/*.c File/*.c main.c
-#obj = ASTNode/*.o Dumper/*.o Parser/*.o Lexer/*.o SymbolTable/*.o Semantics/*.o IR/*.o *.o
+obj = ASTNode/*.o Dumper/*.o Parser/*.o Lexer/*.o SymbolTable/*.o Semantics/*.o IR/*.o Report/*.o File/*.o *.o
 CFLAGS = -O2
 target = Melon
 CC = clang
@@ -10,3 +10,6 @@ all:
 
 clean:
 	rm -f ${target}
+
+clean_obj:
+	rm -f ${obj}
