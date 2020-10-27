@@ -18,6 +18,8 @@
 #include "Dumper/ASTdumper.h"
 #include "Dumper/scopedumper.h"
 
+char * parsingFile = NULL;
+
 int main(int argc, const char * argv[]) {
     if (argc == 1) {
         printf("Melon: no input file\n");
@@ -25,21 +27,29 @@ int main(int argc, const char * argv[]) {
     }
     
     FILE * fp = fopen(argv[1], "r");
+    parsingFile = (char *)argv[1];
     
     if (fp == NULL) {
         printf("Melon: %s: no such file\n", argv[1]);
         exit(-1);
     }
+
+    err_list = ErrorConstructor(0, 0, NULL, NULL, NULL);
     
     Token * headToken = lexicalAnalyze(fp);
     Token * pos = NULL;
     list_for_each_entry(pos, &headToken -> list, list) {
         printf("line: %d\t\tvalue: %s\t\tkind: %d   \t\tfpos: %lld\n", pos -> beginLine, pos -> image, pos -> kind, pos -> fpos);
     }
+
+    if (!list_empty(&err_list -> list)) {
+        dumpErrorList(err_list, fp);
+        return 0;
+    }
     
     printf("\nAST:\n");
     
-    parsingFile = argv[1];
+    
     ASTNode * rootNode = compilationUnit(headToken);
 
     if (!list_empty(&err_list -> list)) {

@@ -13,7 +13,6 @@
 
 extern ASTNode * compilationUnit(Token * headToken);
 
-extern const char * parsingFile;
-extern error_t * err_list;
+extern char * parsingFile;
 
 #endif /* parser_h */

@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "token.h"
+#include "lexer.h"
 #include "tokenkind.h"
+#include "../Report/error.h"
 
 void tokenInit(Token * token) {
     init_list_head(&token -> list);
@@ -23,6 +25,14 @@ void tokenInit(Token * token) {
 void enlargeBuffer(char * buffer, int * bufferSize) {
     buffer = (char *)realloc(buffer, sizeof(char) * (*bufferSize + 1024));
     *bufferSize += 1024;
+}
+
+void throwLexicalError(char * file, char * content, fpos_t fpos, int line) {
+    Token * fake_token = (Token *)malloc(sizeof(Token));
+    fake_token -> beginLine = line;
+    fake_token -> fpos = fpos;
+    error_t * new_err = ErrorConstructor(fake_token -> beginLine, LEX, file, content, fake_token);
+    list_add_tail(&new_err -> list, &err_list -> list);
 }
 
 //注: headToken为空Token，第一个有用的Token地址为headToken -> next
@@ -190,8 +200,9 @@ Token * lexicalAnalyze(FILE * fp) {
             } while (ch != '\'' && ch != '\n' && ch != EOF);
             
             if (ch == '\n' || ch == EOF) {
-                printf("Melon: lexical \033[31merror\033[0m in line %d\n", line);
-                exit(-1);
+                fpos_t cur_pos;
+                fgetpos(fp, &cur_pos);
+                throwLexicalError(parsingFile, "missing terminating \' character", cur_pos, line);
             }
             
             if (bufferIndex == bufferSize - 1)
@@ -199,7 +210,9 @@ Token * lexicalAnalyze(FILE * fp) {
             
             buffer[bufferIndex] = ch;
             bufferIndex++;
-            ch = fgetc(fp);
+
+            if (ch != EOF && ch != '\n')
+                ch = fgetc(fp);
             
             buffer[bufferIndex] = '\0';
             
@@ -250,8 +263,9 @@ Token * lexicalAnalyze(FILE * fp) {
             } while (ch != '\"' && ch != '\n' && ch != EOF);
             
             if (ch == '\n' || ch == EOF) {
-                printf("Melon: lexical \033[31merror\033[0m in line %d\n", line);
-                exit(-1);
+                fpos_t cur_pos;
+                fgetpos(fp, &cur_pos);
+                throwLexicalError(parsingFile, "missing terminating \'\"\' character", cur_pos, line);
             }
             
             if (bufferIndex == bufferSize - 1)
@@ -259,7 +273,9 @@ Token * lexicalAnalyze(FILE * fp) {
             
             buffer[bufferIndex] = ch;
             bufferIndex++;
-            ch = fgetc(fp);
+            
+            if (ch != EOF && ch != '\n')
+                ch = fgetc(fp);
             
             buffer[bufferIndex] = '\0';
             
@@ -1723,8 +1739,10 @@ Token * lexicalAnalyze(FILE * fp) {
         }
         
         if (syntaxError) {
-            printf("Melon: lexical \033[31merror\033[0m in line %d\n", line);
-            exit(-1);
+            fpos_t cur_pos;
+            fgetpos(fp, &cur_pos);
+            throwLexicalError(parsingFile, "illegal character", cur_pos, line);
+            ch = fgetc(fp);
         }
     }
     

@@ -15,6 +15,7 @@
 #include "../ASTNode/constructor.h"
 #include "../SymbolTable/hashtable.h"
 #include "../Report/error.h"
+#include "parser.h"
 
 ASTNode * importStmts(void);
 
@@ -134,19 +135,14 @@ void throwSyntaxError(char * file, char * expected, Token * token);
 
 Token * token = NULL;
 
-char * parsingFile = NULL;
-
 int prelooking = 0;
 
 Hashtable * typeDefList = NULL;
-
-error_t * err_list = NULL;
 
 ASTNode * compilationUnit(Token * headToken) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     token = list_entry(headToken -> list.next, Token, list);
     typeDefList = HashtableConstructor();
-    err_list = ErrorConstructor(0, 0, NULL, NULL, NULL);
 
     if (token == NULL)
         return NodeConstructor(Root, parsingFile, 1, NULL, ptrs);
