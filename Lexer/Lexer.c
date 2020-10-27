@@ -332,6 +332,13 @@ Token * lexicalAnalyze(FILE * fp) {
             buffer[bufferIndex] = ch;
             bufferIndex++;
             ch = fgetc(fp);
+            if (ch >= '0' && ch <= '9') {
+                goto label;
+                
+
+            } else {
+                ;
+            }
             
             buffer[bufferIndex] = '\0';
             
@@ -715,7 +722,8 @@ Token * lexicalAnalyze(FILE * fp) {
                 if (ch == '.') {
                     //tailToken -> kind = FLOAT_;
                 int is_sn = 0;
-                
+                label:
+
                 do {
                     if (bufferIndex == bufferSize - 1)
                         enlargeBuffer(buffer, &bufferSize);
@@ -900,7 +908,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     ch = fgetc(fp);
                 } while (ch >= '0' && ch <= '9');
                 
-                if (ch == '.') {
+            if (ch == '.') {
                     //tailToken -> kind = FLOAT_;
                 int is_sn = 0;
                 
