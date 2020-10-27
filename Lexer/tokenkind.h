@@ -50,6 +50,7 @@
 //浮点数字面量
 #define FLOAT_ 32
 
+
 //字符字面量
 #define CHARACTER 33
 
@@ -126,5 +127,7 @@
 //CACT
 #define BOOL 84
 #define BOOL_ 85    //bool literal value
+
+#define DOUBLE_ 86
 
 #endif /* tokenkind_h */

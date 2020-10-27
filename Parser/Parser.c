@@ -2518,6 +2518,10 @@ ASTNode * primary(void) {
             Node = NodeConstructor(FloatLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
             token = list_entry(token -> list.next, Token, list);
             break;
+        case DOUBLE_:
+            Node = NodeConstructor(FloatLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
         case STRING:
             Node = NodeConstructor(StringLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
             token = list_entry(token -> list.next, Token, list);
