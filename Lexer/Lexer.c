@@ -805,6 +805,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
+                
                 else {
                     tailToken -> kind = INTEGER;
                     
@@ -820,6 +821,78 @@ Token * lexicalAnalyze(FILE * fp) {
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
             }
+            else if (ch == '.') {
+                buffer[bufferIndex] = '+';
+                bufferIndex++;
+                int is_sn = 0;
+                
+
+                do {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                } while (ch >= '0' && ch <= '9');
+
+                
+
+                if (ch == 'e' || ch == 'E') {
+                    is_sn = 1;
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+
+
+                }
+
+                if (is_sn) {
+                    if (ch == '+' || ch == '-'){
+                        buffer[bufferIndex] = ch;
+                        bufferIndex++;
+                        ch = fgetc(fp);
+
+                    } else {
+                        ;
+                    }
+                    while (ch >= '0' && ch <= '9') {
+                        if (bufferIndex == bufferSize - 1)
+                            enlargeBuffer(buffer, &bufferSize);
+                    
+                            buffer[bufferIndex] = ch;
+                            bufferIndex++;
+                            ch = fgetc(fp);
+                    }
+                }
+
+                int is_float = 0;
+
+                if (ch == 'f' || ch == 'F') {
+                    is_float = 1;
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                }
+
+                if (is_float) {
+                    tailToken -> kind = FLOAT_;
+                } else {
+                    tailToken -> kind = DOUBLE_;
+                }
+
+
+                buffer[bufferIndex] = '\0';
+                    
+                    tailToken -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                    
+                    for (int i = 0; i <= bufferIndex; i++)
+                        tailToken -> image[i] = buffer[i];
+                    
+                    bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
+                    list_add_tail(&tailToken -> list, &headToken -> list);
+
+                }
             else {
                 tailToken -> kind = SUM;
                 
@@ -924,7 +997,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     ch = fgetc(fp);
                 } while (ch >= '0' && ch <= '9');
                 
-            if (ch == '.') {
+                if (ch == '.') {
                     //tailToken -> kind = FLOAT_;
                 int is_sn = 0;
                 
@@ -993,6 +1066,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
+                
                 else {
                     tailToken -> kind = INTEGER;
                     
@@ -1008,6 +1082,78 @@ Token * lexicalAnalyze(FILE * fp) {
                     list_add_tail(&tailToken -> list, &headToken -> list);
                 }
             }
+            else if (ch == '.') {
+                buffer[bufferIndex] = '-';
+                bufferIndex++;
+                    int is_sn = 0;
+                
+
+                do {
+                    if (bufferIndex == bufferSize - 1)
+                        enlargeBuffer(buffer, &bufferSize);
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                } while (ch >= '0' && ch <= '9');
+
+                
+
+                if (ch == 'e' || ch == 'E') {
+                    is_sn = 1;
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+
+
+                }
+
+                if (is_sn) {
+                    if (ch == '+' || ch == '-'){
+                        buffer[bufferIndex] = ch;
+                        bufferIndex++;
+                        ch = fgetc(fp);
+
+                    } else {
+                        ;
+                    }
+                    while (ch >= '0' && ch <= '9') {
+                        if (bufferIndex == bufferSize - 1)
+                            enlargeBuffer(buffer, &bufferSize);
+                    
+                            buffer[bufferIndex] = ch;
+                            bufferIndex++;
+                            ch = fgetc(fp);
+                    }
+                }
+
+                int is_float = 0;
+
+                if (ch == 'f' || ch == 'F') {
+                    is_float = 1;
+                    buffer[bufferIndex] = ch;
+                    bufferIndex++;
+                    ch = fgetc(fp);
+                }
+
+                if (is_float) {
+                    tailToken -> kind = FLOAT_;
+                } else {
+                    tailToken -> kind = DOUBLE_;
+                }
+
+
+                buffer[bufferIndex] = '\0';
+                    
+                    tailToken -> image = (char *)malloc(sizeof(char) * (bufferIndex + 1));
+                    
+                    for (int i = 0; i <= bufferIndex; i++)
+                        tailToken -> image[i] = buffer[i];
+                    
+                    bufferIndex = 0;
+                    fgetpos(fp, &tailToken -> fpos);
+                    list_add_tail(&tailToken -> list, &headToken -> list);
+
+                }
             else {
                 tailToken -> kind = SUB;
                 
