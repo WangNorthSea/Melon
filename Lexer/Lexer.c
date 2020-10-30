@@ -349,7 +349,7 @@ Token * lexicalAnalyze(FILE * fp) {
             bufferIndex++;
             ch = fgetc(fp);
             if (ch >= '0' && ch <= '9') {
-                goto label;
+                goto numeric_constant;
                 
 
             } else {
@@ -722,7 +722,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
-            else if (ch >= '0' && ch <= '9') {
+            /*else if (ch >= '0' && ch <= '9') {
                 buffer[bufferIndex] = '+';
                 bufferIndex++;
                 
@@ -738,7 +738,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 if (ch == '.') {
                     //tailToken -> kind = FLOAT_;
                 int is_sn = 0;
-                label:
+                numeric_constant:
 
                 do {
                     if (bufferIndex == bufferSize - 1)
@@ -892,7 +892,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
 
-                }
+            }*/
             else {
                 tailToken -> kind = SUM;
                 
@@ -984,7 +984,7 @@ Token * lexicalAnalyze(FILE * fp) {
                 fgetpos(fp, &tailToken -> fpos);
                 list_add_tail(&tailToken -> list, &headToken -> list);
             }
-            else if (ch >= '0' && ch <= '9') {
+            /*else if (ch >= '0' && ch <= '9') {
                 buffer[bufferIndex] = '-';
                 bufferIndex++;
                 
@@ -1153,7 +1153,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     fgetpos(fp, &tailToken -> fpos);
                     list_add_tail(&tailToken -> list, &headToken -> list);
 
-                }
+            }*/
             else {
                 tailToken -> kind = SUB;
                 
@@ -1217,6 +1217,7 @@ Token * lexicalAnalyze(FILE * fp) {
             if (ch == '.' && !hasX) {
                 //tailToken -> kind = FLOAT_;
                 int is_sn = 0;
+            numeric_constant:
                 
                 do {
                     if (bufferIndex == bufferSize - 1)

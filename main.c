@@ -54,19 +54,24 @@ int main(int argc, const char * argv[]) {
 
     if (!list_empty(&err_list -> list)) {
         dumpErrorList(err_list, fp);
+        return 0;
     }
-    else
-        dumpAST(rootNode);
+
+    dumpAST(rootNode);
     
-    //semanticAnalyze(rootNode, parsingFile);
+    semanticAnalyze(rootNode, parsingFile);
     
-    //printf("\nAfter semantic analysis...\nScope:\n");
+    printf("\nAfter semantic analysis...\nScope:\n");
+
+    if (!list_empty(&err_list -> list)) {
+        dumpErrorList(err_list, fp);
+        return 0;
+    }
     
-    //dumpScope(scope);
-    
-    //printf("\nAST:\n");
-    
-    //dumpAST(rootNode);
+    dumpScope(scope);
+
+    printf("\nAST:\n");
+    dumpAST(rootNode);
     
     return 0;
 }

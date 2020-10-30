@@ -23,7 +23,7 @@ void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             break;
@@ -47,11 +47,11 @@ void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case FloatType:
             if (type2 -> listLen == 0) {
@@ -77,55 +77,55 @@ void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
 void stringLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     switch (type2 -> kind) {
         case IntegerLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case CharacterLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case CharType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case ShortIntType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case IntType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case LongIntType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case UnsignedCharType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case UnsignedShortIntType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case UnsignedIntType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case UnsignedLongIntType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case StructType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case UnionType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case FloatType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case DoubleType:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         default:
             break;
@@ -143,12 +143,12 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case CharType:
             if (type2 -> listLen == 0) {
@@ -158,7 +158,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case ShortIntType:
             if (type2 -> listLen == 0) {
@@ -168,7 +168,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case IntType:
             if (type2 -> listLen == 0) {
@@ -178,7 +178,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case LongIntType:
             if (type2 -> listLen == 0) {
@@ -188,7 +188,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case UnsignedCharType:
             if (type2 -> listLen == 0) {
@@ -198,7 +198,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case UnsignedShortIntType:
             if (type2 -> listLen == 0) {
@@ -208,7 +208,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case UnsignedIntType:
             if (type2 -> listLen == 0) {
@@ -218,7 +218,7 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case UnsignedLongIntType:
             if (type2 -> listLen == 0) {
@@ -228,19 +228,19 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case FloatType:
             if (type2 -> listLen == 0) {
@@ -250,11 +250,11 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case DoubleType:
             if (type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         default:
             break;
@@ -271,10 +271,10 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             break;
@@ -332,19 +332,19 @@ void voidType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type not allowed");
+                throwSemanticError(type1, "struct type not allowed");
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type mismatched");
+                throwSemanticError(type1, "union type mismatched");
             break;
         case FloatType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case DoubleType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         default:
             break;
@@ -363,7 +363,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -373,7 +373,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0) {
@@ -521,7 +521,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -531,7 +531,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -541,7 +541,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -558,7 +558,7 @@ void charType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -588,7 +588,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -598,7 +598,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0) {
@@ -746,7 +746,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -756,7 +756,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -766,7 +766,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -783,7 +783,7 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -813,7 +813,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -823,7 +823,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0) {
@@ -971,7 +971,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -981,7 +981,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -991,7 +991,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1008,7 +1008,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1038,7 +1038,7 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -1048,7 +1048,7 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             break;
@@ -1142,15 +1142,15 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1161,7 +1161,7 @@ void longIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1185,7 +1185,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -1195,7 +1195,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0) {
@@ -1343,7 +1343,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -1353,7 +1353,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -1363,7 +1363,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1380,7 +1380,7 @@ void unsignedCharType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1410,7 +1410,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -1420,7 +1420,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0) {
@@ -1568,7 +1568,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -1578,7 +1578,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -1588,7 +1588,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1605,7 +1605,7 @@ void unsignedShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1635,7 +1635,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -1645,7 +1645,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0) {
@@ -1793,7 +1793,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -1803,7 +1803,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type1 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -1813,7 +1813,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1830,7 +1830,7 @@ void unsignedIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1860,7 +1860,7 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -1870,7 +1870,7 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             break;
@@ -1964,15 +1964,15 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case UnionType:
             if (type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case FloatType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -1983,7 +1983,7 @@ void unsignedLongIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
@@ -2004,25 +2004,25 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     switch (type2 -> kind) {
         case IntegerLiteral:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case CharacterLiteral:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type not allowed");
+                throwSemanticError(type1, "struct type not allowed");
             break;
         case CharType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2032,7 +2032,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case ShortIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2042,7 +2042,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case IntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2052,11 +2052,11 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case LongIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case UnsignedCharType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2066,7 +2066,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedShortIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2076,7 +2076,7 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2086,23 +2086,23 @@ void structType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedLongIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case StructType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct type operand not allowed");
+                throwSemanticError(type1, "struct type operand not allowed");
             break;
         case UnionType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct or union type operand not allowed");
+                throwSemanticError(type1, "struct or union type operand not allowed");
             break;
         case FloatType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case DoubleType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         default:
             break;
@@ -2116,25 +2116,25 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     switch (type2 -> kind) {
         case IntegerLiteral:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case CharacterLiteral:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+            throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type not allowed");
+                throwSemanticError(type1, "union type not allowed");
             break;
         case CharType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2144,7 +2144,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case ShortIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2154,7 +2154,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case IntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(LongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2164,11 +2164,11 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case LongIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case UnsignedCharType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2178,7 +2178,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedShortIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2188,7 +2188,7 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             else if (type2 -> listLen == 0) {
                 temp = NodeConstructor(UnsignedLongIntType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2198,23 +2198,23 @@ void unionType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedLongIntType:
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case StructType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "struct or union type operand not allowed");
+                throwSemanticError(type1, "struct or union type operand not allowed");
             break;
         case UnionType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "union type operand not allowed");
+                throwSemanticError(type1, "union type operand not allowed");
             break;
         case FloatType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case DoubleType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         default:
             break;
@@ -2243,7 +2243,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             }
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
@@ -2253,11 +2253,11 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
             }
             else
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case CharType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
@@ -2267,7 +2267,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2283,7 +2283,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2299,7 +2299,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2309,7 +2309,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case LongIntType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2325,7 +2325,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2341,7 +2341,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2357,7 +2357,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2367,7 +2367,7 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedLongIntType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2377,23 +2377,23 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case UnionType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case FloatType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen != 0 && type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case DoubleType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen != 0 && type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2428,15 +2428,15 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             }
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "string literal operand not allowed");
+            throwSemanticError(type1, "string literal operand not allowed");
             break;
         case FloatLiteral:
             if (type1 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case VoidType:                                                                        //注意指针(带有PtrRef)的问题，字面量可以但特定类型不一定行
             if (type1 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case CharType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {
@@ -2446,7 +2446,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2462,7 +2462,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2478,7 +2478,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2488,7 +2488,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case LongIntType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2504,7 +2504,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2520,7 +2520,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2536,7 +2536,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2546,7 +2546,7 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case UnsignedLongIntType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2556,17 +2556,17 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case StructType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case UnionType:
             if (type1 -> listLen == 0 || type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         case FloatType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen != 0 && type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
@@ -2576,9 +2576,9 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case DoubleType:
             if (type1 -> listLen == 0 && type2 -> listLen != 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             else if (type1 -> listLen != 0 && type2 -> listLen == 0)
-                throwSemanticError(fileChecking, type1 -> line, "data type mismatched");
+                throwSemanticError(type1, "data type mismatched");
             break;
         default:
             break;

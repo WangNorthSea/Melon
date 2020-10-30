@@ -3270,6 +3270,34 @@ ASTNode * unary(void) {
             
             Node = NodeConstructor(UnaryOp, parsingFile, token -> beginLine, "~", ptrs);
             break;
+        case SUM:
+            token = list_entry(token -> list.next, Token, list);
+            ptrs[0] = term();
+            
+            if (ptrs[0] == NULL) {
+                //if (prelooking)
+                    return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
+            }
+            
+            Node = NodeConstructor(UnaryOp, parsingFile, token -> beginLine, "+", ptrs);
+            break;
+        case SUB:
+            token = list_entry(token -> list.next, Token, list);
+            ptrs[0] = term();
+            
+            if (ptrs[0] == NULL) {
+                //if (prelooking)
+                    return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "term");
+                //}
+            }
+            
+            Node = NodeConstructor(UnaryOp, parsingFile, token -> beginLine, "-", ptrs);
+            break;
         case MUL:
             token = list_entry(token -> list.next, Token, list);
             ptrs[0] = term();

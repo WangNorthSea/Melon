@@ -19,6 +19,7 @@
 #include "assigntc.h"
 #include "returntc.h"
 #include "graphnode.h"
+#include "../Report/error.h"
 
 //待解决的问题:
 //1.funcPtr(constFuncPtr)的赋值与运算类型检查
@@ -66,11 +67,11 @@ void funcPtrParam(ASTNode * node);
 
 void funcPtr(ASTNode * node);
 
-void variable(ASTNode * node);
+void * variable(ASTNode * node);
 
 void constFuncPtr(ASTNode * node);
 
-void constVariable(ASTNode * node);
+void * constVariable(ASTNode * node);
 
 void blockScope(ASTNode * node);
 
@@ -112,7 +113,7 @@ int paramsCompare(ASTNode * paramNode1, ASTNode * paramNode2);
 
 void newScope(void);
 
-void throwSemanticError(const char * file, int line, char * content);
+void throwSemanticError(ASTNode * node, char * content);
 
 void semanticAnalyze(ASTNode * root, const char * file) {
     fileChecking = file;
@@ -157,14 +158,18 @@ void iterator(ASTNode * node) {
             funcPtr(node);
             break;
         case Variable:
-            variable(node);
+            temp = variable(node);
+            if (temp == NULL)
+                return;
             break;
         case ConstFuncPtr:
             needRollBackScope = 1;
             constFuncPtr(node);
             break;
         case ConstVariable:
-            constVariable(node);
+            temp = constVariable(node);
+            if (temp == NULL)
+                return;
             break;
         case Block:
             needRollBackScope = 1;
@@ -205,14 +210,16 @@ void iterator(ASTNode * node) {
             break;
         case Break:
             if (inFor == 0 && inWhile == 0 && inDoWhile == 0 && inSwitch == 0)
-                throwSemanticError(fileChecking, node -> line, "'break' appeared not in a loop or switch");
+                throwSemanticError(node, "'break' appeared not in a loop or switch");
             break;
         case Continue:
             if (inFor == 0 && inWhile == 0 && inDoWhile == 0)
-                throwSemanticError(fileChecking, node -> line, "'continue' appeared not in a loop");
+                throwSemanticError(node, "'continue' appeared not in a loop");
             break;
         default:
             temp = exprCheck(node);
+            if (temp == NULL)
+                return;
             break;
     }
     
@@ -230,13 +237,13 @@ void iterator(ASTNode * node) {
     if (node -> kind == DefinedStruct || node -> kind == DefinedUnion) {
         inStructOrUnion = 0;
         if (checkClosure() == 1)
-            throwSemanticError(fileChecking, node -> line, "recursively defined");
+            throwSemanticError(node, "recursively defined");
     }
     else if (node -> kind == DefinedFunc) {
         inFunc = 0;
         if (returned == 0) {
             if (funcReturnType -> kind != VoidType || funcReturnType -> listLen != 0)
-                throwSemanticError(fileChecking, node -> line, "control reaches end of non-void function");
+                throwSemanticError(node, "control reaches end of non-void function");
         }
         returned = 0;
     }
@@ -253,20 +260,26 @@ void iterator(ASTNode * node) {
 void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
     ASTNode * target = scope -> localLookup(scope, node -> ptrs[2] -> image);
     if (target != NULL) {
-        if (target -> kind == DefinedFunc)
-            throwSemanticError(fileChecking, node -> line, "function redefined");
+        if (target -> kind == DefinedFunc) {
+            throwSemanticError(node, "function redefined");
+            return;
+        }
         else
             funcCompare(target, node);
     }
     
     if (node -> ptrs[1] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return;
+        }
     }
     
     if (node -> ptrs[1] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return;
+        }
     }
     
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
@@ -276,8 +289,10 @@ void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
 void definedStruct(ASTNode * node) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "struct redefined");
+    if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL) {
+        throwSemanticError(node, "struct redefined");
+        return;
+    }
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
     newScope();
     StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
@@ -287,8 +302,10 @@ void definedStruct(ASTNode * node) {
 void definedUnion(ASTNode * node) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     
-    if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "union redefined");
+    if (scope -> localLookup(scope, node -> ptrs[0] -> image) != NULL) {
+        throwSemanticError(node, "union redefined");
+        return;
+    }
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
     newScope();
     StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
@@ -296,51 +313,68 @@ void definedUnion(ASTNode * node) {
 }
 
 void normalParam(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL) {
+        throwSemanticError(node, "parameter redefined");
+        return;
+    }
     
     if (node -> ptrs[0] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return;
+        }
     }
     
     if (node -> ptrs[0] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return;
+        }
     }
     
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void constParam(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL) {
+        throwSemanticError(node, "parameter redefined");
+        return;
+    }
     
     if (node -> ptrs[0] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return;
+        }
     }
     
     if (node -> ptrs[0] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+        }
     }
     
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
 }
 
 void funcPtrParam(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[1] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "parameter redefined");
+    if (scope -> localLookup(scope, node -> ptrs[1] -> image) != NULL) {
+        throwSemanticError(node, "parameter redefined");
+        return;
+    }
     
     if (node -> ptrs[0] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return;
+        }
     }
     
     if (node -> ptrs[0] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[0] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return;
+        }
     }
     
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node);
@@ -354,25 +388,31 @@ void funcPtr(ASTNode * node) {
         name = 1;
     
     if (node -> ptrs[name - 1] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return;
+        }
     }
     
     if (node -> ptrs[name - 1] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return;
+        }
     }
     
     if (inStructOrUnion == 1)
         tempGnode = GNodeConstructor(lastStop, node -> ptrs[name - 1]);
     
-    if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "function pointer redefined");
+    if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL) {
+        throwSemanticError(node, "function pointer redefined");
+        return;
+    }
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
     newScope();
 }
 
-void variable(ASTNode * node) {
+void * variable(ASTNode * node) {
     int type = 0;
     int varname = 2;
     GNode * tempGnode = NULL;
@@ -389,29 +429,38 @@ void variable(ASTNode * node) {
         type = 1;
     
     if (node -> ptrs[type] -> kind == VoidType) {
-        if (node -> ptrs[type] -> listLen == 0)
-            throwSemanticError(fileChecking, node -> line, "void type variable not allowed");
+        if (node -> ptrs[type] -> listLen == 0) {
+            throwSemanticError(node, "void type variable not allowed");
+            return NULL;
+        }
     }
     
     if (node -> ptrs[type] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return NULL;
+        }
     }
     
     if (node -> ptrs[type] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return NULL;
+        }
     }
     
     if (inStructOrUnion == 1)
         tempGnode = GNodeConstructor(lastStop, node -> ptrs[type]);
     
-    if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "variable redefined");
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+    if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL) {
+        throwSemanticError(node, "variable redefined");
+        return NULL;
+    }
     
     if (node -> ptrs[varname + 1] != NULL) {
         assignType = exprCheck(node -> ptrs[varname + 1]);
+        if (assignType == NULL)
+            return NULL;
         temp = node -> ptrs[1];
         varType = node -> ptrs[type];
         node -> ptrs[1] = node -> ptrs[varname + 1];
@@ -419,6 +468,10 @@ void variable(ASTNode * node) {
         node -> ptrs[varname + 1] = node -> ptrs[1];
         node -> ptrs[1] = temp;
     }
+
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+
+    return (void *)1;
 }
 
 void constFuncPtr(ASTNode * node) {
@@ -428,25 +481,31 @@ void constFuncPtr(ASTNode * node) {
         name = 1;
     
     if (node -> ptrs[name - 1] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return;
+        }
     }
     
     if (node -> ptrs[name - 1] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[name - 1] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return;
+        }
     }
     
     if (inStructOrUnion == 1)
         tempGnode = GNodeConstructor(lastStop, node -> ptrs[name - 1]);
     
-    if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "function pointer redefined");
+    if (scope -> localLookup(scope, node -> ptrs[name] -> image) != NULL) {
+        throwSemanticError(node, "function pointer redefined");
+        return;
+    }
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
     newScope();
 }
 
-void constVariable(ASTNode * node) {
+void * constVariable(ASTNode * node) {
     int type = 0;
     int varname = 2;
     GNode * tempGnode = NULL;
@@ -463,29 +522,38 @@ void constVariable(ASTNode * node) {
         type = 1;
     
     if (node -> ptrs[type] -> kind == VoidType) {
-        if (node -> ptrs[type] -> listLen == 0)
-            throwSemanticError(fileChecking, node -> line, "void type const variable not allowed");
+        if (node -> ptrs[type] -> listLen == 0) {
+            throwSemanticError(node, "void type const variable not allowed");
+            return NULL;
+        }
     }
     
     if (node -> ptrs[type] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return NULL;
+        }
     }
     
     if (node -> ptrs[type] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[type] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return NULL;
+        }
     }
     
     if (inStructOrUnion == 1)
         tempGnode = GNodeConstructor(lastStop, node -> ptrs[type]);
     
-    if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "const variable redefined");
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+    if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL) {
+        throwSemanticError(node, "const variable redefined");
+        return NULL;
+    }
     
     if (node -> ptrs[varname + 1] != NULL) {
         assignType = exprCheck(node -> ptrs[varname + 1]);
+        if (assignType == NULL)
+            return NULL;
         temp = node -> ptrs[1];
         varType = node -> ptrs[type];
         node -> ptrs[1] = node -> ptrs[varname + 1];
@@ -493,6 +561,10 @@ void constVariable(ASTNode * node) {
         node -> ptrs[varname + 1] = node -> ptrs[1];
         node -> ptrs[1] = temp;
     }
+
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+
+    return (void *)1;
 }
 
 void blockScope(ASTNode * node) {
@@ -507,13 +579,17 @@ void funcStmt(ASTNode * node) {
         funcCompare(target, node);
     
     if (node -> ptrs[1] -> kind == StructType) {
-        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "struct type undefined");
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL) {
+            throwSemanticError(node, "struct type undefined");
+            return;
+        }
     }
     
     if (node -> ptrs[1] -> kind == UnionType) {
-        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL)
-            throwSemanticError(fileChecking, node -> line, "union type undefined");
+        if (scope -> lookup(scope, node -> ptrs[1] -> image) == NULL) {
+            throwSemanticError(node, "union type undefined");
+            return;
+        }
     }
     
     scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
@@ -535,21 +611,29 @@ void externConst(ASTNode * node) {
 }
 
 void label(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> image) != NULL)
-        throwSemanticError(fileChecking, node -> line, "label relocated");
+    if (scope -> localLookup(scope, node -> image) != NULL) {
+        throwSemanticError(node, "label relocated");
+        return;
+    }
     scope -> symbolTable -> put(scope -> symbolTable, node -> image, node);
 }
 
 void return_(ASTNode * node) {
-    if (inFunc == 0)
-        throwSemanticError(fileChecking, node -> line, "not in the definition of a function");
+    if (inFunc == 0) {
+        throwSemanticError(node, "not in the definition of a function");
+        return;
+    }
     
     if (node -> ptrs[0] == NULL) {
-        if (funcReturnType -> kind != VoidType || funcReturnType -> listLen != 0)
-            throwSemanticError(fileChecking, node -> line, "non-void function should return a value");
+        if (funcReturnType -> kind != VoidType || funcReturnType -> listLen != 0) {
+            throwSemanticError(node, "non-void function should return a value");
+            return;
+        }
     }
     else {
         ASTNode * returnType = exprCheck(node -> ptrs[0]);
+        if (returnType == NULL)
+            return;
         ReturnTypeChecker(node, funcReturnType, returnType);
     }
 }
@@ -559,8 +643,10 @@ ASTNode * exprCheck(ASTNode * node) {
     if (node -> kind == Identifier) {
         ASTNode * target = scope -> lookup(scope, node -> image);       //并不是type
         if (target == NULL) {
-            printf("Melon: %s: semantic \033[31merror\033[0m in line %d identifier \'%s\' undefined\n", fileChecking, node -> line, node -> image);
-            exit(-1);
+            throwSemanticError(node, "identifier undefined");
+            return NULL;
+            //printf("Melon: %s: semantic \033[31merror\033[0m in line %d identifier \'%s\' undefined\n", fileChecking, node -> line, node -> image);
+            //exit(-1);
         }
         
         return getTargetType(target);
@@ -570,6 +656,9 @@ ASTNode * exprCheck(ASTNode * node) {
     else if (node -> kind == BinaryOp) {
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);
+
+        if (type1 == NULL || type2 == NULL)
+            return NULL;
         
         BinaryOpTypeChecker(node, type1, type2);
         
@@ -584,6 +673,9 @@ ASTNode * exprCheck(ASTNode * node) {
     }
     else if (node -> kind == SuffixOp) {
         ASTNode * type = exprCheck(node -> ptrs[0]);
+
+        if (type == NULL)
+            return NULL;
         
         SuffixOpTypeChecker(type);
         
@@ -592,12 +684,20 @@ ASTNode * exprCheck(ASTNode * node) {
     else if (node -> kind == ArrayRef) {
         refCount++;
         ASTNode * refType = exprCheck(node -> ptrs[0]);
+
+        if (refType == NULL)
+            return NULL;
         
-        if (refCount > refType -> listLen)
-            throwSemanticError(fileChecking, node -> line, "too many times array reference");
+        if (refCount > refType -> listLen) {
+            throwSemanticError(node, "too many times array reference");
+            return NULL;
+        }
         refCount = 0;
         
         ASTNode * exprType = exprCheck(node -> ptrs[1]);
+
+        if (exprType == NULL)
+            return NULL;
         
         ArrayRefTypeChecker(exprType);
         
@@ -605,8 +705,10 @@ ASTNode * exprCheck(ASTNode * node) {
         return refType;
     }
     else if (node -> kind == OpAssign) {
-        if (node -> ptrs[0] -> kind == Cast)
-            throwSemanticError(fileChecking, node -> line, "assignment to cast is illegal, lvalue casts are not supported");
+        if (node -> ptrs[0] -> kind == Cast) {
+            throwSemanticError(node, "assignment to cast is illegal, lvalue casts are not supported");
+            return NULL;
+        }
         
         switch (node -> ptrs[0] -> kind) {
             case Identifier:
@@ -616,20 +718,26 @@ ASTNode * exprCheck(ASTNode * node) {
             case Dereference:
                 break;
             default:
-                throwSemanticError(fileChecking, node -> line, "expression is not assignable");
+                throwSemanticError(node, "expression is not assignable");
+                return NULL;
                 break;
         }
         
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[2]);
+
+        if (type1 == NULL || type2 == NULL)
+            return NULL;
         
         OpAssignTypeChecker(node, type1, type2);
         
         return type1;
     }
     else if (node -> kind == Assign) {
-        if (node -> ptrs[0] -> kind == Cast)
-            throwSemanticError(fileChecking, node -> line, "assignment to cast is illegal, lvalue casts are not supported");
+        if (node -> ptrs[0] -> kind == Cast) {
+            throwSemanticError(node, "assignment to cast is illegal, lvalue casts are not supported");
+            return NULL;
+        }
         
         switch (node -> ptrs[0] -> kind) {
             case Identifier:
@@ -639,12 +747,16 @@ ASTNode * exprCheck(ASTNode * node) {
             case Dereference:
                 break;
             default:
-                throwSemanticError(fileChecking, node -> line, "expression is not assignable");
+                throwSemanticError(node, "expression is not assignable");
+                return NULL;
                 break;
         }
         
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);
+
+        if (type1 == NULL || type2 == NULL)
+            return NULL;
         
         AssignTypeChecker(node, type1, type2);
         
@@ -654,6 +766,9 @@ ASTNode * exprCheck(ASTNode * node) {
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         type1 = exprCheck(node -> ptrs[1]);
         ASTNode * type2 = exprCheck(node -> ptrs[2]);
+
+        if (type1 == NULL || type2 == NULL)
+            return NULL;
         
         if (type1 -> kind == Cast)
             return type2;
@@ -667,6 +782,9 @@ ASTNode * exprCheck(ASTNode * node) {
     else if (node -> kind == LogicOr) {
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);
+
+        if (type1 == NULL || type2 == NULL)
+            return NULL;
         
         if (type1 -> kind == Cast)
             return type2;
@@ -680,6 +798,9 @@ ASTNode * exprCheck(ASTNode * node) {
     else if (node -> kind == LogicAnd) {
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);
+
+        if (type1 == NULL || type2 == NULL)
+            return NULL;
         
         if (type1 -> kind == Cast)
             return type2;
@@ -692,6 +813,9 @@ ASTNode * exprCheck(ASTNode * node) {
     }
     else if (node -> kind == PrefixOp) {
         ASTNode * type = exprCheck(node -> ptrs[0]);
+
+        if (type == NULL)
+            return NULL;
         
         SuffixOpTypeChecker(type);           //似乎和后缀运算符没有区别
         
@@ -699,6 +823,9 @@ ASTNode * exprCheck(ASTNode * node) {
     }
     else if (node -> kind == UnaryOp) {
         ASTNode * type = exprCheck(node -> ptrs[0]);
+
+        if (type == NULL)
+            return NULL;
         
         if (!strcmp(node -> image, "!"))
             UnaryOpTypeChecker(type, LOGICNOT);
@@ -710,9 +837,14 @@ ASTNode * exprCheck(ASTNode * node) {
     else if (node -> kind == Dereference) {
         refCount++;
         ASTNode * type = exprCheck(node -> ptrs[0]);
+
+        if (type == NULL)
+            return NULL;
         
-        if (refCount > type -> listLen)
-            throwSemanticError(fileChecking, node -> line, "too many times dereference");
+        if (refCount > type -> listLen) {
+            throwSemanticError(node, "too many times dereference");
+            return NULL;
+        }
         refCount = 0;
         
         type -> listLen--;
@@ -730,11 +862,16 @@ ASTNode * exprCheck(ASTNode * node) {
             case Dereference:
                 break;
             default:
-                throwSemanticError(fileChecking, node -> line, "can not take the address of an rvalue");
+                throwSemanticError(node, "can not take the address of an rvalue");
+                return NULL;
                 break;
         }
         
         ASTNode * type = exprCheck(node -> ptrs[0]);
+
+        if (type == NULL)
+            return NULL;
+
         type -> append(type, *temp);
         free(temp);
         
@@ -764,32 +901,43 @@ ASTNode * exprCheck(ASTNode * node) {
             case Dereference:
                 break;
             default:
-                throwSemanticError(fileChecking, node -> line, "member reference base type is not a structure or union");
+                throwSemanticError(node, "member reference base type is not a structure or union");
+                return NULL;
                 break;
         }
         
         ASTNode * type = exprCheck(node -> ptrs[0]);
+
+        if (type == NULL)
+            return NULL;
         
         MemberTypeChecker(type);
         
         Scope * localScope = StruUnionScope -> get(StruUnionScope, type -> image);
         ASTNode * member = localScope -> localLookup(localScope, node -> ptrs[1] -> image);
         
-        if (member == NULL)
-            throwSemanticError(fileChecking, node -> line, "no such member");
+        if (member == NULL) {
+            throwSemanticError(node, "no such member");
+            return NULL;
+        }
         
         return getTargetType(member);
     }
     else if (node -> kind == PtrMember) {
         ASTNode * type = exprCheck(node -> ptrs[0]);
+
+        if (type == NULL)
+            return NULL;
         
         PtrMemberTypeChecker(type);
         
         Scope * localScope = StruUnionScope -> get(StruUnionScope, type -> image);
         ASTNode * member = localScope -> localLookup(localScope, node -> ptrs[1] -> image);
         
-        if (member == NULL)
-            throwSemanticError(fileChecking, node -> line, "no such member");
+        if (member == NULL) {
+            throwSemanticError(node, "no such member");
+            return NULL;
+        }
         
         return getTargetType(member);
     }
@@ -799,14 +947,18 @@ ASTNode * exprCheck(ASTNode * node) {
     else if (node -> kind == Funcall) {
         ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
         
-        if (node -> ptrs[0] -> kind != Identifier)
-            throwSemanticError(fileChecking, node -> line, "invalid function call");
+        if (node -> ptrs[0] -> kind != Identifier) {
+            throwSemanticError(node, "invalid function call");
+            return NULL;
+        }
         
         int params = 3;
         
         ASTNode * targetFunc = scope -> lookup(scope, node -> ptrs[0] -> image);
-        if (targetFunc == NULL || (targetFunc -> kind != DefinedFunc && targetFunc -> kind != FuncStmt && targetFunc -> kind != FuncPtr && targetFunc -> kind != ConstFuncPtr))
-            throwSemanticError(fileChecking, node -> line, "function undefined");
+        if (targetFunc == NULL || (targetFunc -> kind != DefinedFunc && targetFunc -> kind != FuncStmt && targetFunc -> kind != FuncPtr && targetFunc -> kind != ConstFuncPtr)) {
+            throwSemanticError(node, "function undefined");
+            return NULL;
+        }
         
         if (targetFunc -> ptrs[2] -> kind == ParamsNode)
             params = 2;
@@ -819,9 +971,14 @@ ASTNode * exprCheck(ASTNode * node) {
                 for (i = 0; i < targetFunc -> ptrs[params] -> listLen - 1; i++) {
                     inputType = exprCheck(&(node -> ptrs[1] -> list[i]));
                     targetType = exprCheck(&(targetFunc -> ptrs[params] -> list[i]));
+
+                    if (inputType == NULL || targetType == NULL)
+                        return NULL;
                     
-                    if (inputType -> kind != targetType -> kind || inputType -> listLen != targetType -> listLen)
-                        throwSemanticError(fileChecking, node -> line, "argument type mismatched");
+                    if (inputType -> kind != targetType -> kind || inputType -> listLen != targetType -> listLen) {
+                        throwSemanticError(node, "argument type mismatched");
+                        return NULL;
+                    }
                 }
             }
             else {
@@ -846,16 +1003,23 @@ ASTNode * exprCheck(ASTNode * node) {
                     ASTNode * inputType;
                     for (i = 0; i < targetArgs; i++) {
                         inputType = exprCheck(&(node -> ptrs[1] -> list[i]));
+
+                        if (inputType == NULL)
+                            return NULL;
                         
                         if (targetFunc -> ptrs[params] -> list[i].ptrs[1] -> kind == Name)
                             temp = NodeConstructor(Identifier, fileChecking, node -> line, targetFunc -> ptrs[params] -> list[i].ptrs[1] -> image, ptrs);
                         else
                             temp = NodeConstructor(Identifier, fileChecking, node -> line, targetFunc -> ptrs[params] -> list[i].ptrs[1] -> ptrs[0] -> image, ptrs);
                         targetType = exprCheck(temp);
+                        if (targetType == NULL)
+                            return NULL;
                         free(temp);
                         
-                        if (inputType -> kind != targetType -> kind || inputType -> listLen != targetType -> listLen)
-                            throwSemanticError(fileChecking, node -> line, "argument type mismatched");
+                        if (inputType -> kind != targetType -> kind || inputType -> listLen != targetType -> listLen) {
+                            throwSemanticError(node, "argument type mismatched");
+                            return NULL;
+                        }
                     }
                 }
             }
@@ -870,22 +1034,22 @@ ASTNode * exprCheck(ASTNode * node) {
         return getTargetType(targetFunc);
     }
     
-    return NULL;
+    return node;
 }
 
 void SuffixOpTypeChecker(ASTNode * type) {
     switch (type -> kind) {
         case IntegerLiteral:
-            throwSemanticError(fileChecking, type -> line, "integer literal is not assignable");
+            throwSemanticError(type, "integer literal is not assignable");
             break;
         case CharacterLiteral:
-            throwSemanticError(fileChecking, type -> line, "character literal is not assignable");
+            throwSemanticError(type, "character literal is not assignable");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type -> line, "string literal is not assignable");
+            throwSemanticError(type, "string literal is not assignable");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type -> line, "float literal is not assignable");
+            throwSemanticError(type, "float literal is not assignable");
             break;
         case VoidType:
             break;
@@ -907,11 +1071,11 @@ void SuffixOpTypeChecker(ASTNode * type) {
             break;
         case StructType:
             if (type -> listLen == 0)
-                throwSemanticError(fileChecking, type -> line, "struct type not allowed");
+                throwSemanticError(type, "struct type not allowed");
             break;
         case UnionType:
             if (type -> listLen == 0)
-                throwSemanticError(fileChecking, type -> line, "union type not allowed");
+                throwSemanticError(type, "union type not allowed");
             break;
         case FloatType:
             break;
@@ -929,57 +1093,57 @@ void ArrayRefTypeChecker(ASTNode * type) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+            throwSemanticError(type, "array subscript is not an integer");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+            throwSemanticError(type, "array subscript is not an integer");
             break;
         case VoidType:
-            throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+            throwSemanticError(type, "array subscript is not an integer");
             break;
         case CharType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case ShortIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case IntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case LongIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case UnsignedCharType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case UnsignedShortIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case UnsignedIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case UnsignedLongIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+                throwSemanticError(type, "array subscript is not an integer");
             break;
         case StructType:
-            throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+            throwSemanticError(type, "array subscript is not an integer");
             break;
         case UnionType:
-            throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+            throwSemanticError(type, "array subscript is not an integer");
             break;
         case FloatType:
-            throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+            throwSemanticError(type, "array subscript is not an integer");
             break;
         case DoubleType:
-            throwSemanticError(fileChecking, type -> line, "array subscript is not an integer");
+            throwSemanticError(type, "array subscript is not an integer");
             break;
         default:
             break;
@@ -989,16 +1153,16 @@ void ArrayRefTypeChecker(ASTNode * type) {
 void OpAssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     switch (type1 -> kind) {
         case IntegerLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case CharacterLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case VoidType:
             opAssignVoidType(parent, type1, type2);
@@ -1047,16 +1211,16 @@ void OpAssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
 void AssignTypeChecker(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     switch (type1 -> kind) {
         case IntegerLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case CharacterLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type1 -> line, "expression is not assignable");
+            throwSemanticError(type1, "expression is not assignable");
             break;
         case VoidType:
             assignVoidType(parent, type1, type2);
@@ -1167,87 +1331,87 @@ void UnaryOpTypeChecker(ASTNode * type, int kind) {
         case CharacterLiteral:
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type -> line, "string literal operand not allowed");
+            throwSemanticError(type, "string literal operand not allowed");
             break;
         case FloatLiteral:
             if (kind == NOT)
-                throwSemanticError(fileChecking, type -> line, "float literal operand not allowed");
+                throwSemanticError(type, "float literal operand not allowed");
             break;
         case VoidType:
             if (kind == NOT)
-                throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                throwSemanticError(type, "pointer operand not allowed");
             break;
         case CharType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case ShortIntType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case IntType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case LongIntType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case UnsignedCharType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case UnsignedShortIntType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case UnsignedIntType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case UnsignedLongIntType:
             if (type -> listLen != 0) {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case StructType:
             if (type -> listLen == 0)
-                throwSemanticError(fileChecking, type -> line, "struct type operand not allowed");
+                throwSemanticError(type, "struct type operand not allowed");
             else {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case UnionType:
             if (type -> listLen == 0)
-                throwSemanticError(fileChecking, type -> line, "union type operand not allowed");
+                throwSemanticError(type, "union type operand not allowed");
             else {
                 if (kind == NOT)
-                    throwSemanticError(fileChecking, type -> line, "pointer operand not allowed");
+                    throwSemanticError(type, "pointer operand not allowed");
             }
             break;
         case FloatType:
             if (kind == NOT)
-                throwSemanticError(fileChecking, type -> line, "float type operand not allowed");
+                throwSemanticError(type, "float type operand not allowed");
             break;
         case DoubleType:
             if (kind == NOT)
-                throwSemanticError(fileChecking, type -> line, "double type operand not allowed");
+                throwSemanticError(type, "double type operand not allowed");
             break;
         default:
             break;
@@ -1257,87 +1421,87 @@ void UnaryOpTypeChecker(ASTNode * type, int kind) {
 void MemberTypeChecker(ASTNode * type) {
     switch (type -> kind) {
         case IntegerLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case CharacterLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case VoidType:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+            throwSemanticError(type, "member reference base type is a pointer");
             break;
         case CharType:
             if (type -> listLen != 0)
-                    throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                    throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case ShortIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case IntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case LongIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case UnsignedCharType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case UnsignedShortIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case UnsignedIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case UnsignedLongIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case StructType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             break;
         case UnionType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             break;
         case FloatType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case DoubleType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is a pointer");
+                throwSemanticError(type, "member reference base type is a pointer");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         default:
             break;
@@ -1347,95 +1511,95 @@ void MemberTypeChecker(ASTNode * type) {
 void PtrMemberTypeChecker(ASTNode * type) {
     switch (type -> kind) {
         case IntegerLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case CharacterLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case StringLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case FloatLiteral:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+            throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case VoidType:
-            throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+            throwSemanticError(type, "member reference base type is not a structure or union");
             break;
         case CharType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case ShortIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case IntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case LongIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case UnsignedCharType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case UnsignedShortIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case UnsignedIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case UnsignedLongIntType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case StructType:
             if (type -> listLen != 0) {
                 if (type -> listLen != 1)
-                    throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                    throwSemanticError(type, "member reference base type is not a structure or union");
             }
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case UnionType:
             if (type -> listLen != 0) {
                 if (type -> listLen != 1)
-                    throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                    throwSemanticError(type, "member reference base type is not a structure or union");
             }
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case FloatType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         case DoubleType:
             if (type -> listLen != 0)
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a structure or union");
+                throwSemanticError(type, "member reference base type is not a structure or union");
             else
-                throwSemanticError(fileChecking, type -> line, "member reference base type is not a pointer");
+                throwSemanticError(type, "member reference base type is not a pointer");
             break;
         default:
             break;
@@ -1641,16 +1805,22 @@ ASTNode * getTargetType(ASTNode * target) {
 
 void funcCompare(ASTNode * func1, ASTNode * func2) {
     //check static
-    if ((func1 -> ptrs[0] != NULL && func2 -> ptrs[0] == NULL) || (func1 -> ptrs[0] == NULL && func2 -> ptrs[0] != NULL))
-        throwSemanticError(fileChecking, func2 -> line, "conflicting function types");
+    if ((func1 -> ptrs[0] != NULL && func2 -> ptrs[0] == NULL) || (func1 -> ptrs[0] == NULL && func2 -> ptrs[0] != NULL)) {
+        throwSemanticError(func2, "conflicting function types");
+        return;
+    }
     
     //check return value type
-    if (func1 -> ptrs[1] -> kind != func2 -> ptrs[1] -> kind || func1 -> ptrs[1] -> listLen != func2 -> ptrs[1] -> listLen)
-        throwSemanticError(fileChecking, func2 -> line, "conflicting function types");
+    if (func1 -> ptrs[1] -> kind != func2 -> ptrs[1] -> kind || func1 -> ptrs[1] -> listLen != func2 -> ptrs[1] -> listLen) {
+        throwSemanticError(func2, "conflicting function types");
+        return;
+    }
     
     //check parameters
-    if (paramsCompare(func1 -> ptrs[3], func2 -> ptrs[3]))
-        throwSemanticError(fileChecking, func2 -> line, "conflicting function types");
+    if (paramsCompare(func1 -> ptrs[3], func2 -> ptrs[3])) {
+        throwSemanticError(func2, "conflicting function types");
+        return;
+    }
 }
 
 int paramsCompare(ASTNode * paramNode1, ASTNode * paramNode2) {
@@ -1698,7 +1868,7 @@ void newScope(void) {
     scope = temp;
 }
 
-void throwSemanticError(const char * file, int line, char * content) {
-    printf("Melon: %s: semantic \033[31merror\033[0m in line %d %s\n", file, line, content);
-    exit(-1);
+void throwSemanticError(ASTNode * node, char * content) {
+    error_t * new_err = ErrorConstructor(node -> line, SEMANTICS, node -> file, content, NULL);
+    list_add_tail(&new_err -> list, &err_list -> list);
 }
