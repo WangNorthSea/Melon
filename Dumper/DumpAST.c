@@ -283,6 +283,9 @@ void kindTable(int kind) {
         case 190:
             printf("BoolLiteral");
             break;
+        case 191:
+            printf("ListExpr");
+            break;
         default:
             break;
     }

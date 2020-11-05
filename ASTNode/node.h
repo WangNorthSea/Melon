@@ -117,6 +117,7 @@ typedef struct ASTNode ASTNode;
 
 //CACT
 #define BoolType 189
-#define BoolLiteral 190 
+#define BoolLiteral 190
+#define ListExpr 191
 
 #endif /* node_h */

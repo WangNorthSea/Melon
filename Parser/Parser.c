@@ -127,6 +127,8 @@ ASTNode * args(void);
 
 ASTNode * extern_(void);
 
+ASTNode * listexpr(void);
+
 ASTNode * getType(char * key);
 
 int match(int kind);
@@ -485,7 +487,10 @@ ASTNode * defvars(void) {
             }
         }
         else {
-            ptrs[3] = expr();
+            ptrs[3] = listexpr();
+            if (ptrs[3] == NULL) {
+                ptrs[3] = expr();
+            }
             
             if (ptrs[3] == NULL) {
                 //if (prelooking)
@@ -858,15 +863,19 @@ ASTNode * params(void) {
     
     Node = NodeConstructor(ParamsNode, parsingFile, token -> beginLine, NULL, ptrs);
     
-    if (match(VOID) && match(RIGHTPARENTHESE)) {         //LOOKAHEAD(<VOID> ")")
+    if ((match(RIGHTPARENTHESE)) || (match(VOID) && match(RIGHTPARENTHESE))) {         //LOOKAHEAD(<VOID> ")")
         token = lookahead;
-        if (!match(VOID)) {
+        match(VOID);
+        /*if ((match(RIGHTPARENTHESE)) || (match(VOID) && match(RIGHTPARENTHESE))) {
+            ;
+        }
+        else {
             if (prelooking)
                 return NULL;
             else {
                 throwSyntaxError(parsingFile, "\'void\'", list_entry(token -> list.prev, Token, list));
             }
-        }
+        }*/
     }
     else {
         token = lookahead;
@@ -3618,6 +3627,43 @@ ASTNode * extern_(void) {
             }
         }
     }
+}
+
+ASTNode * listexpr(void) {
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    ASTNode * Node = NodeConstructor(ListExpr, parsingFile, token -> beginLine, NULL, ptrs);
+    Token * lookahead = NULL;
+    
+    if (!match(LEFTBRACE)) { //'{'
+        //if (prelooking)
+            return NULL;
+        //else {
+            //throwSyntaxError(parsingFile, "\'{\'", list_entry(token -> list.prev, Token, list));
+        //}
+    }
+
+    do {
+        ptrs[0] = listexpr();
+        if (ptrs[0] == NULL) {
+            prelooking++;
+            lookahead = token;
+            ptrs[0] = expr();
+            prelooking--;
+        }
+
+        if (ptrs[0] == NULL) {
+            token = lookahead;
+            return NULL;
+        }
+
+        Node -> append(Node, *ptrs[0]);
+    } while (match(COMMA));
+
+    if (!match(RIGHTBRACE)) {
+        return NULL;
+    }
+    
+    return Node;
 }
 
 ASTNode * getType(char * key) {

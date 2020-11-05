@@ -1,13 +1,5 @@
-const int abbb;
-
 int main(void) {	
-	bool a = true, b;
-	bool c = false;
-	int aaaaa = 4+5;
-	//const int abbb = abbb;
-	//b = true;
-	//avd(1);
-	//struct saaa sdsd;
- 	int aaaa = abbb;
+	int a[8] = {1, {1}, 3, 4 + 2, 2, 1, 9, 0};
 	return 0;
 }
+
