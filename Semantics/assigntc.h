@@ -1,10 +1,3 @@
-//
-//  assigntc.h
-//  Melon
-//
-//  Created by 王浩宇 on 2019/4/13.
-//  Copyright © 2019 UCAS Developers. All rights reserved.
-//
 
 #ifndef assigntc_h
 #define assigntc_h

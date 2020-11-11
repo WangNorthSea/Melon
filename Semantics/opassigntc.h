@@ -1,10 +1,3 @@
-//
-//  opassigntc.h
-//  Melon
-//
-//  Created by 王浩宇 on 2019/4/12.
-//  Copyright © 2019 UCAS Developers. All rights reserved.
-//
 
 #ifndef opassigntc_h
 #define opassigntc_h

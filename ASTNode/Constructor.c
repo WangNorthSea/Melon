@@ -1,10 +1,3 @@
-//
-//  Constructor.c
-//  Melon
-//
-//  Created by 王浩宇 on 2019/3/21.
-//  Copyright © 2019 UCAS Developers. All rights reserved.
-//
 
 #include <stdlib.h>
 #include <string.h>

@@ -1,53 +1,39 @@
-//
-//  IrConstructor.c
-//  Melon
-//
-//  Created by 王浩宇 on 2019/4/26.
-//  Copyright © 2019 UCAS Developers. All rights reserved.
-//
 
 #include <stdlib.h>
 #include "opcode.h"
 #include "ir.h"
+#include "../List/list.h"
+#include "../ASTNode/node.h"
 
-void BlockAppend(struct IR * appender, struct BasicBlock * block) {
-    appender -> blockCount++;
-    appender -> blocks = (BasicBlock **)realloc(appender -> blocks, sizeof(BasicBlock *) * (appender -> blockCount));
-    appender -> blocks[appender -> blockCount - 1] = block;
+ThreeAddrCode * threeAddrCodeGen(char op, char dest_basic_type, char src1_basic_type, char src2_basic_type, char * dest, char * src1, char * src2, ASTNode * dest_node, ASTNode * src1_node, ASTNode * src2_node) {
+    ThreeAddrCode * new_code = (ThreeAddrCode *)malloc(sizeof(ThreeAddrCode));
+    init_list_head(&new_code -> list);
+    new_code -> op = op;
+    new_code -> dest_basic_type = dest_basic_type;
+    new_code -> src1_basic_type = src1_basic_type;
+    new_code -> src2_basic_type = src2_basic_type;
+    new_code -> dest = dest;
+    new_code -> src1 = src1;
+    new_code -> src2 = src2;
+    new_code -> dest_node = dest_node;
+    new_code -> src1_node = src1_node;
+    new_code -> src2_node = src2_node;
+    return new_code;
 }
 
-void PhiAppend(BasicBlock * appender, Quad * phiQuad) {
-    appender -> phiCount++;
-    appender -> phis = (Quad **)realloc(appender -> phis, sizeof(Quad *) * (appender -> phiCount));
-    appender -> phis[appender -> phiCount - 1] = phiQuad;
+CFGNode * CFGNodeGen(void) {
+    CFGNode * node = (CFGNode *)malloc(sizeof(CFGNode));
+    init_list_head(&node -> predecessors);
+    init_list_head(&node -> successors);
+    init_list_head(&node->basic_block.ir_code);
+    return node;
 }
 
-Quad * QuadConstructor(char op, Quad * src1, Quad * src2, Quad * prev) {
-    Quad * quad = (Quad *)malloc(sizeof(Quad));
-    quad -> op = op;
-    quad -> src1 = src1;
-    quad -> src2 = src2;
-    quad -> prev = prev;
-    quad -> next = NULL;
-    return quad;
-}
-
-BasicBlock * BlockConstructor(IR * ir) {
-    BasicBlock * block = (BasicBlock *)malloc(sizeof(BasicBlock));
-    block -> head = NULL;
-    block -> currentQuad = NULL;
-    block -> phis = NULL;
-    block -> PhiAppend = PhiAppend;
-    block -> phiCount = 0;
-    ir -> BlockAppend(ir, block);
-    return block;
-}
-
-IR * IRConstructor(void) {
-    IR * ir = (IR *)malloc(sizeof(IR));
-    ir -> blockCount = 0;
-    ir -> blocks = NULL;
-    ir -> BlockAppend = BlockAppend;
-    ir -> start = BlockConstructor(ir);
-    return ir;
+CtrlFlowGraph * CFGGen(char * function, ASTNode * func_node) {
+    CtrlFlowGraph * cfg = (CtrlFlowGraph *)malloc(sizeof(CtrlFlowGraph));
+    cfg -> function = function;
+    cfg -> func_node = func_node;
+    cfg -> entry = NULL;
+    cfg -> exit = NULL;
+    return cfg;
 }

@@ -1,10 +1,3 @@
-//
-//  binoptc.h
-//  Melon
-//
-//  Created by 王浩宇 on 2019/4/12.
-//  Copyright © 2019 UCAS Developers. All rights reserved.
-//
 
 #ifndef binoptc_h
 #define binoptc_h

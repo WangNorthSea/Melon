@@ -1,39 +1,45 @@
-//
-//  ir.h
-//  Melon
-//
-//  Created by 王浩宇 on 2019/4/26.
-//  Copyright © 2019 UCAS Developers. All rights reserved.
-//
 
-#ifndef ir_h
-#define ir_h
+#ifndef __IR_H__
+#define __IR_H__
 
-struct Quad {
+#include "../List/list.h"
+#include "../ASTNode/node.h"
+
+struct ThreeAddrCode {
+    struct list_head list;
     char op;
-    struct Quad * src1;
-    struct Quad * src2;
-    struct Quad * prev;
-    struct Quad * next;
+    char dest_basic_type;
+    char src1_basic_type;
+    char src2_basic_type;
+    char * dest;
+    char * src1;
+    char * src2;
+    ASTNode * dest_node;
+    ASTNode * src1_node;
+    ASTNode * src2_node;
 };
 
 struct BasicBlock {
-    struct Quad * head;
-    struct Quad * currentQuad;
-    struct Quad ** phis;
-    void (*PhiAppend)(struct BasicBlock * appender, struct Quad * phiQuad);
-    int phiCount;
+    struct list_head ir_code;
 };
 
-struct IR {
-    struct BasicBlock * start;
-    struct BasicBlock ** blocks;
-    void (*BlockAppend)(struct IR * appender, struct BasicBlock * block);
-    int blockCount;
+struct CFGNode {
+    struct list_head predecessors;
+    struct list_head successors;
+    struct BasicBlock basic_block;
 };
 
-typedef struct Quad Quad;
+struct CtrlFlowGraph {
+    struct list_head list;
+    char * function;
+    ASTNode * func_node;
+    struct CFGNode * entry;
+    struct CFGNode * exit;
+};
+
+typedef struct ThreeAddrCode ThreeAddrCode;
 typedef struct BasicBlock BasicBlock;
-typedef struct IR IR;
+typedef struct CFGNode CFGNode;
+typedef struct CtrlFlowGraph CtrlFlowGraph;
 
 #endif /* ir_h */
