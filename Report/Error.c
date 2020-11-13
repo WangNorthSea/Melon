@@ -32,7 +32,7 @@ void dumpErrorList(error_t * err_list, FILE * fp) {
                 break;
         }
 
-        if (p -> lastToken != NULL) {
+        /*if (p -> lastToken != NULL) {
             int read_line = 1;
             char ch = 0;
             fseek(fp, 0, SEEK_SET);
@@ -77,7 +77,7 @@ void dumpErrorList(error_t * err_list, FILE * fp) {
             }
 
             printf("\033[32m^\033[0m\n");
-        }
+        }*/
     }
     return;
 }

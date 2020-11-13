@@ -12,7 +12,7 @@ void tokenInit(Token * token) {
     token -> beginLine = 0;
     token -> kind = 0;
     token -> image = NULL;
-    token -> fpos = 0;
+    //token -> fpos = 0;
 }
 
 void enlargeBuffer(char * buffer, int * bufferSize) {
@@ -633,7 +633,7 @@ Token * lexicalAnalyze(FILE * fp) {
                     if (ch != '/') {
                         fpos_t fpos;
                         fgetpos(fp, &fpos);
-                        fseek(fp, fpos - 1, SEEK_SET);
+                        //fseek(fp, fpos - 1, SEEK_SET);
                         ch = '*';
                         goto restart;
                     }
@@ -1187,6 +1187,7 @@ Token * lexicalAnalyze(FILE * fp) {
             }
             
             if (hasX) {
+                int hexcount = 0;
                 while ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F')) {
                     if (bufferIndex == bufferSize - 1)
                         enlargeBuffer(buffer, &bufferSize);
@@ -1194,6 +1195,12 @@ Token * lexicalAnalyze(FILE * fp) {
                     buffer[bufferIndex] = ch;
                     bufferIndex++;
                     ch = fgetc(fp);
+                    hexcount++;
+                }
+                if (hexcount == 0) {
+                    fpos_t cur_pos;
+                    fgetpos(fp, &cur_pos);
+                    throwLexicalError(parsingFile, "illegal hex number", cur_pos, line);
                 }
             }
             else {

@@ -9,7 +9,7 @@
 
 struct list_head cfg_list;
 
-void CFGConstruct(ASTNode * ast) {
+/*void CFGConstruct(ASTNode * ast) {
     init_list_head(&cfg_list);
     CFGIterator(ast);
 }
@@ -147,4 +147,4 @@ void CFGIterator(ASTNode * node) {
         inDoWhile--;
     else if (node -> kind == Switch)
         inSwitch--;
-}
+}*/

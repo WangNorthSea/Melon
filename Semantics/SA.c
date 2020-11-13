@@ -257,8 +257,10 @@ void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
             throwSemanticError(node, "function redefined");
             return;
         }
-        else
-            funcCompare(target, node);
+        else {
+            if (target -> kind == FuncStmt)
+                funcCompare(target, node);
+        }
     }
     
     if (node -> ptrs[1] -> kind == StructType) {

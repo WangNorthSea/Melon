@@ -1,4 +1,10 @@
-int main(void) {	
+//int main();
+
+//int main(void);
+
+int main = 5;
+
+int main(int a) {	
 	int a = 1;
 	int i = 0;
 

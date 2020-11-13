@@ -37,7 +37,7 @@ int main(int argc, const char * argv[]) {
 
     if (!list_empty(&err_list -> list)) {
         dumpErrorList(err_list, fp);
-        return 0;
+        return -1;
     }
     
     printf("\nAST:\n");
@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]) {
 
     if (!list_empty(&err_list -> list)) {
         dumpErrorList(err_list, fp);
-        return 0;
+        return -1;
     }
 
     dumpAST(rootNode);
@@ -58,7 +58,7 @@ int main(int argc, const char * argv[]) {
 
     if (!list_empty(&err_list -> list)) {
         dumpErrorList(err_list, fp);
-        return 0;
+        return -1;
     }
     
     dumpScope(scope);
