@@ -10,6 +10,7 @@ struct Scope {
     void (*appendScope)(struct Scope * appender, struct Scope * toAppend);
     ASTNode * (*lookup)(struct Scope * scope, char * key);
     ASTNode * (*localLookup)(struct Scope * scope, char * key);
+    ASTNode * (*paramLookup)(struct Scope * scope, char * key);
 };
 
 typedef struct Scope Scope;

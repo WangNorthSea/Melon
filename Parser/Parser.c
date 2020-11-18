@@ -122,6 +122,8 @@ ASTNode * extern_(void);
 
 ASTNode * listexpr(void);
 
+ASTNode * constval(void);
+
 ASTNode * getType(char * key);
 
 int match(int kind);
@@ -483,7 +485,7 @@ ASTNode * defvars(void) {
             ptrs[3] = listexpr();
             if (ptrs[3] == NULL) {
                 //ptrs[3] = expr();
-                ptrs[3] = primary();
+                ptrs[3] = constval();
             }
             
             if (ptrs[3] == NULL) {
@@ -534,7 +536,7 @@ ASTNode * defvars(void) {
                  ptrs[3] = listexpr();
                 if (ptrs[3] == NULL) {
                     //ptrs[3] = expr();
-                    ptrs[3] = primary();
+                    ptrs[3] = constval();
                 }
                 
                 if (ptrs[3] == NULL) {
@@ -1189,7 +1191,7 @@ ASTNode * defconst(void) {
             ptrs[3] = listexpr();
             if (ptrs[3] == NULL) {
                 //ptrs[3] = expr();
-                ptrs[3] = primary();
+                ptrs[3] = constval();
             }
             
             if (ptrs[3] == NULL) {
@@ -1240,7 +1242,7 @@ ASTNode * defconst(void) {
                 ptrs[3] = listexpr();
                 if (ptrs[3] == NULL) {
                     //ptrs[3] = expr();
-                    ptrs[3] = primary();
+                    ptrs[3] = constval();
                 }
                 
                 if (ptrs[3] == NULL) {
@@ -3657,7 +3659,7 @@ ASTNode * listexpr(void) {
             prelooking++;
             lookahead = token;
             //ptrs[0] = expr();
-            ptrs[0] = primary();
+            ptrs[0] = constval();
         //}
 
         if (ptrs[0] == NULL) {
@@ -3675,6 +3677,72 @@ ASTNode * listexpr(void) {
         return NULL;
     }
     
+    return Node;
+}
+
+ASTNode * constval(void) {
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    ASTNode * Node = NULL;
+    
+    switch (token -> kind) {
+        case INTEGER:
+            Node = NodeConstructor(IntegerLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
+        case CHARACTER:
+            Node = NodeConstructor(CharacterLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
+        case FLOAT_:
+            Node = NodeConstructor(FloatLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
+        case DOUBLE_:
+            Node = NodeConstructor(FloatLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
+        case STRING:
+            Node = NodeConstructor(StringLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
+        /*case IDENTIFIER:
+            Node = NodeConstructor(Identifier, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
+        case LEFTPARENTHESE:
+            token = list_entry(token -> list.next, Token, list);
+            Node = expr();
+            
+            if (Node == NULL) {
+                //if (prelooking)
+                return NULL;
+                //else {
+                    //throwSyntaxError(parsingFile, "expression");
+                //}
+            }
+            
+            if (!match(RIGHTPARENTHESE)) {
+                if (prelooking)
+                    return NULL;
+                else {
+                    throwSyntaxError(parsingFile, "\')\'", token);
+                }
+            }
+            break;*/
+        case BOOL_:
+            Node = NodeConstructor(BoolLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
+            token = list_entry(token -> list.next, Token, list);
+            break;
+        default:
+            Node = NodeConstructor(Identifier, parsingFile, token -> beginLine, "Fake node", ptrs);
+            if (prelooking)
+                return NULL;
+            else {
+                throwSyntaxError(parsingFile, "literal, identifier or \'(\'", token);
+            }
+            break;
+    }
+
     return Node;
 }
 
@@ -3696,7 +3764,8 @@ int match(int kind) {
 
 void throwSyntaxError(char * file, char * expected, Token * cur_token) {
     error_t * new_err = ErrorConstructor(cur_token -> beginLine, SYNTAX, file, expected, list_entry(cur_token -> list.prev, Token, list));
-    token = list_entry(token -> list.next, Token, list);
+    if (token -> kind != EOF_)
+        token = list_entry(token -> list.next, Token, list);
     list_add_tail(&new_err -> list, &err_list -> list);
     //printf("Melon: %s: syntax \033[31merror\033[0m in line %d expected %s\n", file, line, expected);
     //exit(-1);

@@ -523,7 +523,17 @@ void assignShortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
 
 void assignIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     ASTNode * temp = NULL;
+    ASTNode * varname = NULL;
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+
+    if (parent -> kind != Assign) {
+        if (parent -> ptrs[1] -> kind == Varname)
+            varname = parent -> ptrs[1];
+        else
+            varname = parent -> ptrs[2];
+        if (varname -> listLen != 0 && type2 -> kind != ListExpr)
+            throwSemanticError(type2, "expected list expression");
+    }
     
     switch (type2 -> kind) {
         case IntegerLiteral:
@@ -728,6 +738,11 @@ void assignIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 throwSemanticError(type2, "data type mismatched");
             }
             break;
+        case ListExpr:
+            if (parent -> kind != Assign) {
+                if (varname -> listLen == 0)
+                    throwSemanticError(type2, "list expression can only be assigned to an array");
+            }
         default:
             break;
     }

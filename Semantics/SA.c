@@ -44,6 +44,8 @@ int inSwitch = 0;
 
 int returned = 0;
 
+int hasMain = 0;
+
 ASTNode * funcReturnType = NULL;
 
 void definedFunc(ASTNode * node);
@@ -113,6 +115,8 @@ void semanticAnalyze(ASTNode * root, const char * file) {
     scope = ScopeConstructor(NULL);
     StruUnionScope = HashtableConstructor();
     iterator(root);
+    if (hasMain == 0)
+        throwSemanticError(root, "\'main\' function not found");
 }
 
 void iterator(ASTNode * node) {
@@ -124,6 +128,8 @@ void iterator(ASTNode * node) {
             needRollBackScope = 1;
             inFunc = 1;
             funcReturnType = node -> ptrs[1];
+            if (!strcmp(node -> ptrs[2] -> image, "main"))
+                hasMain = 1;
             definedFunc(node);
             break;
         case NormalParam:
@@ -308,9 +314,12 @@ void definedUnion(ASTNode * node) {
 }
 
 void normalParam(ASTNode * node) {
-    if (scope -> localLookup(scope, node -> ptrs[1] -> ptrs[0] -> image) != NULL) {
-        throwSemanticError(node, "parameter redefined");
-        return;
+    ASTNode * target = NULL;
+    if ((target = scope -> lookup(scope, node -> ptrs[1] -> ptrs[0] -> image)) != NULL) {
+        if (target -> kind != DefinedFunc) {
+            throwSemanticError(node, "parameter redefined");
+            return;
+        }
     }
     
     if (node -> ptrs[0] -> kind == StructType) {
@@ -451,6 +460,13 @@ void * variable(ASTNode * node) {
         throwSemanticError(node, "variable redefined");
         return NULL;
     }
+    else {
+        ASTNode * target = scope -> paramLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image);
+        if (target != NULL && target -> kind == NormalParam) {
+            throwSemanticError(node, "variable has been defined as parameter");
+            return NULL;
+        }
+    }
     
     if (node -> ptrs[varname + 1] != NULL) {
         assignType = exprCheck(node -> ptrs[varname + 1]);
@@ -543,6 +559,13 @@ void * constVariable(ASTNode * node) {
     if (scope -> localLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image) != NULL) {
         throwSemanticError(node, "const variable redefined");
         return NULL;
+    }
+    else {
+        ASTNode * target = scope -> paramLookup(scope, node -> ptrs[varname] -> ptrs[0] -> image);
+        if (target != NULL && target -> kind == NormalParam) {
+            throwSemanticError(node, "const variable has been defined as parameter");
+            return NULL;
+        }
     }
     
     if (node -> ptrs[varname + 1] != NULL) {
@@ -646,7 +669,7 @@ ASTNode * exprCheck(ASTNode * node) {
         
         return getTargetType(target);
     }
-    else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral || node -> kind == SizeofType || node -> kind == SizeofExpr)
+    else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral || node -> kind == SizeofType || node -> kind == SizeofExpr || node -> kind == ListExpr)
         return node;
     else if (node -> kind == BinaryOp) {
         ASTNode * type1 = exprCheck(node -> ptrs[0]);

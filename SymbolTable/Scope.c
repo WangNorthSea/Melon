@@ -27,6 +27,14 @@ ASTNode * localLookup(Scope * scope, char * key) {
     return target;
 }
 
+ASTNode * paramLookup(Scope * scope, char * key) {
+    ASTNode * target = NULL;
+    if (scope -> upperLevel != NULL) {
+        scope = scope -> upperLevel;
+        target = scope -> symbolTable -> get(scope -> symbolTable, key);
+    }
+    return target;
+}
 
 Scope * ScopeConstructor(Scope * upperLevel) {
     Scope * scope = (Scope *)malloc(sizeof(Scope));
@@ -37,5 +45,6 @@ Scope * ScopeConstructor(Scope * upperLevel) {
     scope -> appendScope = appendScope;
     scope -> lookup = lookup;
     scope -> localLookup = localLookup;
+    scope -> paramLookup = paramLookup;
     return scope;
 }
