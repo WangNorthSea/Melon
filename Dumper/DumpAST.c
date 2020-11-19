@@ -279,6 +279,9 @@ void kindTable(int kind) {
         case 191:
             printf("ListExpr");
             break;
+        case 192:
+            printf("ConstMark");
+            break;
         default:
             break;
     }

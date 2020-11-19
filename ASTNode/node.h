@@ -113,4 +113,6 @@ typedef struct ASTNode ASTNode;
 #define BoolLiteral 190
 #define ListExpr 191
 
+#define ConstMark 192
+
 #endif /* node_h */

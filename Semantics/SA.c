@@ -198,8 +198,16 @@ void iterator(ASTNode * node) {
         case For:
             inFor++;
             break;
+        case If:
+            temp = exprCheck(node -> ptrs[0]);
+            if (temp == NULL || temp -> kind != BoolType)
+                throwSemanticError(node, "expected bool type expression");
+            break;
         case While:
             inWhile++;
+            temp = exprCheck(node -> ptrs[0]);
+            if (temp == NULL || temp -> kind != BoolType)
+                throwSemanticError(node, "expected bool type expression");
             break;
         case DoWhile:
             inDoWhile++;
@@ -1372,9 +1380,12 @@ void UnaryOpTypeChecker(ASTNode * type, int kind) {
             }
             break;
         case IntType:
-            if (type -> listLen != 0) {
+            /*if (type -> listLen != 0) {
                 if (kind == NOT)
                     throwSemanticError(type, "pointer operand not allowed");
+            }*/
+            if (kind == LOGICNOT) {
+                throwSemanticError(type, "data type not allowed");
             }
             break;
         case LongIntType:
@@ -1753,6 +1764,9 @@ ASTNode * getTargetType(ASTNode * target) {
                     new -> append(new, *temp);
                     free(temp);
                 }
+
+                temp = NodeConstructor(ConstMark, fileChecking, target -> line, NULL, ptrs);
+                new -> ptrs[0] = temp;
                 return new;
             }
             else {
@@ -1771,6 +1785,9 @@ ASTNode * getTargetType(ASTNode * target) {
                     new -> append(new, *temp);
                     free(temp);
                 }
+
+                temp = NodeConstructor(ConstMark, fileChecking, target -> line, NULL, ptrs);
+                new -> ptrs[0] = temp;
                 return new;
             }
             break;

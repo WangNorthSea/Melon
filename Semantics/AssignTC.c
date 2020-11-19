@@ -534,6 +534,10 @@ void assignIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
         if (varname -> listLen != 0 && type2 -> kind != ListExpr)
             throwSemanticError(type2, "expected list expression");
     }
+
+    if (type1 -> ptrs[0] != NULL && type1 -> ptrs[0] -> kind == ConstMark) {
+        throwSemanticError(type2, "assign to a constant variable is not allowed");
+    }
     
     switch (type2 -> kind) {
         case IntegerLiteral:
@@ -743,6 +747,10 @@ void assignIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 if (varname -> listLen == 0)
                     throwSemanticError(type2, "list expression can only be assigned to an array");
             }
+            break;
+        case BoolType:
+            throwSemanticError(type2, "data type mismatched");
+            break;
         default:
             break;
     }
