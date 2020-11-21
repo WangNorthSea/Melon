@@ -1,4 +1,4 @@
 */*.o
 *.sh
 .vscode
-Melon.dSYM
+*.dSYM

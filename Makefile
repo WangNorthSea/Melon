@@ -1,8 +1,8 @@
 src = ASTNode/*.c Dumper/*.c Parser/*.c Lexer/*.c SymbolTable/*.c Semantics/*.c IR/*.c Report/*.c File/*.c main.c
 obj = ASTNode/*.o Dumper/*.o Parser/*.o Lexer/*.o SymbolTable/*.o Semantics/*.o IR/*.o Report/*.o File/*.o *.o
 CFLAGS = -O0 -g
-target = Melon
-CC = clang
+target = main
+CC = gcc
 
 .PHONY: all clean
 all:
