@@ -15,16 +15,18 @@ ASTNode * NodeConstructor(int kind, const char * file, int line, char * image, A
     ASTNode * node = (ASTNode *)malloc(sizeof(ASTNode));
     node -> kind = kind;
     node -> listLen = 0;
-    node -> file = (char *)malloc(sizeof(char) * strlen(file));
-    strcpy(node -> file, file);
+    //node -> file = (char *)malloc(sizeof(char) * strlen(file));
+    //strcpy(node -> file, file);
+    node -> file = file;
     node -> line = line;
     
-    if (image != NULL) {
+    /*if (image != NULL) {
         node -> image = (char *)malloc(sizeof(char) * strlen(image));
         strcpy(node -> image, image);
     }
     else
-        node -> image = NULL;
+        node -> image = NULL;*/
+    node -> image = image;
     
     for (i = 0; i < 6; i++)
         node -> ptrs[i] = ptrs[i];
