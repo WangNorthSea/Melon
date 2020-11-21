@@ -1,4 +1,4 @@
 */*.o
-*.sh
+clang-output.sh
 .vscode
 *.dSYM

@@ -17,7 +17,7 @@ ASTNode * NodeConstructor(int kind, const char * file, int line, char * image, A
     node -> listLen = 0;
     //node -> file = (char *)malloc(sizeof(char) * strlen(file));
     //strcpy(node -> file, file);
-    node -> file = file;
+    node -> file = (char *)file;
     node -> line = line;
     
     /*if (image != NULL) {
