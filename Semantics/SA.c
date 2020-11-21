@@ -677,8 +677,12 @@ ASTNode * exprCheck(ASTNode * node) {
         
         return getTargetType(target);
     }
-    else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral || node -> kind == SizeofType || node -> kind == SizeofExpr || node -> kind == ListExpr)
+    else if (node -> kind == IntegerLiteral || node -> kind == CharacterLiteral || node -> kind == StringLiteral || node -> kind == FloatLiteral || node -> kind == SizeofType || node -> kind == SizeofExpr || node -> kind == ListExpr) {
+        /*if (node -> kind == IntegerLiteral) {
+            octLiteralCheck(node);
+        }*/
         return node;
+    }
     else if (node -> kind == BinaryOp) {
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);

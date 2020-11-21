@@ -52,7 +52,7 @@ int main(int argc, const char * argv[]) {
 
     dumpAST(rootNode);
     
-    semanticAnalyze(rootNode, parsingFile);
+    /*semanticAnalyze(rootNode, parsingFile);
     
     printf("\nAfter semantic analysis...\nScope:\n");
 
@@ -64,7 +64,7 @@ int main(int argc, const char * argv[]) {
     dumpScope(scope);
 
     printf("\nAST:\n");
-    dumpAST(rootNode);
+    dumpAST(rootNode);*/
     
     return 0;
 }

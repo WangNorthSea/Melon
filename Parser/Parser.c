@@ -784,7 +784,8 @@ ASTNode * expr(void) {
             }
         }
         
-        ptrs[1] = expr();
+        //ptrs[1] = expr();
+        ptrs[1] = expr10();
         
         if (ptrs[1] == NULL) {
             //if (prelooking)
@@ -2517,6 +2518,27 @@ jumpout:
     return Node;
 }
 
+void octLiteralCheck(ASTNode * node) {
+    int i = 0, hasX = 0;
+    if (node -> image[0] != '0') {
+        token = list_entry(token -> list.next, Token, list);
+        return;
+    }
+    
+    for (i = 0; i < strlen(node -> image); i++) {
+        if (node -> image[i] == 'x')
+            hasX = 1;
+
+        if ((node -> image[i] < '0' || node -> image[i] > '7') && hasX == 0) {
+            //throwSemanticError(node, "illegal oct number");
+            throwSyntaxError(parsingFile, "legitmate oct number", token);
+            return;
+        }
+    }
+
+    token = list_entry(token -> list.next, Token, list);
+}
+
 ASTNode * primary(void) {
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
     ASTNode * Node = NULL;
@@ -3653,6 +3675,10 @@ ASTNode * listexpr(void) {
         //}
     }
 
+    if (match(RIGHTBRACE)) {
+        return Node;
+    }
+
     do {
         //ptrs[0] = listexpr();
         //if (ptrs[0] == NULL) {
@@ -3664,17 +3690,19 @@ ASTNode * listexpr(void) {
 
         if (ptrs[0] == NULL) {
             token = lookahead;
-            if (match(RIGHTBRACE))
+            /*if (match(RIGHTBRACE))
                 return Node;
-            else
-                return NULL;
+            else {*/
+                throwSyntaxError(parsingFile, "constant value", token);
+                return Node;
+            //}
         }
 
         Node -> append(Node, *ptrs[0]);
     } while (match(COMMA));
 
     if (!match(RIGHTBRACE)) {
-        return NULL;
+        throwSyntaxError(parsingFile, "\'}\'", token);
     }
     
     return Node;
@@ -3687,12 +3715,13 @@ ASTNode * constval(void) {
     switch (token -> kind) {
         case INTEGER:
             Node = NodeConstructor(IntegerLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
-            token = list_entry(token -> list.next, Token, list);
+            //token = list_entry(token -> list.next, Token, list);
+            octLiteralCheck(Node);
             break;
-        case CHARACTER:
+        /*case CHARACTER:
             Node = NodeConstructor(CharacterLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
             token = list_entry(token -> list.next, Token, list);
-            break;
+            break;*/
         case FLOAT_:
             Node = NodeConstructor(FloatLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
             token = list_entry(token -> list.next, Token, list);
@@ -3701,11 +3730,11 @@ ASTNode * constval(void) {
             Node = NodeConstructor(FloatLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
             token = list_entry(token -> list.next, Token, list);
             break;
-        case STRING:
+        /*case STRING:
             Node = NodeConstructor(StringLiteral, parsingFile, token -> beginLine, token -> image, ptrs);
             token = list_entry(token -> list.next, Token, list);
             break;
-        /*case IDENTIFIER:
+        case IDENTIFIER:
             Node = NodeConstructor(Identifier, parsingFile, token -> beginLine, token -> image, ptrs);
             token = list_entry(token -> list.next, Token, list);
             break;
