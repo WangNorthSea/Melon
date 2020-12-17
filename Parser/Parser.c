@@ -1255,7 +1255,7 @@ ASTNode * defconst(void) {
                 }
             }
             
-            temp = NodeConstructor(Variable, parsingFile, token -> beginLine, NULL, ptrs);
+            temp = NodeConstructor(ConstVariable, parsingFile, token -> beginLine, NULL, ptrs);
             Node -> append(Node, *temp);
             free(temp);
         }

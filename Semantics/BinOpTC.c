@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <string.h>
 #include "../ASTNode/node.h"
 #include "../ASTNode/constructor.h"
 #include "../SymbolTable/hashtable.h"
@@ -800,6 +801,14 @@ void shortIntType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
 void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     ASTNode * temp = NULL;
     ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    int dim1 = 0, dim2 = 0;
+
+    if (type1 -> ptrs[1] != NULL) {
+        dim1 = type1 -> ptrs[1] -> listLen;
+    }
+    if (type2 -> ptrs[1] != NULL) {
+        dim2 = type2 -> ptrs[1] -> listLen;
+    }
     
     switch (type2 -> kind) {
         case IntegerLiteral:
@@ -879,6 +888,17 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
+            }
+            if (dim1 != dim2) {
+                throwSemanticError(type1, "dimension mismatched");
+            }
+            else if (dim1 != 0) {
+                for (int i = 0; i < dim1; i++) {
+                    if (strcmp(type1 -> ptrs[1] -> list[i].image, type2 -> ptrs[1] -> list[i].image)) {
+                        throwSemanticError(type1, "array size mismatched");
+                        break;
+                    }
+                }
             }
             break;
         case LongIntType:
@@ -984,7 +1004,7 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             }
             break;
         case FloatType:
-            if (type1 -> listLen != 0 && type2 -> listLen == 0) {
+            /*if (type1 -> listLen != 0 && type2 -> listLen == 0) {
                 throwSemanticError(type1, "data type mismatched");
             }
             else if (type1 -> listLen == 0 && type2 -> listLen != 0) {
@@ -998,7 +1018,8 @@ void intType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
-            }
+            }*/
+            throwSemanticError(type1, "data type mismatched");
             break;
         case DoubleType:
             if (type1 -> listLen != 0 && type2 -> listLen == 0) {

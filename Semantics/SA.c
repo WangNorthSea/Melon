@@ -200,13 +200,13 @@ void iterator(ASTNode * node) {
             break;
         case If:
             temp = exprCheck(node -> ptrs[0]);
-            if (temp == NULL || temp -> kind != BoolType)
+            if (temp == NULL || (temp -> kind != BoolType && temp -> kind != BoolLiteral))
                 throwSemanticError(node, "expected bool type expression");
             break;
         case While:
             inWhile++;
             temp = exprCheck(node -> ptrs[0]);
-            if (temp == NULL || temp -> kind != BoolType)
+            if (temp == NULL || (temp -> kind != BoolType && temp -> kind != BoolLiteral))
                 throwSemanticError(node, "expected bool type expression");
             break;
         case DoWhile:
@@ -664,7 +664,7 @@ void return_(ASTNode * node) {
     }
 }
 
-//从表达式节点出发，检查表达式各部分的类型，进行隐式类型转换，并返回表达式最终得到的类型，基本上是语义分析的核心
+//从表达式节点出发，检查表达式各部分的类型，并返回表达式最终得到的类型，基本上是语义分析的核心
 ASTNode * exprCheck(ASTNode * node) {
     if (node -> kind == Identifier) {
         ASTNode * target = scope -> lookup(scope, node -> image);       //并不是type
@@ -684,13 +684,71 @@ ASTNode * exprCheck(ASTNode * node) {
         return node;
     }
     else if (node -> kind == BinaryOp) {
+        ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
         ASTNode * type1 = exprCheck(node -> ptrs[0]);
         ASTNode * type2 = exprCheck(node -> ptrs[1]);
+        int dim1 = 0, dim2 = 0;
 
         if (type1 == NULL || type2 == NULL)
             return NULL;
+
+        if (type1 -> ptrs[1] != NULL) {
+            dim1 = type1 -> ptrs[1] -> listLen;
+        }
+        if (type2 -> ptrs[1] != NULL) {
+            dim2 = type2 -> ptrs[1] -> listLen;
+        }
         
         BinaryOpTypeChecker(node, type1, type2);
+
+        if (!strcmp(node -> image, "==")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
+        else if (!strcmp(node -> image, "!=")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
+        else if (!strcmp(node -> image, "&&")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
+        else if (!strcmp(node -> image, "||")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
+        else if (!strcmp(node -> image, ">")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
+        else if (!strcmp(node -> image, "<")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
+        else if (!strcmp(node -> image, ">=")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
+        else if (!strcmp(node -> image, "<=")) {
+            if (dim1 != 0 || dim2 != 0) {
+                throwSemanticError(node, "array type not allowed in logic expressions");
+            }
+            return NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
         
         if (type1 -> kind == Cast)
             return type2;
@@ -857,8 +915,11 @@ ASTNode * exprCheck(ASTNode * node) {
         if (type == NULL)
             return NULL;
         
-        if (!strcmp(node -> image, "!"))
+        if (!strcmp(node -> image, "!")) {
             UnaryOpTypeChecker(type, LOGICNOT);
+            ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+            type = NodeConstructor(BoolType, fileChecking, node -> line, NULL, ptrs);
+        }
         else
             UnaryOpTypeChecker(type, NOT);
         
@@ -1730,6 +1791,18 @@ ASTNode * getTargetType(ASTNode * target) {
                     new -> append(new, *temp);
                     free(temp);
                 }
+
+                //if (target -> ptrs[2] -> kind == Varname) {
+                int len = target -> ptrs[2] -> listLen;
+                if (len > 0) {
+                    ASTNode * fake_node = NodeConstructor(IntType, fileChecking, target -> line, "Fake node", ptrs);
+                    int count = 0;
+                    while (count < len) {
+                        fake_node -> append(fake_node, target -> ptrs[2] -> list[count]);
+                        count++;
+                    }
+                    new -> ptrs[1] = fake_node; //ptrs[0] is for ConstMark
+                }
                 return new;
             }
             else {
@@ -1747,6 +1820,18 @@ ASTNode * getTargetType(ASTNode * target) {
                     temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
                     new -> append(new, *temp);
                     free(temp);
+                }
+
+                //if (target -> ptrs[1] -> kind == Varname) {
+                int len = target -> ptrs[1] -> listLen;
+                if (len > 0) {
+                    ASTNode * fake_node = NodeConstructor(IntType, fileChecking, target -> line, "Fake node", ptrs);
+                    int count = 0;
+                    while (count < len) {
+                        fake_node -> append(fake_node, target -> ptrs[1] -> list[count]);
+                        count++;
+                    }
+                    new -> ptrs[1] = fake_node; //ptrs[0] is for ConstMark
                 }
                 return new;
             }
@@ -1769,6 +1854,18 @@ ASTNode * getTargetType(ASTNode * target) {
                     free(temp);
                 }
 
+                //if (target -> ptrs[2] -> kind == Varname) {
+                int len = target -> ptrs[2] -> listLen;
+                if (len > 0) {
+                    ASTNode * fake_node = NodeConstructor(IntType, fileChecking, target -> line, "Fake node", ptrs);
+                    int count = 0;
+                    while (count < len) {
+                        fake_node -> append(fake_node, target -> ptrs[2] -> list[count]);
+                        count++;
+                    }
+                    new -> ptrs[1] = fake_node; //ptrs[0] is for ConstMark
+                }
+
                 temp = NodeConstructor(ConstMark, fileChecking, target -> line, NULL, ptrs);
                 new -> ptrs[0] = temp;
                 return new;
@@ -1788,6 +1885,18 @@ ASTNode * getTargetType(ASTNode * target) {
                     temp = NodeConstructor(PtrRef, fileChecking, target -> line, NULL, ptrs);
                     new -> append(new, *temp);
                     free(temp);
+                }
+
+                //if (target -> ptrs[1] -> kind == Varname) {
+                int len = target -> ptrs[1] -> listLen;
+                if (len > 0) {
+                    ASTNode * fake_node = NodeConstructor(IntType, fileChecking, target -> line, "Fake node", ptrs);
+                    int count = 0;
+                    while (count < len) {
+                        fake_node -> append(fake_node, target -> ptrs[1] -> list[count]);
+                        count++;
+                    }
+                    new -> ptrs[1] = fake_node; //ptrs[0] is for ConstMark
                 }
 
                 temp = NodeConstructor(ConstMark, fileChecking, target -> line, NULL, ptrs);
