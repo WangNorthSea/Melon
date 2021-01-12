@@ -2,7 +2,9 @@
 #define __FILEOP_H__
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-extern int fgetc_buffered(FILE *fp);
+extern void file_write(FILE * fp, char * str);
 
 #endif

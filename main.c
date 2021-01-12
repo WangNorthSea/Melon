@@ -10,6 +10,7 @@
 #include "Semantics/semantics.h"
 #include "Dumper/ASTdumper.h"
 #include "Dumper/scopedumper.h"
+#include "CodeGen/codegen.h"
 
 char * parsingFile = NULL;
 
@@ -66,6 +67,8 @@ int main(int argc, const char * argv[]) {
 
     printf("\nAST:\n");
     dumpAST(rootNode);
+
+    riscv64__codegen(rootNode);
     
     return 0;
 }

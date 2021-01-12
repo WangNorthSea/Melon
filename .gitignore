@@ -2,3 +2,4 @@
 clang-output.sh
 .vscode
 *.dSYM
+global_test.*
