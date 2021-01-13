@@ -1910,12 +1910,12 @@ void assignFloatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     
     switch (type2 -> kind) {
         case IntegerLiteral:
-            if (type1 -> listLen == 0) {
+            /*if (type1 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
-            }
+            }*/
             break;
         case CharacterLiteral:
             if (type1 -> listLen == 0) {
@@ -1930,10 +1930,10 @@ void assignFloatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
             break;
         case FloatLiteral:
             if (type1 -> listLen == 0) {
-                temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
+                /*temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[1];
-                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
+                parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);*/
             }
             else
                 throwSemanticError(type1, "data type mismatched");
@@ -1981,14 +1981,15 @@ void assignFloatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
-            else if (type1 -> listLen == 0 && type2 -> listLen != 0)
+            else */if (type1 -> listLen == 0 && type2 -> listLen != 0)
                 throwSemanticError(type1, "data type mismatched");
-            else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
+            /*else if (type1 -> listLen == 0 && type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }*/
+            else if (type1 -> listLen != 0 && type2 -> listLen == 0)
             throwSemanticError(type1, "data type mismatched");
             break;
         case LongIntType:
@@ -2096,12 +2097,12 @@ void assignDoubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     
     switch (type2 -> kind) {
         case IntegerLiteral:
-            if (type1 -> listLen == 0) {
+            /*if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
-            }
+            }*/
             break;
         case CharacterLiteral:
             if (type1 -> listLen == 0) {

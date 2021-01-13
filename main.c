@@ -68,7 +68,7 @@ int main(int argc, const char * argv[]) {
     printf("\nAST:\n");
     dumpAST(rootNode);
 
-    riscv64__codegen(rootNode);
+    riscv64__codegen(rootNode, scope);
     
     return 0;
 }

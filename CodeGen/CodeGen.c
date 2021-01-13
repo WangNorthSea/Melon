@@ -36,6 +36,462 @@ void riscv64__put_header(FILE * fp) {
     file_write(fp, "\t\t.attribute stack_align, 16\n");
 }
 
+void riscv64__put_globl_int(FILE * fp, ASTNode * var) {
+    if (var -> ptrs[2] -> listLen == 0) {  //not array
+        file_write(fp, "\t\t.globl ");
+        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+        file_write(fp, "\n");
+        if (var -> ptrs[3] == NULL) {
+            file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+            file_write(fp, "\t\t.align\t2\n");
+            file_write(fp, "\t\t.type\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", @object\n");
+            file_write(fp, "\t\t.size\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", 4\n");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ":\n");
+            file_write(fp, "\t\t.zero\t4\n\n");
+        }
+        else if (var -> ptrs[3] -> kind == IntegerLiteral) {
+            if (!strcmp(var -> ptrs[3] -> image, "0")) {  //initialized as 0
+                file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+                file_write(fp, "\t\t.align\t2\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 4\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                file_write(fp, "\t\t.zero\t4\n\n");
+            }
+            else {
+                file_write(fp, "\t\t.section\t\t.sdata,\"aw\"\n");
+                file_write(fp, "\t\t.align\t2\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 4\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                file_write(fp, "\t\t.word\t");
+                file_write(fp, var -> ptrs[3] -> image);
+                file_write(fp, "\n\n");
+            }
+        }
+    }
+    else {
+        if (var -> ptrs[2] -> list[0].kind == FixedArray) {
+            int elem_count = atoi(var -> ptrs[2] -> list[0].image);
+            if (var -> ptrs[3] == NULL) {   //uninitialized
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                file_write(fp, "\t\t.bss\n");
+                file_write(fp, "\t\t.align\t3\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                fprintf(fp, ", %d\n", elem_count * 4);
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                fprintf(fp, "\t\t.zero\t%d\n\n", elem_count * 4);
+            }
+            else {
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                if (var -> ptrs[3] -> kind == ListExpr) {
+                    if (var -> ptrs[3] -> listLen == 1 && var -> ptrs[3] -> list[0].image[0] == '0') {
+                        file_write(fp, "\t\t.bss\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count * 4);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        fprintf(fp, "\t\t.zero\t%d\n\n", elem_count * 4);
+                    }
+                    else {
+                        file_write(fp, "\t\t.data\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count * 4);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        for (int i = 0; i < elem_count; i++) {
+                            fprintf(fp, "\t\t.word\t%s\n", var -> ptrs[3] -> list[i].image);
+                        }
+                        file_write(fp, "\n");
+                    }
+                }
+                else {
+                    ;
+                }
+            }
+        }
+    }
+}
+
+void riscv64__put_globl_char(FILE * fp, ASTNode * var) {
+    if (var -> ptrs[2] -> listLen == 0) {  //not array
+        file_write(fp, "\t\t.globl ");
+        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+        file_write(fp, "\n");
+        if (var -> ptrs[3] == NULL) {
+            file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+            file_write(fp, "\t\t.type\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", @object\n");
+            file_write(fp, "\t\t.size\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", 1\n");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ":\n");
+            file_write(fp, "\t\t.zero\t1\n\n");
+        }
+        else if (var -> ptrs[3] -> kind == IntegerLiteral) {
+            if (!strcmp(var -> ptrs[3] -> image, "0")) {  //initialized as 0
+                file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 1\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                file_write(fp, "\t\t.zero\t1\n\n");
+            }
+            else {
+                file_write(fp, "\t\t.section\t\t.sdata,\"aw\"\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 1\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                file_write(fp, "\t\t.byte\t");
+                file_write(fp, var -> ptrs[3] -> image);
+                file_write(fp, "\n\n");
+            }
+        }
+    }
+    else {
+        if (var -> ptrs[2] -> list[0].kind == FixedArray) {
+            int elem_count = atoi(var -> ptrs[2] -> list[0].image);
+            if (var -> ptrs[3] == NULL) {   //uninitialized
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                file_write(fp, "\t\t.section\t\t.sbss\n");
+                file_write(fp, "\t\t.align\t3\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                fprintf(fp, ", %d\n", elem_count);
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                fprintf(fp, "\t\t.zero\t%d\n\n", elem_count);
+            }
+            else {
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                if (var -> ptrs[3] -> kind == ListExpr) {
+                    if (var -> ptrs[3] -> listLen == 1 && var -> ptrs[3] -> list[0].image[0] == '0') {
+                        file_write(fp, "\t\t.section\t\t.sbss\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        fprintf(fp, "\t\t.zero\t%d\n\n", elem_count);
+                    }
+                    else {
+                        file_write(fp, "\t\t.section\t\t.sdata\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        for (int i = 0; i < elem_count; i++) {
+                            fprintf(fp, "\t\t.byte\t%s\n", var -> ptrs[3] -> list[i].image);
+                        }
+                        file_write(fp, "\n");
+                    }
+                }
+                else {
+                    ;
+                }
+            }
+        }
+    }
+}
+
+void riscv64__put_globl_float(FILE * fp, ASTNode * var) {
+    if (var -> ptrs[2] -> listLen == 0) {  //not array
+        file_write(fp, "\t\t.globl ");
+        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+        file_write(fp, "\n");
+        if (var -> ptrs[3] == NULL) {
+            file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+            file_write(fp, "\t\t.align\t2\n");
+            file_write(fp, "\t\t.type\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", @object\n");
+            file_write(fp, "\t\t.size\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", 4\n");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ":\n");
+            file_write(fp, "\t\t.zero\t4\n\n");
+        }
+        else if (var -> ptrs[3] -> kind == IntegerLiteral || var -> ptrs[3] -> kind == FloatLiteral) {
+            if (!strcmp(var -> ptrs[3] -> image, "0")) {  //initialized as 0
+                file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+                file_write(fp, "\t\t.align\t2\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 4\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                file_write(fp, "\t\t.zero\t4\n\n");
+            }
+            else {
+                file_write(fp, "\t\t.section\t\t.sdata,\"aw\"\n");
+                file_write(fp, "\t\t.align\t2\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 4\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                file_write(fp, "\t\t.word\t");
+                float num = strtof(var -> ptrs[3] -> image, NULL);
+                float * num_ptr = &num;
+                unsigned output = *(unsigned *)num_ptr;
+                fprintf(fp, "%u\n\n", output);
+            }
+        }
+    }
+    else {
+        if (var -> ptrs[2] -> list[0].kind == FixedArray) {
+            int elem_count = atoi(var -> ptrs[2] -> list[0].image);
+            if (var -> ptrs[3] == NULL) {   //uninitialized
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                file_write(fp, "\t\t.bss\n");
+                file_write(fp, "\t\t.align\t3\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                fprintf(fp, ", %d\n", elem_count * 4);
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                fprintf(fp, "\t\t.zero\t%d\n\n", elem_count * 4);
+            }
+            else {
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                if (var -> ptrs[3] -> kind == ListExpr) {
+                    if (var -> ptrs[3] -> listLen == 1 && var -> ptrs[3] -> list[0].image[0] == '0') {
+                        file_write(fp, "\t\t.bss\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count * 4);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        fprintf(fp, "\t\t.zero\t%d\n\n", elem_count * 4);
+                    }
+                    else {
+                        file_write(fp, "\t\t.data\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count * 4);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        for (int i = 0; i < elem_count; i++) {
+                            float num = strtof(var -> ptrs[3] -> list[i].image, NULL);
+                            float * num_ptr = &num;
+                            unsigned output = *(unsigned *)num_ptr;
+                            fprintf(fp, "\t\t.word\t%u\n", output);
+                        }
+                        file_write(fp, "\n");
+                    }
+                }
+                else {
+                    ;
+                }
+            }
+        }
+    }
+}
+
+void riscv64__put_globl_double(FILE * fp, ASTNode * var) {
+    if (var -> ptrs[2] -> listLen == 0) {  //not array
+        file_write(fp, "\t\t.globl ");
+        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+        file_write(fp, "\n");
+        if (var -> ptrs[3] == NULL) {
+            file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+            file_write(fp, "\t\t.align\t3\n");
+            file_write(fp, "\t\t.type\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", @object\n");
+            file_write(fp, "\t\t.size\t");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ", 8\n");
+            file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+            file_write(fp, ":\n");
+            file_write(fp, "\t\t.zero\t8\n\n");
+        }
+        else if (var -> ptrs[3] -> kind == IntegerLiteral || var -> ptrs[3] -> kind == FloatLiteral) {
+            if (!strcmp(var -> ptrs[3] -> image, "0")) {  //initialized as 0
+                file_write(fp, "\t\t.section\t\t.sbss,\"aw\",@nobits\n");
+                file_write(fp, "\t\t.align\t3\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 8\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                file_write(fp, "\t\t.zero\t8\n\n");
+            }
+            else {
+                file_write(fp, "\t\t.section\t\t.sdata,\"aw\"\n");
+                file_write(fp, "\t\t.align\t3\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", 8\n");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                double num = strtod(var -> ptrs[3] -> image, NULL);
+                double * num_ptr = &num;
+                unsigned long long output = *(unsigned long long *)num_ptr;
+                unsigned upper = (unsigned)((output >> 32) & 0xffffffff);
+                unsigned lower = (unsigned)(output & 0xffffffff);
+                fprintf(fp, "\t\t.word\t%u\n", lower);
+                fprintf(fp, "\t\t.word\t%u\n\n", upper);  //little endian
+            }
+        }
+    }
+    else {
+        if (var -> ptrs[2] -> list[0].kind == FixedArray) {
+            int elem_count = atoi(var -> ptrs[2] -> list[0].image);
+            if (var -> ptrs[3] == NULL) {   //uninitialized
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                file_write(fp, "\t\t.bss\n");
+                file_write(fp, "\t\t.align\t3\n");
+                file_write(fp, "\t\t.type\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ", @object\n");
+                file_write(fp, "\t\t.size\t");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                fprintf(fp, ", %d\n", elem_count * 8);
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                file_write(fp, ":\n");
+                fprintf(fp, "\t\t.zero\t%d\n\n", elem_count * 8);
+            }
+            else {
+                file_write(fp, "\t\t.globl ");
+                file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
+                file_write(fp, "\n");
+                if (var -> ptrs[3] -> kind == ListExpr) {
+                    if (var -> ptrs[3] -> listLen == 1 && var -> ptrs[3] -> list[0].image[0] == '0') {
+                        file_write(fp, "\t\t.bss\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count * 8);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        fprintf(fp, "\t\t.zero\t%d\n\n", elem_count * 8);
+                    }
+                    else {
+                        file_write(fp, "\t\t.data\n");
+                        file_write(fp, "\t\t.align\t3\n");
+                        file_write(fp, "\t\t.type\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ", @object\n");
+                        file_write(fp, "\t\t.size\t");
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        fprintf(fp, ", %d\n", elem_count * 8);
+                        file_write(fp, var -> ptrs[2] -> ptrs[0] -> image);
+                        file_write(fp, ":\n");
+                        for (int i = 0; i < elem_count; i++) {
+                            double num = strtod(var -> ptrs[3] -> list[i].image, NULL);
+                            double * num_ptr = &num;
+                            unsigned long long output = *(unsigned long long *)num_ptr;
+                            unsigned upper = (unsigned)((output >> 32) & 0xffffffff);
+                            unsigned lower = (unsigned)(output & 0xffffffff);
+                            fprintf(fp, "\t\t.word\t%u\n", lower);
+                            fprintf(fp, "\t\t.word\t%u\n", upper); //little endian
+                        }
+                        file_write(fp, "\n");
+                    }
+                }
+                else {
+                    ;
+                }
+            }
+        }
+    }
+}
+
 void riscv64__put_globl_var(FILE * fp, Scope * scope) {
     file_write(fp, "\t\t.text\n");
     for (int i = 0; i < TableArraySize; i++) {
@@ -43,7 +499,27 @@ void riscv64__put_globl_var(FILE * fp, Scope * scope) {
             struct Value * next = &(scope -> symbolTable -> tableArray[i]);
             while (next != NULL) {
                 ASTNode * var = (ASTNode *)next -> target;
-                
+                if (var -> kind == Variable) {
+                    switch (var -> ptrs[1] -> kind) {
+                        case IntType:
+                            riscv64__put_globl_int(fp, var);
+                            break;
+                        case CharType:
+                            riscv64__put_globl_char(fp, var);
+                            break;
+                        case BoolType:
+                            riscv64__put_globl_char(fp, var);
+                            break;
+                        case FloatType:
+                            riscv64__put_globl_float(fp, var);
+                            break;
+                        case DoubleType:
+                            riscv64__put_globl_double(fp, var);
+                            break;
+                        default:
+                            break;
+                    }
+                }
                 /*if (((ASTNode *)next -> target) -> kind == DefinedFunc || ((ASTNode *)next -> target) -> kind == DefinedStruct || ((ASTNode *)next -> target) -> kind == DefinedUnion || ((ASTNode *)next -> target) -> kind == Block || ((ASTNode *)next -> target) -> kind == FuncPtrParam) {
                     ;
                 }*/
@@ -59,8 +535,8 @@ void riscv64__codegen(ASTNode * root, Scope * scope) {
     FILE * codefile = fopen(codefile_path, "w");
     
     riscv64__put_header(codefile);
-    //riscv64__put_globl_var(codefile, scope);
-
+    riscv64__put_globl_var(codefile, scope);
+    
 
 
 
