@@ -291,7 +291,7 @@ void definedFunc(ASTNode * node) {      //返回值type为ptrs[1]
         }
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node, 0, 0, 0);
     newScope();
 }
 
@@ -302,9 +302,9 @@ void definedStruct(ASTNode * node) {
         throwSemanticError(node, "struct redefined");
         return;
     }
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node, 0, 0, 0);
     newScope();
-    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
+    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope, 0, 0, 0);
     lastStop = GNodeConstructor(NULL, NodeConstructor(StructType, fileChecking, node -> line, node -> ptrs[0] -> image, ptrs));
 }
 
@@ -315,9 +315,9 @@ void definedUnion(ASTNode * node) {
         throwSemanticError(node, "union redefined");
         return;
     }
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[0] -> image, node, 0, 0, 0);
     newScope();
-    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope);
+    StruUnionScope -> put(StruUnionScope, node -> ptrs[0] -> image, scope, 0, 0, 0);
     lastStop = GNodeConstructor(NULL, NodeConstructor(UnionType, fileChecking, node -> line, node -> ptrs[0] -> image, ptrs));
 }
 
@@ -344,7 +344,13 @@ void normalParam(ASTNode * node) {
         }
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
+    if (node -> ptrs[1] -> listLen == 0) {
+        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node, PARAM_VAR, 0, 0);
+    }
+    else {
+        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node, PARAM_VAR, 1, atoi(node -> ptrs[1] -> list[0].image));
+    }
+    
 }
 
 void constParam(ASTNode * node) {
@@ -366,7 +372,12 @@ void constParam(ASTNode * node) {
         }
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node);
+    if (node -> ptrs[1] -> listLen == 0) {
+        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node, PARAM_VAR, 0, 0);
+    }
+    else {
+        scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> ptrs[0] -> image, node, PARAM_VAR, 1, atoi(node -> ptrs[1] -> list[0].image));
+    }
 }
 
 void funcPtrParam(ASTNode * node) {
@@ -389,7 +400,7 @@ void funcPtrParam(ASTNode * node) {
         }
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[1] -> image, node, 0, 0, 0);
     newScope();
 }
 
@@ -420,7 +431,7 @@ void funcPtr(ASTNode * node) {
         throwSemanticError(node, "function pointer redefined");
         return;
     }
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node, 0, 0, 0);
     newScope();
 }
 
@@ -488,7 +499,18 @@ void * variable(ASTNode * node) {
         node -> ptrs[1] = temp;
     }
 
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+    int loc_type = LOCAL_VAR;
+    int isArray = 0;
+    int arrlen = 0;
+    if (inFunc == 0) {
+        loc_type = GLOBAL_VAR;
+    }
+    if (node -> ptrs[varname] -> listLen != 0) {
+        isArray = 1;
+        arrlen = atoi(node -> ptrs[varname] -> list[0].image);
+    }
+
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node, loc_type, isArray, arrlen);
 
     return (void *)1;
 }
@@ -520,7 +542,7 @@ void constFuncPtr(ASTNode * node) {
         throwSemanticError(node, "function pointer redefined");
         return;
     }
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[name] -> image, node, 0, 0, 0);
     newScope();
 }
 
@@ -588,13 +610,24 @@ void * constVariable(ASTNode * node) {
         node -> ptrs[1] = temp;
     }
 
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node);
+    int loc_type = LOCAL_VAR;
+    int isArray = 0;
+    int arrlen = 0;
+    if (inFunc == 0) {
+        loc_type = GLOBAL_VAR;
+    }
+    if (node -> ptrs[varname] -> listLen != 0) {
+        isArray = 1;
+        arrlen = atoi(node -> ptrs[varname] -> list[0].image);
+    }
+
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[varname] -> ptrs[0] -> image, node, loc_type, isArray, arrlen);
 
     return (void *)1;
 }
 
 void blockScope(ASTNode * node) {
-    scope -> symbolTable -> put(scope -> symbolTable, "<<Block>>", node);
+    scope -> symbolTable -> put(scope -> symbolTable, "<<Block>>", node, 0, 0, 0);
     newScope();
 }
 
@@ -618,7 +651,7 @@ void funcStmt(ASTNode * node) {
         }
     }
     
-    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> ptrs[2] -> image, node, 0, 0, 0);
     newScope();
 }
 
@@ -641,7 +674,7 @@ void label(ASTNode * node) {
         throwSemanticError(node, "label relocated");
         return;
     }
-    scope -> symbolTable -> put(scope -> symbolTable, node -> image, node);
+    scope -> symbolTable -> put(scope -> symbolTable, node -> image, node, 0, 0, 0);
 }
 
 void return_(ASTNode * node) {

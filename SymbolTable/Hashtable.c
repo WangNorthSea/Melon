@@ -4,6 +4,8 @@
 #include "../ASTNode/node.h"
 #include "hashtable.h"
 
+struct varinfo * global_info_ptr = NULL;
+
 unsigned int ELFHash(char * str) {
     unsigned int hash = 0;
     unsigned int x = 0;
@@ -20,7 +22,7 @@ unsigned int ELFHash(char * str) {
     return hash & 0x7fffffff;
 }
 
-void put(Hashtable * table, char * key, void * value) {
+void put(Hashtable * table, char * key, void * value, int loc_type, int isArray, int arrlen) {
     unsigned int hashValue = ELFHash(key);
     int arrayLoc = hashValue % TableArraySize;
     Value * temp = NULL;
@@ -28,6 +30,9 @@ void put(Hashtable * table, char * key, void * value) {
     if (table -> tableArray[arrayLoc].key == NULL) {
         table -> tableArray[arrayLoc].target = value;
         table -> tableArray[arrayLoc].key = key;
+        table -> tableArray[arrayLoc].info.loc_type = loc_type;
+        table -> tableArray[arrayLoc].info.isArray = isArray;
+        table -> tableArray[arrayLoc].info.arrlen = arrlen;
     }
     else {
         temp = &table -> tableArray[arrayLoc];
@@ -38,6 +43,9 @@ void put(Hashtable * table, char * key, void * value) {
         temp -> next = NULL;
         temp -> target = value;
         temp -> key = key;
+        temp -> info.loc_type = loc_type;
+        temp -> info.isArray = isArray;
+        temp -> info.arrlen = arrlen;
     }
 }
 
@@ -48,8 +56,10 @@ void * get(struct Hashtable * table, char * key) {
     
     while (temp != NULL) {
         if (temp -> key != NULL) {
-            if (!strcmp(temp -> key, key))
+            if (!strcmp(temp -> key, key)) {
+                global_info_ptr = &(temp -> info);
                 return temp -> target;
+            }
             else
                 temp = temp -> next;
         }
@@ -69,6 +79,10 @@ Hashtable * HashtableConstructor(void) {
         table -> tableArray[i].key = NULL;
         table -> tableArray[i].next = NULL;
         table -> tableArray[i].target = NULL;
+        table -> tableArray[i].info.arrlen = 0;
+        table -> tableArray[i].info.frame_offset = 0;
+        table -> tableArray[i].info.isArray = 0;
+        table -> tableArray[i].info.loc_type = 0;
     }
     
     return table;

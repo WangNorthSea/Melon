@@ -13,6 +13,8 @@
 #include "../Parser/parser.h"
 #include "../File/fileop.h"
 
+#define ROUND(a, n)     (((((int)(a))+(n)-1)) & ~((n)-1))
+
 char * riscv64__new_filepath(void) {
     char * codefile_path = (char *)malloc(strlen(parsingFile));
     memcpy(codefile_path, parsingFile, strlen(parsingFile));
@@ -36,7 +38,7 @@ void riscv64__put_header(FILE * fp) {
     file_write(fp, "\t\t.attribute stack_align, 16\n");
 }
 
-void riscv64__put_globl_int(FILE * fp, ASTNode * var) {
+void riscv64__put_globl_int(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -147,7 +149,7 @@ void riscv64__put_globl_int(FILE * fp, ASTNode * var) {
     }
 }
 
-void riscv64__put_globl_char(FILE * fp, ASTNode * var) {
+void riscv64__put_globl_char(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -255,7 +257,7 @@ void riscv64__put_globl_char(FILE * fp, ASTNode * var) {
     }
 }
 
-void riscv64__put_globl_float(FILE * fp, ASTNode * var) {
+void riscv64__put_globl_float(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -371,7 +373,7 @@ void riscv64__put_globl_float(FILE * fp, ASTNode * var) {
     }
 }
 
-void riscv64__put_globl_double(FILE * fp, ASTNode * var) {
+void riscv64__put_globl_double(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -499,22 +501,23 @@ void riscv64__put_globl_var(FILE * fp, Scope * scope) {
             struct Value * next = &(scope -> symbolTable -> tableArray[i]);
             while (next != NULL) {
                 ASTNode * var = (ASTNode *)next -> target;
-                if (var -> kind == Variable) {
+                struct varinfo * info_ptr = &(next -> info);
+                if (var -> kind == Variable || var -> kind == ConstVariable) {
                     switch (var -> ptrs[1] -> kind) {
                         case IntType:
-                            riscv64__put_globl_int(fp, var);
+                            riscv64__put_globl_int(fp, var, info_ptr);
                             break;
                         case CharType:
-                            riscv64__put_globl_char(fp, var);
+                            riscv64__put_globl_char(fp, var, info_ptr);
                             break;
                         case BoolType:
-                            riscv64__put_globl_char(fp, var);
+                            riscv64__put_globl_char(fp, var, info_ptr);
                             break;
                         case FloatType:
-                            riscv64__put_globl_float(fp, var);
+                            riscv64__put_globl_float(fp, var, info_ptr);
                             break;
                         case DoubleType:
-                            riscv64__put_globl_double(fp, var);
+                            riscv64__put_globl_double(fp, var, info_ptr);
                             break;
                         default:
                             break;
@@ -530,6 +533,80 @@ void riscv64__put_globl_var(FILE * fp, Scope * scope) {
 
 }
 
+void riscv64__set_var_offset(Scope * scope, int * frame_offset) {
+    int branch = 0;
+    for (int i = 0; i < TableArraySize; i++) {
+        if (scope -> symbolTable -> tableArray[i].key != NULL) {
+            struct Value * next = &(scope -> symbolTable -> tableArray[i]);
+            while (next != NULL) {
+                ASTNode * var = (ASTNode *)next -> target;
+                struct varinfo * info_ptr = &(next -> info);
+                if (var -> kind == Variable || var -> kind == ConstVariable) {
+                    switch (var -> ptrs[1] -> kind) {
+                        case IntType:
+                            *frame_offset = ROUND(*frame_offset, 4);
+                            if (info_ptr -> isArray == 0) {
+                                *frame_offset += 4;
+                            }
+                            else {
+                                *frame_offset += info_ptr -> arrlen * 4;
+                            }
+                            break;
+                        case CharType:
+                            if (info_ptr -> isArray == 0) {
+                                *frame_offset += 1;
+                            }
+                            else {
+                                *frame_offset += info_ptr -> arrlen;
+                            }
+                            break;
+                        case BoolType:
+                            if (info_ptr -> isArray == 0) {
+                                *frame_offset += 1;
+                            }
+                            else {
+                                *frame_offset += info_ptr -> arrlen;
+                            }
+                            break;
+                        case FloatType:
+                            *frame_offset = ROUND(*frame_offset, 4);
+                            if (info_ptr -> isArray == 0) {
+                                *frame_offset += 4;
+                            }
+                            else {
+                                *frame_offset += info_ptr -> arrlen * 4;
+                            }
+                            break;
+                        case DoubleType:
+                            *frame_offset = ROUND(*frame_offset, 8);
+                            if (info_ptr -> isArray == 0) {
+                                *frame_offset += 8;
+                            }
+                            else {
+                                *frame_offset += info_ptr -> arrlen * 8;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    info_ptr -> frame_offset = -(*frame_offset);
+                }
+                if (var -> kind == Block) {
+                    riscv64__set_var_offset(scope -> lowerLevel[branch], frame_offset);
+                    branch++;
+                }
+                next = next -> next;
+            }
+        }
+    }
+}
+
+void riscv64__put_func(FILE * fp, ASTNode * node, Scope * scope) {
+    int frame_offset = 0;
+    riscv64__set_var_offset(scope, &frame_offset);
+    
+}
+
 void riscv64__codegen(ASTNode * root, Scope * scope) {
     char * codefile_path = riscv64__new_filepath();
     FILE * codefile = fopen(codefile_path, "w");
@@ -537,16 +614,21 @@ void riscv64__codegen(ASTNode * root, Scope * scope) {
     riscv64__put_header(codefile);
     riscv64__put_globl_var(codefile, scope);
     
-
-
-
-
-
-
-
-
-
-
+    int branch = 0;
+    for (int i = 0; i < TableArraySize; i++) {
+        if (scope -> symbolTable -> tableArray[i].key != NULL) {
+            struct Value * next = &(scope -> symbolTable -> tableArray[i]);
+            while (next != NULL) {
+                ASTNode * var = (ASTNode *)next -> target;
+                struct varinfo * info_ptr = &(next -> info);
+                if (var -> kind == DefinedFunc) {
+                    riscv64__put_func(codefile, var, scope -> lowerLevel[branch]);
+                    branch++;
+                }
+                next = next -> next;
+            }
+        }
+    }
 
     fclose(codefile);
 }

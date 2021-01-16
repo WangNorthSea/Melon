@@ -53,7 +53,7 @@ void dumpScope(Scope * scope) {
                 int j;
                 for (j = 0; j < dumpScopeLevel; j++)
                     printf("\t");
-                printf("key: %s\n", next -> key);
+                printf("key: %s\t\tloc_type:%d isArray:%d arrlen:%d\n", next -> key, next -> info.loc_type, next -> info.isArray, next -> info.arrlen);
                 dumpASTNode(dumpScopeLevel, (ASTNode *)next -> target);
                 if (((ASTNode *)next -> target) -> kind == DefinedFunc || ((ASTNode *)next -> target) -> kind == DefinedStruct || ((ASTNode *)next -> target) -> kind == DefinedUnion || ((ASTNode *)next -> target) -> kind == Block || ((ASTNode *)next -> target) -> kind == FuncPtrParam) {
                     dumpScope(scope -> lowerLevel[branch]);

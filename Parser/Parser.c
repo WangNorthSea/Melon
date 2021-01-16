@@ -1398,7 +1398,7 @@ ASTNode * typedef_(void) {
         }
     }
     
-    typeDefList -> put(typeDefList, ptrs[1] -> image, ptrs[0]);
+    typeDefList -> put(typeDefList, ptrs[1] -> image, ptrs[0], 0, 0, 0);
     
     return NodeConstructor(TypeDef, parsingFile, token -> beginLine, NULL, ptrs);
 }
