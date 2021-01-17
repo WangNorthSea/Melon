@@ -601,10 +601,63 @@ void riscv64__set_var_offset(Scope * scope, int * frame_offset) {
     }
 }
 
+void riscv64__put_abi_head(FILE * fp, int frame_offset, int ra_offset, int s0_offset) {
+    fprintf(fp, "\t\taddi\t\tsp,sp,%d\n", -frame_offset);
+    fprintf(fp, "\t\tsd\t\tra,%d(sp)\n", frame_offset + ra_offset);
+    fprintf(fp, "\t\tsd\t\ts0,%d(sp)\n", frame_offset + s0_offset);
+    fprintf(fp, "\t\taddi\t\ts0,sp,%d\n", frame_offset);
+}
+
+void riscv64__put_abi_tail(FILE * fp, ASTNode * node, int frame_offset, int ra_offset, int s0_offset) {
+    if (node -> ptrs[1] -> kind != VoidType) {
+        file_write(fp, "\t\tmv\t\ta0,s0\n");
+    }
+    fprintf(fp, "\t\tld\t\tra,%d(sp)\n", frame_offset + ra_offset);
+    fprintf(fp, "\t\tld\t\ts0,%d(sp)\n", frame_offset + s0_offset);
+    fprintf(fp, "\t\taddi\t\tsp,sp,%d\n", frame_offset);
+    file_write(fp, "\t\tjr\t\tra\n");
+}
+
+void riscv64__put_block(FILE * fp, ASTNode * block, Scope * scope) {
+    ASTNode * stmt = NULL;
+    for (int i = 0; i < block -> ptrs[0] -> listLen; i++) {
+        stmt = &(block -> ptrs[0] -> list[i]);
+        switch (stmt -> ptrs[0] -> kind) {
+            case DefinedVariables:
+                break;
+            case Assign:
+                break;
+            case Return:
+                break;
+            case If:
+                break;
+            case While:
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 void riscv64__put_func(FILE * fp, ASTNode * node, Scope * scope) {
-    int frame_offset = 0;
+    int frame_offset = 16, ra_offset = -8, s0_offset = -16;
+    char * funcname = node -> ptrs[2] -> image;
     riscv64__set_var_offset(scope, &frame_offset);
-    
+    file_write(fp, "\t\t.text\n");
+    file_write(fp, "\t\t.align\t1\n");
+    fprintf(fp, "\t\t.globl\t%s\n", funcname);
+    fprintf(fp, "\t\t.type\t%s, @function\n", funcname);
+    fprintf(fp, "%s:\n", funcname);
+
+    riscv64__put_abi_head(fp, frame_offset, ra_offset, s0_offset);
+    riscv64__put_block(fp, node -> ptrs[4], scope);
+
+
+
+
+    riscv64__put_abi_tail(fp, node, frame_offset, ra_offset, s0_offset);
+
+    fprintf(fp, "\t\t.size\t%s, .-%s\n", funcname, funcname);
 }
 
 void riscv64__codegen(ASTNode * root, Scope * scope) {
