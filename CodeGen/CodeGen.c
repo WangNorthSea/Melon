@@ -747,6 +747,7 @@ void riscv64_put_func(FILE * fp, ASTNode * node, Scope * scope) {
     int frame_offset = 16, ra_offset = -8, s0_offset = -16;
     char * funcname = node -> ptrs[2] -> image;
     riscv64_set_var_offset(scope, &frame_offset);
+    frame_offset = ROUND(frame_offset, 8);
     file_write(fp, "\t\t.text\n");
     file_write(fp, "\t\t.align\t1\n");
     fprintf(fp, "\t\t.globl\t%s\n", funcname);
