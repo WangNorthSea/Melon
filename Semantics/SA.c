@@ -1125,7 +1125,7 @@ ASTNode * exprCheck(ASTNode * node) {
                     ASTNode * temp = NULL;
                     ASTNode * targetType;
                     ASTNode * inputType;
-                    for (i = 0; i < targetArgs; i++) {
+                    /*for (i = 0; i < targetArgs; i++) {
                         inputType = exprCheck(&(node -> ptrs[1] -> list[i]));
 
                         if (inputType == NULL)
@@ -1144,7 +1144,7 @@ ASTNode * exprCheck(ASTNode * node) {
                             throwSemanticError(node, "argument type mismatched");
                             return NULL;
                         }
-                    }
+                    }*/
                 }
             }
         }

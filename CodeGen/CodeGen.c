@@ -610,7 +610,7 @@ void riscv64__put_abi_head(FILE * fp, int frame_offset, int ra_offset, int s0_of
 
 void riscv64__put_abi_tail(FILE * fp, ASTNode * node, int frame_offset, int ra_offset, int s0_offset) {
     if (node -> ptrs[1] -> kind != VoidType) {
-        file_write(fp, "\t\tmv\t\ta0,s0\n");
+        file_write(fp, "\t\tmv\t\ta0,t0\n");
     }
     fprintf(fp, "\t\tld\t\tra,%d(sp)\n", frame_offset + ra_offset);
     fprintf(fp, "\t\tld\t\ts0,%d(sp)\n", frame_offset + s0_offset);
@@ -618,20 +618,124 @@ void riscv64__put_abi_tail(FILE * fp, ASTNode * node, int frame_offset, int ra_o
     file_write(fp, "\t\tjr\t\tra\n");
 }
 
+void riscv64__put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
+    if (node -> ptrs[0] -> kind == Identifier) {
+        ASTNode * val1 = scope -> lookup(scope, node -> ptrs[0] -> image);
+        if (global_info_ptr -> loc_type == LOCAL_VAR) {
+            switch (val1 -> ptrs[1] -> kind) {
+                case IntType:
+                    fprintf(fp, "\t\tlw\t\tt1,%d(s0)\n", global_info_ptr -> frame_offset);
+                    break;
+            }
+        }
+    }
+
+    if (node -> ptrs[1] -> kind == Identifier) {
+        ASTNode * val2 = scope -> lookup(scope, node -> ptrs[1] -> image);
+        if (global_info_ptr -> loc_type == LOCAL_VAR) {
+            switch (val2 -> ptrs[1] -> kind) {
+                case IntType:
+                    fprintf(fp, "\t\tlw\t\tt2,%d(s0)\n", global_info_ptr -> frame_offset);
+                    break;
+            }
+        }
+    }
+
+    if (!strcmp(node -> image, "+")) {
+        file_write(fp, "\t\tadd\t\tt0,t1,t2\n");
+    }
+}
+
+void riscv64__put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
+    if (node -> ptrs[1] != NULL) {
+        ASTNode * args = node -> ptrs[1];
+        for (int i = 0; i < args -> listLen; i++) {
+            ASTNode * val = NULL;
+            switch (args -> list[i].kind) {
+                case Identifier:
+                    val = scope -> lookup(scope, args -> list[i].image);
+                    if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                        switch (val -> ptrs[1] -> kind) {
+                            case IntType:
+                                fprintf(fp, "\t\tlw\t\ta%d,%d(s0)\n", i, global_info_ptr -> frame_offset);
+                                break;
+                        }
+                    }
+                    break;
+                case IntegerLiteral:
+                    fprintf(fp, "\t\tli\t\ta%d,%s\n", i, args -> list[i].image);
+                    break;
+            }
+        }
+    }
+    fprintf(fp, "\t\tcall\t\t%s\n", node -> ptrs[0] -> image);
+}
+
 void riscv64__put_block(FILE * fp, ASTNode * block, Scope * scope) {
     ASTNode * stmt = NULL;
     for (int i = 0; i < block -> ptrs[0] -> listLen; i++) {
         stmt = &(block -> ptrs[0] -> list[i]);
-        switch (stmt -> ptrs[0] -> kind) {
+        ASTNode * stmt_node = stmt -> ptrs[0];
+        switch (stmt_node -> kind) {
             case DefinedVariables:
+                for (int i = 0; i < stmt_node -> listLen; i++) {
+                    if (stmt_node -> list[i].kind == Variable || stmt_node -> list[i].kind == ConstVariable) {
+                        ASTNode * var = scope -> lookup(scope, stmt_node -> list[i].ptrs[2] -> ptrs[0] -> image);
+                        if (var -> ptrs[3] != NULL) {
+                            if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                                switch (var -> ptrs[1] -> kind) {
+                                    case IntType:
+                                        if (var -> ptrs[3] -> kind == IntegerLiteral) {
+                                            fprintf(fp, "\t\tli\t\tt0,%s\n", var -> ptrs[3] -> image);
+                                            fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
                 break;
             case Assign:
+                if (stmt_node -> ptrs[1] -> kind == IntegerLiteral) {
+                    fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[1] -> image);
+                }
+                else if (stmt_node -> ptrs[1] -> kind == BinaryOp) {
+                    riscv64__put_binary_op(fp, stmt_node -> ptrs[1], scope);
+                }
+                else if (stmt_node -> ptrs[1] -> kind == Funcall) {
+                    riscv64__put_funcall(fp, stmt_node -> ptrs[1], scope);
+                    file_write(fp, "\t\tmv\t\tt0,a0\n");
+                }
+                if (stmt_node -> ptrs[0] -> kind == Identifier) {
+                    ASTNode * lval = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
+                    if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                        switch (lval -> ptrs[1] -> kind) {
+                            case IntType:
+                                fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                break;
+                        }
+                    }
+                }
                 break;
             case Return:
+                if (stmt_node -> ptrs[0] -> kind == Identifier) {
+                    ASTNode * val = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
+                    if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                        switch (val -> ptrs[1] -> kind) {
+                            case IntType:
+                                fprintf(fp, "\t\tlw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                break;
+                        }
+                    }
+                }
                 break;
             case If:
                 break;
             case While:
+                break;
+            case Funcall:
+                riscv64__put_funcall(fp, stmt_node, scope);
                 break;
             default:
                 break;
@@ -650,14 +754,14 @@ void riscv64__put_func(FILE * fp, ASTNode * node, Scope * scope) {
     fprintf(fp, "%s:\n", funcname);
 
     riscv64__put_abi_head(fp, frame_offset, ra_offset, s0_offset);
-    riscv64__put_block(fp, node -> ptrs[4], scope);
+    riscv64__put_block(fp, node -> ptrs[4], scope -> lowerLevel[0]);
 
 
 
 
     riscv64__put_abi_tail(fp, node, frame_offset, ra_offset, s0_offset);
 
-    fprintf(fp, "\t\t.size\t%s, .-%s\n", funcname, funcname);
+    fprintf(fp, "\t\t.size\t%s, .-%s\n\n", funcname, funcname);
 }
 
 void riscv64__codegen(ASTNode * root, Scope * scope) {
@@ -676,6 +780,9 @@ void riscv64__codegen(ASTNode * root, Scope * scope) {
                 struct varinfo * info_ptr = &(next -> info);
                 if (var -> kind == DefinedFunc) {
                     riscv64__put_func(codefile, var, scope -> lowerLevel[branch]);
+                    
+                }
+                if (var -> kind == DefinedFunc || var -> kind == FuncStmt) {
                     branch++;
                 }
                 next = next -> next;
