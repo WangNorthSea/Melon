@@ -6,6 +6,6 @@
 #include "../SymbolTable/scope.h"
 
 
-extern void riscv64__codegen(ASTNode * root, Scope * scope);
+extern void riscv64_codegen(ASTNode * root, Scope * scope);
 
 #endif

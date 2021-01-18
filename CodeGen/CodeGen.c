@@ -15,7 +15,7 @@
 
 #define ROUND(a, n)     (((((int)(a))+(n)-1)) & ~((n)-1))
 
-char * riscv64__new_filepath(void) {
+char * riscv64_new_filepath(void) {
     char * codefile_path = (char *)malloc(strlen(parsingFile));
     memcpy(codefile_path, parsingFile, strlen(parsingFile));
     for (int i = strlen(parsingFile) - 1; i >= 0; i--) {
@@ -28,7 +28,7 @@ char * riscv64__new_filepath(void) {
     return codefile_path;
 }
 
-void riscv64__put_header(FILE * fp) {
+void riscv64_put_header(FILE * fp) {
     file_write(fp, "\t\t.file\t\"");
     file_write(fp, parsingFile);
     file_write(fp, "\"\n");
@@ -38,7 +38,7 @@ void riscv64__put_header(FILE * fp) {
     file_write(fp, "\t\t.attribute stack_align, 16\n");
 }
 
-void riscv64__put_globl_int(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
+void riscv64_put_globl_int(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -149,7 +149,7 @@ void riscv64__put_globl_int(FILE * fp, ASTNode * var, struct varinfo * info_ptr)
     }
 }
 
-void riscv64__put_globl_char(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
+void riscv64_put_globl_char(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -257,7 +257,7 @@ void riscv64__put_globl_char(FILE * fp, ASTNode * var, struct varinfo * info_ptr
     }
 }
 
-void riscv64__put_globl_float(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
+void riscv64_put_globl_float(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -373,7 +373,7 @@ void riscv64__put_globl_float(FILE * fp, ASTNode * var, struct varinfo * info_pt
     }
 }
 
-void riscv64__put_globl_double(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
+void riscv64_put_globl_double(FILE * fp, ASTNode * var, struct varinfo * info_ptr) {
     if (var -> ptrs[2] -> listLen == 0) {  //not array
         file_write(fp, "\t\t.globl ");
         file_write(fp, var -> ptrs[2] -> ptrs[0] -> image); //name
@@ -494,7 +494,7 @@ void riscv64__put_globl_double(FILE * fp, ASTNode * var, struct varinfo * info_p
     }
 }
 
-void riscv64__put_globl_var(FILE * fp, Scope * scope) {
+void riscv64_put_globl_var(FILE * fp, Scope * scope) {
     file_write(fp, "\t\t.text\n");
     for (int i = 0; i < TableArraySize; i++) {
         if (scope -> symbolTable -> tableArray[i].key != NULL) {
@@ -505,19 +505,19 @@ void riscv64__put_globl_var(FILE * fp, Scope * scope) {
                 if (var -> kind == Variable || var -> kind == ConstVariable) {
                     switch (var -> ptrs[1] -> kind) {
                         case IntType:
-                            riscv64__put_globl_int(fp, var, info_ptr);
+                            riscv64_put_globl_int(fp, var, info_ptr);
                             break;
                         case CharType:
-                            riscv64__put_globl_char(fp, var, info_ptr);
+                            riscv64_put_globl_char(fp, var, info_ptr);
                             break;
                         case BoolType:
-                            riscv64__put_globl_char(fp, var, info_ptr);
+                            riscv64_put_globl_char(fp, var, info_ptr);
                             break;
                         case FloatType:
-                            riscv64__put_globl_float(fp, var, info_ptr);
+                            riscv64_put_globl_float(fp, var, info_ptr);
                             break;
                         case DoubleType:
-                            riscv64__put_globl_double(fp, var, info_ptr);
+                            riscv64_put_globl_double(fp, var, info_ptr);
                             break;
                         default:
                             break;
@@ -533,7 +533,7 @@ void riscv64__put_globl_var(FILE * fp, Scope * scope) {
 
 }
 
-void riscv64__set_var_offset(Scope * scope, int * frame_offset) {
+void riscv64_set_var_offset(Scope * scope, int * frame_offset) {
     int branch = 0;
     for (int i = 0; i < TableArraySize; i++) {
         if (scope -> symbolTable -> tableArray[i].key != NULL) {
@@ -592,7 +592,7 @@ void riscv64__set_var_offset(Scope * scope, int * frame_offset) {
                     info_ptr -> frame_offset = -(*frame_offset);
                 }
                 if (var -> kind == Block) {
-                    riscv64__set_var_offset(scope -> lowerLevel[branch], frame_offset);
+                    riscv64_set_var_offset(scope -> lowerLevel[branch], frame_offset);
                     branch++;
                 }
                 next = next -> next;
@@ -601,14 +601,14 @@ void riscv64__set_var_offset(Scope * scope, int * frame_offset) {
     }
 }
 
-void riscv64__put_abi_head(FILE * fp, int frame_offset, int ra_offset, int s0_offset) {
+void riscv64_put_abi_head(FILE * fp, int frame_offset, int ra_offset, int s0_offset) {
     fprintf(fp, "\t\taddi\t\tsp,sp,%d\n", -frame_offset);
     fprintf(fp, "\t\tsd\t\tra,%d(sp)\n", frame_offset + ra_offset);
     fprintf(fp, "\t\tsd\t\ts0,%d(sp)\n", frame_offset + s0_offset);
     fprintf(fp, "\t\taddi\t\ts0,sp,%d\n", frame_offset);
 }
 
-void riscv64__put_abi_tail(FILE * fp, ASTNode * node, int frame_offset, int ra_offset, int s0_offset) {
+void riscv64_put_abi_tail(FILE * fp, ASTNode * node, int frame_offset, int ra_offset, int s0_offset) {
     if (node -> ptrs[1] -> kind != VoidType) {
         file_write(fp, "\t\tmv\t\ta0,t0\n");
     }
@@ -618,7 +618,7 @@ void riscv64__put_abi_tail(FILE * fp, ASTNode * node, int frame_offset, int ra_o
     file_write(fp, "\t\tjr\t\tra\n");
 }
 
-void riscv64__put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
+void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
     if (node -> ptrs[0] -> kind == Identifier) {
         ASTNode * val1 = scope -> lookup(scope, node -> ptrs[0] -> image);
         if (global_info_ptr -> loc_type == LOCAL_VAR) {
@@ -646,7 +646,7 @@ void riscv64__put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
     }
 }
 
-void riscv64__put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
+void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
     if (node -> ptrs[1] != NULL) {
         ASTNode * args = node -> ptrs[1];
         for (int i = 0; i < args -> listLen; i++) {
@@ -671,7 +671,7 @@ void riscv64__put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
     fprintf(fp, "\t\tcall\t\t%s\n", node -> ptrs[0] -> image);
 }
 
-void riscv64__put_block(FILE * fp, ASTNode * block, Scope * scope) {
+void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
     ASTNode * stmt = NULL;
     for (int i = 0; i < block -> ptrs[0] -> listLen; i++) {
         stmt = &(block -> ptrs[0] -> list[i]);
@@ -701,10 +701,10 @@ void riscv64__put_block(FILE * fp, ASTNode * block, Scope * scope) {
                     fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[1] -> image);
                 }
                 else if (stmt_node -> ptrs[1] -> kind == BinaryOp) {
-                    riscv64__put_binary_op(fp, stmt_node -> ptrs[1], scope);
+                    riscv64_put_binary_op(fp, stmt_node -> ptrs[1], scope);
                 }
                 else if (stmt_node -> ptrs[1] -> kind == Funcall) {
-                    riscv64__put_funcall(fp, stmt_node -> ptrs[1], scope);
+                    riscv64_put_funcall(fp, stmt_node -> ptrs[1], scope);
                     file_write(fp, "\t\tmv\t\tt0,a0\n");
                 }
                 if (stmt_node -> ptrs[0] -> kind == Identifier) {
@@ -735,7 +735,7 @@ void riscv64__put_block(FILE * fp, ASTNode * block, Scope * scope) {
             case While:
                 break;
             case Funcall:
-                riscv64__put_funcall(fp, stmt_node, scope);
+                riscv64_put_funcall(fp, stmt_node, scope);
                 break;
             default:
                 break;
@@ -743,33 +743,33 @@ void riscv64__put_block(FILE * fp, ASTNode * block, Scope * scope) {
     }
 }
 
-void riscv64__put_func(FILE * fp, ASTNode * node, Scope * scope) {
+void riscv64_put_func(FILE * fp, ASTNode * node, Scope * scope) {
     int frame_offset = 16, ra_offset = -8, s0_offset = -16;
     char * funcname = node -> ptrs[2] -> image;
-    riscv64__set_var_offset(scope, &frame_offset);
+    riscv64_set_var_offset(scope, &frame_offset);
     file_write(fp, "\t\t.text\n");
     file_write(fp, "\t\t.align\t1\n");
     fprintf(fp, "\t\t.globl\t%s\n", funcname);
     fprintf(fp, "\t\t.type\t%s, @function\n", funcname);
     fprintf(fp, "%s:\n", funcname);
 
-    riscv64__put_abi_head(fp, frame_offset, ra_offset, s0_offset);
-    riscv64__put_block(fp, node -> ptrs[4], scope -> lowerLevel[0]);
+    riscv64_put_abi_head(fp, frame_offset, ra_offset, s0_offset);
+    riscv64_put_block(fp, node -> ptrs[4], scope -> lowerLevel[0]);
 
 
 
 
-    riscv64__put_abi_tail(fp, node, frame_offset, ra_offset, s0_offset);
+    riscv64_put_abi_tail(fp, node, frame_offset, ra_offset, s0_offset);
 
     fprintf(fp, "\t\t.size\t%s, .-%s\n\n", funcname, funcname);
 }
 
-void riscv64__codegen(ASTNode * root, Scope * scope) {
-    char * codefile_path = riscv64__new_filepath();
+void riscv64_codegen(ASTNode * root, Scope * scope) {
+    char * codefile_path = riscv64_new_filepath();
     FILE * codefile = fopen(codefile_path, "w");
     
-    riscv64__put_header(codefile);
-    riscv64__put_globl_var(codefile, scope);
+    riscv64_put_header(codefile);
+    riscv64_put_globl_var(codefile, scope);
     
     int branch = 0;
     for (int i = 0; i < TableArraySize; i++) {
@@ -779,7 +779,7 @@ void riscv64__codegen(ASTNode * root, Scope * scope) {
                 ASTNode * var = (ASTNode *)next -> target;
                 struct varinfo * info_ptr = &(next -> info);
                 if (var -> kind == DefinedFunc) {
-                    riscv64__put_func(codefile, var, scope -> lowerLevel[branch]);
+                    riscv64_put_func(codefile, var, scope -> lowerLevel[branch]);
                     
                 }
                 if (var -> kind == DefinedFunc || var -> kind == FuncStmt) {
