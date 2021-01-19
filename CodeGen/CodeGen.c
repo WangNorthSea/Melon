@@ -714,7 +714,7 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
                                             double * num_ptr = &num;
                                             unsigned long long output = *(unsigned long long *)num_ptr;
                                             fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
-                                            fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                            fprintf(fp, "\t\tsd\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
                                         }
                                         break;
                                     case BoolType:
