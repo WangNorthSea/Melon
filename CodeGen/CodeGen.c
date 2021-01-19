@@ -659,6 +659,15 @@ void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
                             case IntType:
                                 fprintf(fp, "\t\tlw\t\ta%d,%d(s0)\n", i, global_info_ptr -> frame_offset);
                                 break;
+                            case FloatType:
+                                fprintf(fp, "\t\tflw\t\tfa%d,%d(s0)\n", i, global_info_ptr -> frame_offset);
+                                break;
+                            case DoubleType:
+                                fprintf(fp, "\t\tfld\t\tfa%d,%d(s0)\n", i, global_info_ptr -> frame_offset);
+                                break;
+                            case BoolType:
+                                fprintf(fp, "\t\tlb\t\ta%d,%d(s0)\n", i, global_info_ptr -> frame_offset);
+                                break;
                         }
                     }
                     break;
@@ -690,6 +699,36 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
                                             fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
                                         }
                                         break;
+                                    case FloatType:
+                                        if (var -> ptrs[3] -> kind == FloatLiteral) {
+                                            float num = strtof(var -> ptrs[3] -> image, NULL);
+                                            float * num_ptr = &num;
+                                            unsigned output = *(unsigned *)num_ptr;
+                                            fprintf(fp, "\t\tli\t\tt0,%u\n", output);
+                                            fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                        }
+                                        break;
+                                    case DoubleType:
+                                        if (var -> ptrs[3] -> kind == FloatLiteral) {
+                                            double num = strtod(var -> ptrs[3] -> image, NULL);
+                                            double * num_ptr = &num;
+                                            unsigned long long output = *(unsigned long long *)num_ptr;
+                                            fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
+                                            fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                        }
+                                        break;
+                                    case BoolType:
+                                        if (var -> ptrs[3] -> kind == BoolLiteral) {
+                                            if (!strcmp(var -> ptrs[3] -> image, "true")) {
+                                                file_write(fp, "\t\tli\t\tt0,1\n");
+                                                fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                            }
+                                            else {
+                                                file_write(fp, "\t\tli\t\tt0,0\n");
+                                                fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                            }
+                                        }
+                                        break;
                                 }
                             }
                         }
@@ -699,6 +738,14 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
             case Assign:
                 if (stmt_node -> ptrs[1] -> kind == IntegerLiteral) {
                     fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[1] -> image);
+                }
+                else if (stmt_node -> ptrs[1] -> kind == BoolLiteral) {
+                    if (!strcmp(stmt_node -> ptrs[1] -> image, "true")) {
+                        file_write(fp, "\t\tli\t\tt0,1\n");
+                    }
+                    else {
+                        file_write(fp, "\t\tli\t\tt0,0\n");
+                    }
                 }
                 else if (stmt_node -> ptrs[1] -> kind == BinaryOp) {
                     riscv64_put_binary_op(fp, stmt_node -> ptrs[1], scope);
@@ -714,6 +761,33 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
                             case IntType:
                                 fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
                                 break;
+                            case FloatType:
+                                if (stmt_node -> ptrs[1] -> kind == FloatLiteral) {
+                                    float num = strtof(stmt_node -> ptrs[1] -> image, NULL);
+                                    float * num_ptr = &num;
+                                    unsigned output = *(unsigned *)num_ptr;
+                                    fprintf(fp, "\t\tli\t\tt0,%u\n", output);
+                                    fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                }
+                                else {
+                                    fprintf(fp, "\t\tfsw\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                }
+                                break;
+                            case DoubleType:
+                                if (stmt_node -> ptrs[1] -> kind == FloatLiteral) {
+                                    double num = strtod(stmt_node -> ptrs[1] -> image, NULL);
+                                    double * num_ptr = &num;
+                                    unsigned long long output = *(unsigned long long *)num_ptr;
+                                    fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
+                                    fprintf(fp, "\t\tsd\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                }
+                                else {
+                                    fprintf(fp, "\t\tfsd\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                }
+                                break;
+                            case BoolType:
+                                fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                break;
                         }
                     }
                 }
@@ -728,6 +802,9 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
                                 break;
                         }
                     }
+                }
+                else if (stmt_node -> ptrs[0] -> kind == IntegerLiteral) {
+                    fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[0] -> image);
                 }
                 break;
             case If:
@@ -783,7 +860,7 @@ void riscv64_codegen(ASTNode * root, Scope * scope) {
                     riscv64_put_func(codefile, var, scope -> lowerLevel[branch]);
                     
                 }
-                if (var -> kind == DefinedFunc || var -> kind == FuncStmt) {
+                if (var -> kind == DefinedFunc) {
                     branch++;
                 }
                 next = next -> next;
