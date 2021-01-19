@@ -110,10 +110,89 @@ void newScope(void);
 
 void throwSemanticError(ASTNode * node, char * content);
 
+void initializeCACTLib(void) {
+    ASTNode * func_stmt = NULL;
+    ASTNode * temp = NULL;
+    ASTNode * ptrs[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    ASTNode * ptrs_lvl2[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    ASTNode * ptrs_lvl3[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+    ASTNode * ptrs_zero[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+
+    /* print_int */
+    ptrs[1] = NodeConstructor(VoidType, fileChecking, 1, NULL, ptrs_zero);
+    ptrs[2] = NodeConstructor(Name, fileChecking, 1, "print_int", ptrs_zero);
+    ptrs[3] = NodeConstructor(ParamsNode, fileChecking, 1, NULL, ptrs_zero);
+    ptrs_lvl2[0] = NodeConstructor(IntType, fileChecking, 1, NULL, ptrs_zero);
+    ptrs_lvl3[0] = NodeConstructor(Name, fileChecking, 1, "a", ptrs_zero);
+    ptrs_lvl2[1] = NodeConstructor(Varname, fileChecking, 1, NULL, ptrs_lvl3);
+    temp = NodeConstructor(NormalParam, fileChecking, 1, NULL, ptrs_lvl2);
+    ptrs[3] -> append(ptrs[3], *temp);
+    func_stmt = NodeConstructor(FuncStmt, fileChecking, 1, NULL, ptrs);
+    scope -> symbolTable -> put(scope -> symbolTable, func_stmt -> ptrs[2] -> image, func_stmt, 0, 0, 0);
+
+    /* print_float */
+    ptrs[1] = NodeConstructor(VoidType, fileChecking, 2, NULL, ptrs_zero);
+    ptrs[2] = NodeConstructor(Name, fileChecking, 2, "print_float", ptrs_zero);
+    ptrs[3] = NodeConstructor(ParamsNode, fileChecking, 2, NULL, ptrs_zero);
+    ptrs_lvl2[0] = NodeConstructor(FloatType, fileChecking, 2, NULL, ptrs_zero);
+    ptrs_lvl3[0] = NodeConstructor(Name, fileChecking, 2, "a", ptrs_zero);
+    ptrs_lvl2[1] = NodeConstructor(Varname, fileChecking, 2, NULL, ptrs_lvl3);
+    temp = NodeConstructor(NormalParam, fileChecking, 2, NULL, ptrs_lvl2);
+    ptrs[3] -> append(ptrs[3], *temp);
+    func_stmt = NodeConstructor(FuncStmt, fileChecking, 2, NULL, ptrs);
+    scope -> symbolTable -> put(scope -> symbolTable, func_stmt -> ptrs[2] -> image, func_stmt, 0, 0, 0);
+
+    /* print_double */
+    ptrs[1] = NodeConstructor(VoidType, fileChecking, 3, NULL, ptrs_zero);
+    ptrs[2] = NodeConstructor(Name, fileChecking, 3, "print_double", ptrs_zero);
+    ptrs[3] = NodeConstructor(ParamsNode, fileChecking, 3, NULL, ptrs_zero);
+    ptrs_lvl2[0] = NodeConstructor(DoubleType, fileChecking, 3, NULL, ptrs_zero);
+    ptrs_lvl3[0] = NodeConstructor(Name, fileChecking, 3, "a", ptrs_zero);
+    ptrs_lvl2[1] = NodeConstructor(Varname, fileChecking, 3, NULL, ptrs_lvl3);
+    temp = NodeConstructor(NormalParam, fileChecking, 3, NULL, ptrs_lvl2);
+    ptrs[3] -> append(ptrs[3], *temp);
+    func_stmt = NodeConstructor(FuncStmt, fileChecking, 3, NULL, ptrs);
+    scope -> symbolTable -> put(scope -> symbolTable, func_stmt -> ptrs[2] -> image, func_stmt, 0, 0, 0);
+
+    /* print_bool */
+    ptrs[1] = NodeConstructor(VoidType, fileChecking, 4, NULL, ptrs_zero);
+    ptrs[2] = NodeConstructor(Name, fileChecking, 4, "print_bool", ptrs_zero);
+    ptrs[3] = NodeConstructor(ParamsNode, fileChecking, 4, NULL, ptrs_zero);
+    ptrs_lvl2[0] = NodeConstructor(BoolType, fileChecking, 4, NULL, ptrs_zero);
+    ptrs_lvl3[0] = NodeConstructor(Name, fileChecking, 4, "a", ptrs_zero);
+    ptrs_lvl2[1] = NodeConstructor(Varname, fileChecking, 4, NULL, ptrs_lvl3);
+    temp = NodeConstructor(NormalParam, fileChecking, 4, NULL, ptrs_lvl2);
+    ptrs[3] -> append(ptrs[3], *temp);
+    func_stmt = NodeConstructor(FuncStmt, fileChecking, 4, NULL, ptrs);
+    scope -> symbolTable -> put(scope -> symbolTable, func_stmt -> ptrs[2] -> image, func_stmt, 0, 0, 0);
+
+    /* get_int */
+    ptrs[1] = NodeConstructor(IntType, fileChecking, 5, NULL, ptrs_zero);
+    ptrs[2] = NodeConstructor(Name, fileChecking, 5, "get_int", ptrs_zero);
+    ptrs[3] = NodeConstructor(ParamsNode, fileChecking, 5, NULL, ptrs_zero);
+    func_stmt = NodeConstructor(FuncStmt, fileChecking, 5, NULL, ptrs);
+    scope -> symbolTable -> put(scope -> symbolTable, func_stmt -> ptrs[2] -> image, func_stmt, 0, 0, 0);
+
+    /* get_float */
+    ptrs[1] = NodeConstructor(FloatType, fileChecking, 6, NULL, ptrs_zero);
+    ptrs[2] = NodeConstructor(Name, fileChecking, 6, "get_float", ptrs_zero);
+    ptrs[3] = NodeConstructor(ParamsNode, fileChecking, 6, NULL, ptrs_zero);
+    func_stmt = NodeConstructor(FuncStmt, fileChecking, 6, NULL, ptrs);
+    scope -> symbolTable -> put(scope -> symbolTable, func_stmt -> ptrs[2] -> image, func_stmt, 0, 0, 0);
+
+    /* get_double */
+    ptrs[1] = NodeConstructor(DoubleType, fileChecking, 7, NULL, ptrs_zero);
+    ptrs[2] = NodeConstructor(Name, fileChecking, 7, "get_double", ptrs_zero);
+    ptrs[3] = NodeConstructor(ParamsNode, fileChecking, 7, NULL, ptrs_zero);
+    func_stmt = NodeConstructor(FuncStmt, fileChecking, 7, NULL, ptrs);
+    scope -> symbolTable -> put(scope -> symbolTable, func_stmt -> ptrs[2] -> image, func_stmt, 0, 0, 0);
+}
+
 void semanticAnalyze(ASTNode * root, const char * file) {
     fileChecking = file;
     scope = ScopeConstructor(NULL);
     StruUnionScope = HashtableConstructor();
+    initializeCACTLib();
     iterator(root);
     if (hasMain == 0)
         throwSemanticError(root, "\'main\' function not found");
