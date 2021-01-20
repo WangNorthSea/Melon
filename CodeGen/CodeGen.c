@@ -752,7 +752,13 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
                 }
                 else if (stmt_node -> ptrs[1] -> kind == Funcall) {
                     riscv64_put_funcall(fp, stmt_node -> ptrs[1], scope);
-                    file_write(fp, "\t\tmv\t\tt0,a0\n");
+                    ASTNode * func_node = scope -> lookup(scope, stmt_node -> ptrs[1] -> ptrs[0] -> image);
+                    if (func_node -> ptrs[1] -> kind == FloatType || func_node -> ptrs[1] -> kind == DoubleType) {
+                        file_write(fp, "\t\tmv\t\tft0,fa0\n");
+                    }
+                    else {
+                        file_write(fp, "\t\tmv\t\tt0,a0\n");
+                    }
                 }
                 if (stmt_node -> ptrs[0] -> kind == Identifier) {
                     ASTNode * lval = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
