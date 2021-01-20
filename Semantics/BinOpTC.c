@@ -2248,6 +2248,8 @@ void floatType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }*/
+            if (type1 -> listLen != 0)
+                throwSemanticError(type1, "data type mismatched");
             break;
         case CharacterLiteral:
             if (type1 -> listLen == 0) {
@@ -2430,12 +2432,14 @@ void doubleType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
     
     switch (type2 -> kind) {
         case IntegerLiteral:
-            if (type1 -> listLen == 0) {
+            /*if (type1 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
-            }
+            }*/
+            if (type1 -> listLen != 0)
+                throwSemanticError(type1, "data type mismatched");
             break;
         case CharacterLiteral:
             if (type1 -> listLen == 0) {
