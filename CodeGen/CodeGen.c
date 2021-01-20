@@ -769,7 +769,11 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
         else if (!strcmp(node -> image, "==")) {
             file_write(fp, "\t\tsext.w\t\tt1,t1\n");
             fprintf(fp, "\t\tbne\t\tt1,t2,.L%d\n", branch_label);
-            branch_label++;
+        }
+        else if (!strcmp(node -> image, "<")) {
+            file_write(fp, "\t\tsext.w\t\tt1,t1\n");
+            file_write(fp, "\t\tsext.w\t\tt2,t2\n");
+            fprintf(fp, "\t\tblt\t\tt1,t2,.L%d\n", branch_label);
         }
     }
 }
@@ -821,15 +825,29 @@ void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
     fprintf(fp, "\t\tcall\t\t%s\n", node -> ptrs[0] -> image);
 }
 
+void riscv64_put_while(FILE * fp, ASTNode * node, Scope * scope) {
+    ASTNode * expr = node -> ptrs[0];
+    int branch = 0;
+    fprintf(fp, "\t\tj\t\t.L%d\n", branch_label);
+    branch_label++;
+    fprintf(fp, ".L%d:\n", branch_label);
+    riscv64_put_stmt(fp, node -> ptrs[1] -> ptrs[0], scope, &branch);
+    fprintf(fp, ".L%d:\n", branch_label - 1);
+    riscv64_put_binary_op(fp, expr, scope);
+    branch_label++;
+}
+
 void riscv64_put_if(FILE * fp, ASTNode * node, Scope * scope) {
     ASTNode * expr = node -> ptrs[0];
     int branch = 0;
     riscv64_put_binary_op(fp, expr, scope);
+    branch_label++;
     riscv64_put_stmt(fp, node -> ptrs[1] -> ptrs[0], scope, &branch);
     fprintf(fp, "\t\tj\t\t.L%d\n", branch_label);
     fprintf(fp, ".L%d:\n", branch_label - 1);
     riscv64_put_stmt(fp, node -> ptrs[2] -> ptrs[0], scope, &branch);
     fprintf(fp, ".L%d:\n", branch_label);
+    branch_label++;
 }
 
 void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branch) {
@@ -988,6 +1006,7 @@ void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branc
             riscv64_put_if(fp, stmt_node, scope);
             break;
         case While:
+            riscv64_put_while(fp, stmt_node, scope);
             break;
         case Funcall:
             riscv64_put_funcall(fp, stmt_node, scope);
