@@ -674,6 +674,19 @@ void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
                 case IntegerLiteral:
                     fprintf(fp, "\t\tli\t\ta%d,%s\n", i, args -> list[i].image);
                     break;
+                case Funcall:
+                    riscv64_put_funcall(fp, &(args -> list[i]), scope);
+                    val = scope -> lookup(scope, args -> list[i].ptrs[0] -> image);
+                    if (val -> ptrs[1] -> kind == IntType) {
+                        fprintf(fp, "\t\tmv\t\ta%d,a0\n", i);
+                    }
+                    else if (val -> ptrs[1] -> kind == FloatType) {
+                        fprintf(fp, "\t\tfmv.s\t\tfa%d,fa0\n", i);
+                    }
+                    else if (val -> ptrs[1] -> kind == DoubleType) {
+                        fprintf(fp, "\t\tfmv.d\t\tfa%d,fa0\n", i);
+                    }
+                    break;
             }
         }
     }
@@ -753,8 +766,11 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
                 else if (stmt_node -> ptrs[1] -> kind == Funcall) {
                     riscv64_put_funcall(fp, stmt_node -> ptrs[1], scope);
                     ASTNode * func_node = scope -> lookup(scope, stmt_node -> ptrs[1] -> ptrs[0] -> image);
-                    if (func_node -> ptrs[1] -> kind == FloatType || func_node -> ptrs[1] -> kind == DoubleType) {
-                        file_write(fp, "\t\tmv\t\tft0,fa0\n");
+                    if (func_node -> ptrs[1] -> kind == FloatType) {
+                        file_write(fp, "\t\tfmv.s\t\tft0,fa0\n");
+                    }
+                    else if (func_node -> ptrs[1] -> kind == DoubleType) {
+                        file_write(fp, "\t\tfmv.d\t\tft0,fa0\n");
                     }
                     else {
                         file_write(fp, "\t\tmv\t\tt0,a0\n");
