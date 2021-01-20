@@ -48,20 +48,20 @@ void integerLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 throwSemanticError(type1, "union type operand not allowed");
             break;
         case FloatType:
-            if (type2 -> listLen == 0) {
+            /*if (type2 -> listLen == 0) {
                 temp = NodeConstructor(FloatType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
-            }
+            }*/
             break;
         case DoubleType:
-            if (type2 -> listLen == 0) {
+            /*if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type1 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[0];
                 parent -> ptrs[0] = NodeConstructor(Cast, fileChecking, type1 -> line, NULL, ptrs);
-            }
+            }*/
             break;
         default:
             break;
@@ -166,13 +166,13 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 throwSemanticError(type1, "data type mismatched");
             break;
         case IntType:
-            if (type2 -> listLen == 0) {
+            /*if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
-            else
+            else*/
                 throwSemanticError(type1, "data type mismatched");
             break;
         case LongIntType:
@@ -238,13 +238,13 @@ void floatLiteralType(ASTNode * parent, ASTNode * type1, ASTNode * type2) {
                 throwSemanticError(type1, "data type mismatched");
             break;
         case FloatType:
-            if (type2 -> listLen == 0) {
+            /*if (type2 -> listLen == 0) {
                 temp = NodeConstructor(DoubleType, fileChecking, type2 -> line, NULL, ptrs);           //隐式类型转换
                 ptrs[0] = temp;
                 ptrs[1] = parent -> ptrs[1];
                 parent -> ptrs[1] = NodeConstructor(Cast, fileChecking, type2 -> line, NULL, ptrs);
             }
-            else
+            else*/ if (type2 -> listLen != 0)
                 throwSemanticError(type1, "data type mismatched");
             break;
         case DoubleType:

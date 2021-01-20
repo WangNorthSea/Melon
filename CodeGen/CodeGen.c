@@ -662,10 +662,10 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
         fprintf(fp, "\t\tli\t\tt1,%s\n", node -> ptrs[0] -> image);
         if (rfloat == 1 || rdouble == 1) {
             if (rfloat == 1) {
-                file_write(fp, "\t\tfmv.w.x\t\tft1,t1\n");
+                file_write(fp, "\t\tfcvt.s.w\t\tft1,t1\n");
             }
             else {
-                file_write(fp, "\t\tfmv.d.x\t\tft1,t1\n");
+                file_write(fp, "\t\tfcvt.d.l\t\tft1,t1\n");
             }
         }
     }
@@ -690,10 +690,10 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
         fprintf(fp, "\t\tli\t\tt2,%s\n", node -> ptrs[1] -> image);
         if (lfloat == 1 || ldouble == 1) {
             if (lfloat == 1) {
-                file_write(fp, "\t\tfmv.w.x\t\tft2,t2\n");
+                file_write(fp, "\t\tfcvt.s.w\t\tft2,t2\n");
             }
             else {
-                file_write(fp, "\t\tfmv.d.x\t\tft2,t2\n");
+                file_write(fp, "\t\tfcvt.d.l\t\tft2,t2\n");
             }
         }
     }
