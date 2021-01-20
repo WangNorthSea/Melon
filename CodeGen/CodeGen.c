@@ -854,7 +854,56 @@ void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branc
     switch (stmt_node -> kind) {
         case DefinedVariables:
             for (int i = 0; i < stmt_node -> listLen; i++) {
-                if (stmt_node -> list[i].kind == Variable || stmt_node -> list[i].kind == ConstVariable) {
+                if (stmt_node -> list[i].kind == Variable) {
+                    ASTNode * var = scope -> lookup(scope, stmt_node -> list[i].ptrs[2] -> ptrs[0] -> image);
+                    if (var -> ptrs[3] != NULL) {
+                        if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                            switch (var -> ptrs[1] -> kind) {
+                                case IntType:
+                                    if (var -> ptrs[3] -> kind == IntegerLiteral) {
+                                        fprintf(fp, "\t\tli\t\tt0,%s\n", var -> ptrs[3] -> image);
+                                        fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                    }
+                                    break;
+                                case FloatType:
+                                    if (var -> ptrs[3] -> kind == FloatLiteral) {
+                                        float num = strtof(var -> ptrs[3] -> image, NULL);
+                                        float * num_ptr = &num;
+                                        unsigned output = *(unsigned *)num_ptr;
+                                        fprintf(fp, "\t\tli\t\tt0,%u\n", output);
+                                        fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                    }
+                                    break;
+                                case DoubleType:
+                                    if (var -> ptrs[3] -> kind == FloatLiteral) {
+                                        double num = strtod(var -> ptrs[3] -> image, NULL);
+                                        double * num_ptr = &num;
+                                        unsigned long long output = *(unsigned long long *)num_ptr;
+                                        fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
+                                        fprintf(fp, "\t\tsd\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                    }
+                                    break;
+                                case BoolType:
+                                    if (var -> ptrs[3] -> kind == BoolLiteral) {
+                                        if (!strcmp(var -> ptrs[3] -> image, "true")) {
+                                            file_write(fp, "\t\tli\t\tt0,1\n");
+                                            fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                        }
+                                        else {
+                                            file_write(fp, "\t\tli\t\tt0,0\n");
+                                            fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+        case DefinedConstVariables:
+            for (int i = 0; i < stmt_node -> listLen; i++) {
+                if (stmt_node -> list[i].kind == ConstVariable) {
                     ASTNode * var = scope -> lookup(scope, stmt_node -> list[i].ptrs[2] -> ptrs[0] -> image);
                     if (var -> ptrs[3] != NULL) {
                         if (global_info_ptr -> loc_type == LOCAL_VAR) {
