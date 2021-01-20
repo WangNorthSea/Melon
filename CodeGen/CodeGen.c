@@ -642,6 +642,21 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
                     break;
             }
         }
+        else if (global_info_ptr -> loc_type == PARAM_VAR) {
+            switch (val1 -> ptrs[0] -> kind) {
+                case IntType:
+                    file_write(fp, "\t\tmv\t\tt1,a0\n");
+                    break;
+                case FloatType:
+                    file_write(fp, "\t\tfmv.s\t\tft1,fa0\n");
+                    rfloat = 1;
+                    break;
+                case DoubleType:
+                    file_write(fp, "\t\tfmv.d\t\tft1,fa0\n");
+                    rdouble = 1;
+                    break;
+            }
+        }
     }
 
     if (node -> ptrs[1] -> kind == Identifier) {
@@ -657,6 +672,21 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
                     break;
                 case DoubleType:
                     fprintf(fp, "\t\tfld\t\tft2,%d(s0)\n", global_info_ptr -> frame_offset);
+                    rdouble = 1;
+                    break;
+            }
+        }
+        else if (global_info_ptr -> loc_type == PARAM_VAR) {
+            switch (val2 -> ptrs[0] -> kind) {
+                case IntType:
+                    file_write(fp, "\t\tmv\t\tt2,a0\n");
+                    break;
+                case FloatType:
+                    file_write(fp, "\t\tfmv.s\t\tft2,fa0\n");
+                    rfloat = 1;
+                    break;
+                case DoubleType:
+                    file_write(fp, "\t\tfmv.d\t\tft2,fa0\n");
                     rdouble = 1;
                     break;
             }
