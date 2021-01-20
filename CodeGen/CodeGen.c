@@ -15,6 +15,11 @@
 
 #define ROUND(a, n)     (((((int)(a))+(n)-1)) & ~((n)-1))
 
+int branch_label = 2;
+
+void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope);
+void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branch);
+
 char * riscv64_new_filepath(void) {
     char * codefile_path = (char *)malloc(strlen(parsingFile));
     memcpy(codefile_path, parsingFile, strlen(parsingFile));
@@ -761,6 +766,11 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
         else if (!strcmp(node -> image, "/")) {
             file_write(fp, "\t\tdiv\t\tt0,t1,t2\n");
         }
+        else if (!strcmp(node -> image, "==")) {
+            file_write(fp, "\t\tsext.w\t\tt1,t1\n");
+            fprintf(fp, "\t\tbne\t\tt1,t2,.L%d\n", branch_label);
+            branch_label++;
+        }
     }
 }
 
@@ -811,152 +821,193 @@ void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
     fprintf(fp, "\t\tcall\t\t%s\n", node -> ptrs[0] -> image);
 }
 
-void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
-    ASTNode * stmt = NULL;
-    for (int i = 0; i < block -> ptrs[0] -> listLen; i++) {
-        stmt = &(block -> ptrs[0] -> list[i]);
-        ASTNode * stmt_node = stmt -> ptrs[0];
-        switch (stmt_node -> kind) {
-            case DefinedVariables:
-                for (int i = 0; i < stmt_node -> listLen; i++) {
-                    if (stmt_node -> list[i].kind == Variable || stmt_node -> list[i].kind == ConstVariable) {
-                        ASTNode * var = scope -> lookup(scope, stmt_node -> list[i].ptrs[2] -> ptrs[0] -> image);
-                        if (var -> ptrs[3] != NULL) {
-                            if (global_info_ptr -> loc_type == LOCAL_VAR) {
-                                switch (var -> ptrs[1] -> kind) {
-                                    case IntType:
-                                        if (var -> ptrs[3] -> kind == IntegerLiteral) {
-                                            fprintf(fp, "\t\tli\t\tt0,%s\n", var -> ptrs[3] -> image);
-                                            fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+void riscv64_put_if(FILE * fp, ASTNode * node, Scope * scope) {
+    ASTNode * expr = node -> ptrs[0];
+    int branch = 0;
+    riscv64_put_binary_op(fp, expr, scope);
+    riscv64_put_stmt(fp, node -> ptrs[1] -> ptrs[0], scope, &branch);
+    fprintf(fp, "\t\tj\t\t.L%d\n", branch_label);
+    fprintf(fp, ".L%d:\n", branch_label - 1);
+    riscv64_put_stmt(fp, node -> ptrs[2] -> ptrs[0], scope, &branch);
+    fprintf(fp, ".L%d:\n", branch_label);
+}
+
+void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branch) {
+    switch (stmt_node -> kind) {
+        case DefinedVariables:
+            for (int i = 0; i < stmt_node -> listLen; i++) {
+                if (stmt_node -> list[i].kind == Variable || stmt_node -> list[i].kind == ConstVariable) {
+                    ASTNode * var = scope -> lookup(scope, stmt_node -> list[i].ptrs[2] -> ptrs[0] -> image);
+                    if (var -> ptrs[3] != NULL) {
+                        if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                            switch (var -> ptrs[1] -> kind) {
+                                case IntType:
+                                    if (var -> ptrs[3] -> kind == IntegerLiteral) {
+                                        fprintf(fp, "\t\tli\t\tt0,%s\n", var -> ptrs[3] -> image);
+                                        fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                    }
+                                    break;
+                                case FloatType:
+                                    if (var -> ptrs[3] -> kind == FloatLiteral) {
+                                        float num = strtof(var -> ptrs[3] -> image, NULL);
+                                        float * num_ptr = &num;
+                                        unsigned output = *(unsigned *)num_ptr;
+                                        fprintf(fp, "\t\tli\t\tt0,%u\n", output);
+                                        fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                    }
+                                    break;
+                                case DoubleType:
+                                    if (var -> ptrs[3] -> kind == FloatLiteral) {
+                                        double num = strtod(var -> ptrs[3] -> image, NULL);
+                                        double * num_ptr = &num;
+                                        unsigned long long output = *(unsigned long long *)num_ptr;
+                                        fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
+                                        fprintf(fp, "\t\tsd\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                    }
+                                    break;
+                                case BoolType:
+                                    if (var -> ptrs[3] -> kind == BoolLiteral) {
+                                        if (!strcmp(var -> ptrs[3] -> image, "true")) {
+                                            file_write(fp, "\t\tli\t\tt0,1\n");
+                                            fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
                                         }
-                                        break;
-                                    case FloatType:
-                                        if (var -> ptrs[3] -> kind == FloatLiteral) {
-                                            float num = strtof(var -> ptrs[3] -> image, NULL);
-                                            float * num_ptr = &num;
-                                            unsigned output = *(unsigned *)num_ptr;
-                                            fprintf(fp, "\t\tli\t\tt0,%u\n", output);
-                                            fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                                        else {
+                                            file_write(fp, "\t\tli\t\tt0,0\n");
+                                            fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
                                         }
-                                        break;
-                                    case DoubleType:
-                                        if (var -> ptrs[3] -> kind == FloatLiteral) {
-                                            double num = strtod(var -> ptrs[3] -> image, NULL);
-                                            double * num_ptr = &num;
-                                            unsigned long long output = *(unsigned long long *)num_ptr;
-                                            fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
-                                            fprintf(fp, "\t\tsd\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                        }
-                                        break;
-                                    case BoolType:
-                                        if (var -> ptrs[3] -> kind == BoolLiteral) {
-                                            if (!strcmp(var -> ptrs[3] -> image, "true")) {
-                                                file_write(fp, "\t\tli\t\tt0,1\n");
-                                                fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                            }
-                                            else {
-                                                file_write(fp, "\t\tli\t\tt0,0\n");
-                                                fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                            }
-                                        }
-                                        break;
-                                }
+                                    }
+                                    break;
                             }
                         }
                     }
                 }
-                break;
-            case Assign:
-                if (stmt_node -> ptrs[1] -> kind == IntegerLiteral) {
-                    fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[1] -> image);
+            }
+            break;
+        case Assign:
+            if (stmt_node -> ptrs[1] -> kind == IntegerLiteral) {
+                fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[1] -> image);
+            }
+            else if (stmt_node -> ptrs[1] -> kind == BoolLiteral) {
+                if (!strcmp(stmt_node -> ptrs[1] -> image, "true")) {
+                    file_write(fp, "\t\tli\t\tt0,1\n");
                 }
-                else if (stmt_node -> ptrs[1] -> kind == BoolLiteral) {
-                    if (!strcmp(stmt_node -> ptrs[1] -> image, "true")) {
-                        file_write(fp, "\t\tli\t\tt0,1\n");
-                    }
-                    else {
-                        file_write(fp, "\t\tli\t\tt0,0\n");
+                else {
+                    file_write(fp, "\t\tli\t\tt0,0\n");
+                }
+            }
+            else if (stmt_node -> ptrs[1] -> kind == BinaryOp) {
+                riscv64_put_binary_op(fp, stmt_node -> ptrs[1], scope);
+            }
+            else if (stmt_node -> ptrs[1] -> kind == Funcall) {
+                riscv64_put_funcall(fp, stmt_node -> ptrs[1], scope);
+                ASTNode * func_node = scope -> lookup(scope, stmt_node -> ptrs[1] -> ptrs[0] -> image);
+                if (func_node -> ptrs[1] -> kind == FloatType) {
+                    file_write(fp, "\t\tfmv.s\t\tft0,fa0\n");
+                }
+                else if (func_node -> ptrs[1] -> kind == DoubleType) {
+                    file_write(fp, "\t\tfmv.d\t\tft0,fa0\n");
+                }
+                else {
+                    file_write(fp, "\t\tmv\t\tt0,a0\n");
+                }
+            }
+            else if (stmt_node -> ptrs[1] -> kind == Identifier) {
+                ASTNode * rval = scope -> lookup(scope, stmt_node -> ptrs[1] -> image);
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    switch (rval -> ptrs[1] -> kind) {
+                        case IntType:
+                            fprintf(fp, "\t\tlw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
+                        case FloatType:
+                            fprintf(fp, "\t\tflw\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
+                        case DoubleType:
+                            fprintf(fp, "\t\tfld\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
+                        case BoolType:
+                            fprintf(fp, "\t\tlb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
                     }
                 }
-                else if (stmt_node -> ptrs[1] -> kind == BinaryOp) {
-                    riscv64_put_binary_op(fp, stmt_node -> ptrs[1], scope);
-                }
-                else if (stmt_node -> ptrs[1] -> kind == Funcall) {
-                    riscv64_put_funcall(fp, stmt_node -> ptrs[1], scope);
-                    ASTNode * func_node = scope -> lookup(scope, stmt_node -> ptrs[1] -> ptrs[0] -> image);
-                    if (func_node -> ptrs[1] -> kind == FloatType) {
-                        file_write(fp, "\t\tfmv.s\t\tft0,fa0\n");
-                    }
-                    else if (func_node -> ptrs[1] -> kind == DoubleType) {
-                        file_write(fp, "\t\tfmv.d\t\tft0,fa0\n");
-                    }
-                    else {
-                        file_write(fp, "\t\tmv\t\tt0,a0\n");
-                    }
-                }
-                if (stmt_node -> ptrs[0] -> kind == Identifier) {
-                    ASTNode * lval = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
-                    if (global_info_ptr -> loc_type == LOCAL_VAR) {
-                        switch (lval -> ptrs[1] -> kind) {
-                            case IntType:
+            }
+
+            if (stmt_node -> ptrs[0] -> kind == Identifier) {
+                ASTNode * lval = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    switch (lval -> ptrs[1] -> kind) {
+                        case IntType:
+                            fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
+                        case FloatType:
+                            if (stmt_node -> ptrs[1] -> kind == FloatLiteral) {
+                                float num = strtof(stmt_node -> ptrs[1] -> image, NULL);
+                                float * num_ptr = &num;
+                                unsigned output = *(unsigned *)num_ptr;
+                                fprintf(fp, "\t\tli\t\tt0,%u\n", output);
                                 fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                break;
-                            case FloatType:
-                                if (stmt_node -> ptrs[1] -> kind == FloatLiteral) {
-                                    float num = strtof(stmt_node -> ptrs[1] -> image, NULL);
-                                    float * num_ptr = &num;
-                                    unsigned output = *(unsigned *)num_ptr;
-                                    fprintf(fp, "\t\tli\t\tt0,%u\n", output);
-                                    fprintf(fp, "\t\tsw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                }
-                                else {
-                                    fprintf(fp, "\t\tfsw\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                }
-                                break;
-                            case DoubleType:
-                                if (stmt_node -> ptrs[1] -> kind == FloatLiteral) {
-                                    double num = strtod(stmt_node -> ptrs[1] -> image, NULL);
-                                    double * num_ptr = &num;
-                                    unsigned long long output = *(unsigned long long *)num_ptr;
-                                    fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
-                                    fprintf(fp, "\t\tsd\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                }
-                                else {
-                                    fprintf(fp, "\t\tfsd\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                }
-                                break;
-                            case BoolType:
-                                fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                break;
-                        }
+                            }
+                            else {
+                                fprintf(fp, "\t\tfsw\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            }
+                            break;
+                        case DoubleType:
+                            if (stmt_node -> ptrs[1] -> kind == FloatLiteral) {
+                                double num = strtod(stmt_node -> ptrs[1] -> image, NULL);
+                                double * num_ptr = &num;
+                                unsigned long long output = *(unsigned long long *)num_ptr;
+                                fprintf(fp, "\t\tli\t\tt0,%llu\n", output);
+                                fprintf(fp, "\t\tsd\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            }
+                            else {
+                                fprintf(fp, "\t\tfsd\t\tft0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            }
+                            break;
+                        case BoolType:
+                            fprintf(fp, "\t\tsb\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
                     }
                 }
-                break;
-            case Return:
-                if (stmt_node -> ptrs[0] -> kind == Identifier) {
-                    ASTNode * val = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
-                    if (global_info_ptr -> loc_type == LOCAL_VAR) {
-                        switch (val -> ptrs[1] -> kind) {
-                            case IntType:
-                                fprintf(fp, "\t\tlw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
-                                break;
-                        }
+            }
+            break;
+        case Return:
+            if (stmt_node -> ptrs[0] -> kind == Identifier) {
+                ASTNode * val = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    switch (val -> ptrs[1] -> kind) {
+                        case IntType:
+                            fprintf(fp, "\t\tlw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
                     }
                 }
-                else if (stmt_node -> ptrs[0] -> kind == IntegerLiteral) {
-                    fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[0] -> image);
-                }
-                break;
-            case If:
-                break;
-            case While:
-                break;
-            case Funcall:
-                riscv64_put_funcall(fp, stmt_node, scope);
-                break;
-            default:
-                break;
-        }
+            }
+            else if (stmt_node -> ptrs[0] -> kind == IntegerLiteral) {
+                fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[0] -> image);
+            }
+            break;
+        case If:
+            riscv64_put_if(fp, stmt_node, scope);
+            break;
+        case While:
+            break;
+        case Funcall:
+            riscv64_put_funcall(fp, stmt_node, scope);
+            break;
+        case Block:
+            riscv64_put_block(fp, stmt_node, scope -> lowerLevel[*branch]);
+            *branch = *branch + 1;
+            break;
+        default:
+            break;
+    }
+}
+
+void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
+    ASTNode * stmt = NULL;
+    int branch = 0;
+    for (int i = 0; i < block -> ptrs[0] -> listLen; i++) {
+        stmt = &(block -> ptrs[0] -> list[i]);
+        ASTNode * stmt_node = stmt -> ptrs[0];
+        riscv64_put_stmt(fp, stmt_node, scope, &branch);
     }
 }
 
