@@ -546,8 +546,11 @@ void riscv64_set_var_offset(Scope * scope, int * frame_offset) {
             while (next != NULL) {
                 ASTNode * var = (ASTNode *)next -> target;
                 struct varinfo * info_ptr = &(next -> info);
-                if (var -> kind == Variable || var -> kind == ConstVariable) {
-                    switch (var -> ptrs[1] -> kind) {
+                int type_loc = 1;
+                if (var -> kind == Variable || var -> kind == ConstVariable || var -> kind == NormalParam) {
+                    if (var -> kind == NormalParam)
+                        type_loc = 0;
+                    switch (var -> ptrs[type_loc] -> kind) {
                         case IntType:
                             *frame_offset = ROUND(*frame_offset, 4);
                             if (info_ptr -> isArray == 0) {
@@ -645,15 +648,15 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
         else if (global_info_ptr -> loc_type == PARAM_VAR) {
             switch (val1 -> ptrs[0] -> kind) {
                 case IntType:
-                    file_write(fp, "\t\tmv\t\tt1,a0\n");
+                    fprintf(fp, "\t\tlw\t\tt1,%d(s0)\n", global_info_ptr -> frame_offset);
                     break;
                 case FloatType:
-                    file_write(fp, "\t\tfmv.s\t\tft1,fa0\n");
-                    rfloat = 1;
+                    fprintf(fp, "\t\tflw\t\tft1,%d(s0)\n", global_info_ptr -> frame_offset);
+                    lfloat = 1;
                     break;
                 case DoubleType:
-                    file_write(fp, "\t\tfmv.d\t\tft1,fa0\n");
-                    rdouble = 1;
+                    fprintf(fp, "\t\tfld\t\tft1,%d(s0)\n", global_info_ptr -> frame_offset);
+                    ldouble = 1;
                     break;
             }
         }
@@ -679,14 +682,14 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
         else if (global_info_ptr -> loc_type == PARAM_VAR) {
             switch (val2 -> ptrs[0] -> kind) {
                 case IntType:
-                    file_write(fp, "\t\tmv\t\tt2,a0\n");
+                    fprintf(fp, "\t\tlw\t\tt2,%d(s0)\n", global_info_ptr -> frame_offset);
                     break;
                 case FloatType:
-                    file_write(fp, "\t\tfmv.s\t\tft2,fa0\n");
+                    fprintf(fp, "\t\tflw\t\tft2,%d(s0)\n", global_info_ptr -> frame_offset);
                     rfloat = 1;
                     break;
                 case DoubleType:
-                    file_write(fp, "\t\tfmv.d\t\tft2,fa0\n");
+                    fprintf(fp, "\t\tfld\t\tft2,%d(s0)\n", global_info_ptr -> frame_offset);
                     rdouble = 1;
                     break;
             }
@@ -1109,6 +1112,46 @@ void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope) {
     }
 }
 
+void riscv64_put_param(FILE * fp, Scope * scope) {
+    int num = 0;
+    for (int i = 0; i < TableArraySize; i++) {
+        if (scope -> symbolTable -> tableArray[i].key != NULL) {
+            struct Value * next = &(scope -> symbolTable -> tableArray[i]);
+            while (next != NULL) {
+                ASTNode * var = (ASTNode *)next -> target;
+                struct varinfo * info_ptr = &(next -> info);
+                if (var -> kind == NormalParam) {
+                    switch (var -> ptrs[0] -> kind) {
+                        case IntType:
+                            fprintf(fp, "\t\tsw\t\ta%d,%d(s0)\n", num, info_ptr -> frame_offset);
+                            num++;
+                            break;
+                        case CharType:
+                            fprintf(fp, "\t\tsb\t\ta%d,%d(s0)\n", num, info_ptr -> frame_offset);
+                            num++;
+                            break;
+                        case BoolType:
+                            fprintf(fp, "\t\tsb\t\ta%d,%d(s0)\n", num, info_ptr -> frame_offset);
+                            num++;
+                            break;
+                        case FloatType:
+                            fprintf(fp, "\t\tfsw\t\tfa%d,%d(s0)\n", num, info_ptr -> frame_offset);
+                            num++;
+                            break;
+                        case DoubleType:
+                            fprintf(fp, "\t\tfsd\t\tfa%d,%d(s0)\n", num, info_ptr -> frame_offset);
+                            num++;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                next = next -> next;
+            }
+        }
+    }
+}
+
 void riscv64_put_func(FILE * fp, ASTNode * node, Scope * scope) {
     int frame_offset = 16, ra_offset = -8, s0_offset = -16;
     char * funcname = node -> ptrs[2] -> image;
@@ -1121,6 +1164,7 @@ void riscv64_put_func(FILE * fp, ASTNode * node, Scope * scope) {
     fprintf(fp, "%s:\n", funcname);
 
     riscv64_put_abi_head(fp, frame_offset, ra_offset, s0_offset);
+    riscv64_put_param(fp, scope);
     riscv64_put_block(fp, node -> ptrs[4], scope -> lowerLevel[0]);
 
 
