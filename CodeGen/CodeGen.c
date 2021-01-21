@@ -20,6 +20,7 @@ int branch_label = 2;
 void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope);
 void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branch);
 void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope);
+ASTNode * riscv64_calc_array_ref_addr(FILE * fp, ASTNode * node, Scope * scope);
 
 char * riscv64_new_filepath(void) {
     char * codefile_path = (char *)malloc(strlen(parsingFile));
@@ -667,6 +668,38 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
                     break;
             }
         }
+        else {
+            fprintf(fp, "\t\tla\t\ta5,%s\n", val1 -> ptrs[2] -> ptrs[0] -> image);
+            switch (val1 -> ptrs[1] -> kind) {
+                case IntType:
+                    file_write(fp, "\t\tlw\t\tt1,(a5)\n");
+                    break;
+                case FloatType:
+                    file_write(fp, "\t\tflw\t\tft1,(a5)\n");
+                    lfloat = 1;
+                    break;
+                case DoubleType:
+                    file_write(fp, "\t\tfld\t\tft1,(a5)\n");
+                    ldouble = 1;
+                    break;
+            }
+        }
+    }
+    else if (node -> ptrs[0] -> kind == ArrayRef) {
+        ASTNode * var = riscv64_calc_array_ref_addr(fp, node -> ptrs[0], scope);
+        switch (var -> ptrs[1] -> kind) {
+            case IntType:
+                file_write(fp, "\t\tlw\t\tt1,(a5)\n");
+                break;
+            case FloatType:
+                file_write(fp, "\t\tflw\t\tft1,(a5)\n");
+                lfloat = 1;
+                break;
+            case DoubleType:
+                file_write(fp, "\t\tfld\t\tft1,(a5)\n");
+                ldouble = 1;
+                break;
+        }
     }
 
     if (node -> ptrs[1] -> kind == Identifier) {
@@ -700,6 +733,38 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
                     rdouble = 1;
                     break;
             }
+        }
+        else {
+            fprintf(fp, "\t\tla\t\ta5,%s\n", val2 -> ptrs[2] -> ptrs[0] -> image);
+            switch (val2 -> ptrs[1] -> kind) {
+                case IntType:
+                    file_write(fp, "\t\tlw\t\tt2,(a5)\n");
+                    break;
+                case FloatType:
+                    file_write(fp, "\t\tflw\t\tft2,(a5)\n");
+                    rfloat = 1;
+                    break;
+                case DoubleType:
+                    file_write(fp, "\t\tfld\t\tft2,(a5)\n");
+                    rdouble = 1;
+                    break;
+            }
+        }
+    }
+    else if (node -> ptrs[1] -> kind == ArrayRef) {
+        ASTNode * var = riscv64_calc_array_ref_addr(fp, node -> ptrs[1], scope);
+        switch (var -> ptrs[1] -> kind) {
+            case IntType:
+                file_write(fp, "\t\tlw\t\tt2,(a5)\n");
+                break;
+            case FloatType:
+                file_write(fp, "\t\tflw\t\tft2,(a5)\n");
+                rfloat = 1;
+                break;
+            case DoubleType:
+                file_write(fp, "\t\tfld\t\tft2,(a5)\n");
+                rdouble = 1;
+                break;
         }
     }
 
@@ -869,6 +934,20 @@ void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
                     riscv64_put_binary_op(fp, &(args -> list[i]), scope);
                     fprintf(fp, "\t\tmv\t\ta%d,t0\n", i);
                     break;
+                case ArrayRef:
+                    val = riscv64_calc_array_ref_addr(fp, &(args -> list[i]), scope);
+                    switch (val -> ptrs[1] -> kind) {
+                        case IntType:
+                            fprintf(fp, "\t\tlw\t\ta%d,(a5)\n", i);
+                            break;
+                        case FloatType:
+                            fprintf(fp, "\t\tflw\t\ta%d,(a5)\n", i);
+                            break;
+                        case DoubleType:
+                            fprintf(fp, "\t\tfld\t\ta%d,(a5)\n", i);
+                            break;
+                    }
+                    break;
             }
         }
     }
@@ -898,6 +977,48 @@ void riscv64_put_if(FILE * fp, ASTNode * node, Scope * scope) {
     riscv64_put_stmt(fp, node -> ptrs[2] -> ptrs[0], scope, &branch);
     fprintf(fp, ".L%d:\n", branch_label);
     branch_label++;
+}
+
+ASTNode * riscv64_calc_array_ref_addr(FILE * fp, ASTNode * node, Scope * scope) {
+    ASTNode * var = NULL;
+    if (node -> ptrs[1] -> kind == Identifier) {
+        var = scope -> lookup(scope, node -> ptrs[1] -> image);
+        if (global_info_ptr -> loc_type == LOCAL_VAR) {
+            switch (var -> ptrs[1] -> kind) {
+                case IntType:
+                    fprintf(fp, "\t\tlw\t\ta4,%d(s0)\n", global_info_ptr -> frame_offset);
+                    break;
+            }
+        }
+    }
+    else if (node -> ptrs[1] -> kind == IntegerLiteral) {
+        fprintf(fp, "\t\tli\t\ta4,%s\n", node -> ptrs[1] -> image);
+    }
+
+
+    if (node -> ptrs[0] -> kind == Identifier) {
+        var = scope -> lookup(scope, node -> ptrs[0] -> image);
+        if (global_info_ptr -> loc_type == GLOBAL_VAR) {
+            fprintf(fp, "\t\tla\t\ta5,%s\n", node -> ptrs[0] -> image);
+        }
+        else if (global_info_ptr -> loc_type == LOCAL_VAR) {
+            fprintf(fp, "\t\taddi\t\ta5,s0,%d\n", global_info_ptr -> frame_offset);
+        }
+        switch (var -> ptrs[1] -> kind) {
+            case IntType:
+                file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                break;
+            case FloatType:
+                file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                break;
+            case DoubleType:
+                file_write(fp, "\t\tslli\t\ta4,a4,3\n");
+                break;
+        }
+        file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+    }
+
+    return var;
 }
 
 void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branch) {
@@ -1085,8 +1206,26 @@ void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branc
                     }
                 }
             }
+            else if (stmt_node -> ptrs[0] -> kind == ArrayRef) {
+                ASTNode * var = riscv64_calc_array_ref_addr(fp, stmt_node -> ptrs[0], scope);
+                switch (var -> ptrs[1] -> kind) {
+                    case IntType:
+                        file_write(fp, "\t\tsw\t\tt0,(a5)\n");
+                        break;
+                    case FloatType:
+                        file_write(fp, "\t\tfsw\t\tft0,(a5)\n");
+                        break;
+                    case DoubleType:
+                        file_write(fp, "\t\tfsd\t\tft0,(a5)\n");
+                        break;
+                }
+            }
             break;
         case Return:
+            if (stmt_node -> ptrs[0] == NULL) {
+                break;
+            }
+
             if (stmt_node -> ptrs[0] -> kind == Identifier) {
                 ASTNode * val = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
                 if (global_info_ptr -> loc_type == LOCAL_VAR) {
