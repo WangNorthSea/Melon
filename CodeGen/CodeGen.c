@@ -19,6 +19,7 @@ int branch_label = 2;
 
 void riscv64_put_block(FILE * fp, ASTNode * block, Scope * scope);
 void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branch);
+void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope);
 
 char * riscv64_new_filepath(void) {
     char * codefile_path = (char *)malloc(strlen(parsingFile));
@@ -628,6 +629,12 @@ void riscv64_put_abi_tail(FILE * fp, ASTNode * node, int frame_offset, int ra_of
 
 void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
     int lfloat = 0, ldouble = 0, rfloat = 0, rdouble = 0;
+
+    if (node -> ptrs[1] -> kind == Funcall) {
+        riscv64_put_funcall(fp, node -> ptrs[1], scope);
+        file_write(fp, "\t\tmv\t\tt2,a0\n");
+    }
+
     if (node -> ptrs[0] -> kind == Identifier) {
         ASTNode * val1 = scope -> lookup(scope, node -> ptrs[0] -> image);
         if (global_info_ptr -> loc_type == LOCAL_VAR) {
@@ -801,12 +808,18 @@ void riscv64_put_binary_op(FILE * fp, ASTNode * node, Scope * scope) {
         }
         else if (!strcmp(node -> image, "==")) {
             file_write(fp, "\t\tsext.w\t\tt1,t1\n");
+            file_write(fp, "\t\tsext.w\t\tt2,t2\n");
             fprintf(fp, "\t\tbne\t\tt1,t2,.L%d\n", branch_label);
         }
         else if (!strcmp(node -> image, "<")) {
             file_write(fp, "\t\tsext.w\t\tt1,t1\n");
             file_write(fp, "\t\tsext.w\t\tt2,t2\n");
             fprintf(fp, "\t\tblt\t\tt1,t2,.L%d\n", branch_label);
+        }
+        else if (!strcmp(node -> image, ">")) {
+            file_write(fp, "\t\tsext.w\t\tt1,t1\n");
+            file_write(fp, "\t\tsext.w\t\tt2,t2\n");
+            fprintf(fp, "\t\tble\t\tt1,t2,.L%d\n", branch_label);
         }
     }
 }
@@ -851,6 +864,10 @@ void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
                     else if (val -> ptrs[1] -> kind == DoubleType) {
                         fprintf(fp, "\t\tfmv.d\t\tfa%d,fa0\n", i);
                     }
+                    break;
+                case BinaryOp:
+                    riscv64_put_binary_op(fp, &(args -> list[i]), scope);
+                    fprintf(fp, "\t\tmv\t\ta%d,t0\n", i);
                     break;
             }
         }
@@ -1079,9 +1096,19 @@ void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branc
                             break;
                     }
                 }
+                else if (global_info_ptr -> loc_type == PARAM_VAR) {
+                    switch (val -> ptrs[0] -> kind) {
+                        case IntType:
+                            fprintf(fp, "\t\tlw\t\tt0,%d(s0)\n", global_info_ptr -> frame_offset);
+                            break;
+                    }
+                }
             }
             else if (stmt_node -> ptrs[0] -> kind == IntegerLiteral) {
                 fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[0] -> image);
+            }
+            else if (stmt_node -> ptrs[0] -> kind == BinaryOp) {
+                riscv64_put_binary_op(fp, stmt_node -> ptrs[0], scope);
             }
             break;
         case If:
