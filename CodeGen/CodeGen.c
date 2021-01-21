@@ -941,10 +941,10 @@ void riscv64_put_funcall(FILE * fp, ASTNode * node, Scope * scope) {
                             fprintf(fp, "\t\tlw\t\ta%d,(a5)\n", i);
                             break;
                         case FloatType:
-                            fprintf(fp, "\t\tflw\t\ta%d,(a5)\n", i);
+                            fprintf(fp, "\t\tflw\t\tfa%d,(a5)\n", i);
                             break;
                         case DoubleType:
-                            fprintf(fp, "\t\tfld\t\ta%d,(a5)\n", i);
+                            fprintf(fp, "\t\tfld\t\tfa%d,(a5)\n", i);
                             break;
                     }
                     break;
