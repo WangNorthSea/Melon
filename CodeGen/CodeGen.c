@@ -1021,6 +1021,154 @@ ASTNode * riscv64_calc_array_ref_addr(FILE * fp, ASTNode * node, Scope * scope) 
     return var;
 }
 
+void riscv64_put_vector(FILE * fp, ASTNode * lval, ASTNode * op, Scope * scope) {
+    int branch = 0;
+    ASTNode * val1 = NULL;
+    ASTNode * val2 = NULL;
+    file_write(fp, "\t\tli\t\ta3,0\n");
+    fprintf(fp, "\t\tj\t\t.L%d\n", branch_label);
+    branch_label++;
+    fprintf(fp, ".L%d:\n", branch_label);
+    
+    switch (lval -> ptrs[1] -> kind) {
+        case IntType:
+            val1 = scope -> lookup(scope, op -> ptrs[0] -> image);
+            if (global_info_ptr -> loc_type == GLOBAL_VAR) {
+                fprintf(fp, "\t\tla\t\ta5,%s\n", op -> ptrs[0] -> image);
+                file_write(fp, "\t\tmv\t\ta4,a3\n");
+                file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                file_write(fp, "\t\tlw\t\tt1,(a5)\n");
+            }
+
+            val2 = scope -> lookup(scope, op -> ptrs[1] -> image);
+            if (global_info_ptr -> loc_type == GLOBAL_VAR) {
+                fprintf(fp, "\t\tla\t\ta5,%s\n", op -> ptrs[1] -> image);
+                file_write(fp, "\t\tmv\t\ta4,a3\n");
+                file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                file_write(fp, "\t\tlw\t\tt2,(a5)\n");
+            }
+            break;
+        case FloatType:
+            val1 = scope -> lookup(scope, op -> ptrs[0] -> image);
+            if (global_info_ptr -> loc_type == GLOBAL_VAR) {
+                fprintf(fp, "\t\tla\t\ta5,%s\n", op -> ptrs[0] -> image);
+                file_write(fp, "\t\tmv\t\ta4,a3\n");
+                file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                file_write(fp, "\t\tflw\t\tft1,(a5)\n");
+            }
+
+            val2 = scope -> lookup(scope, op -> ptrs[1] -> image);
+            if (global_info_ptr -> loc_type == GLOBAL_VAR) {
+                fprintf(fp, "\t\tla\t\ta5,%s\n", op -> ptrs[1] -> image);
+                file_write(fp, "\t\tmv\t\ta4,a3\n");
+                file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                file_write(fp, "\t\tflw\t\tft2,(a5)\n");
+            }
+            break;
+        case DoubleType:
+            val1 = scope -> lookup(scope, op -> ptrs[0] -> image);
+            if (global_info_ptr -> loc_type == GLOBAL_VAR) {
+                fprintf(fp, "\t\tla\t\ta5,%s\n", op -> ptrs[0] -> image);
+                file_write(fp, "\t\tmv\t\ta4,a3\n");
+                file_write(fp, "\t\tslli\t\ta4,a4,3\n");
+                file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                file_write(fp, "\t\tfld\t\tft1,(a5)\n");
+            }
+
+            val2 = scope -> lookup(scope, op -> ptrs[1] -> image);
+            if (global_info_ptr -> loc_type == GLOBAL_VAR) {
+                fprintf(fp, "\t\tla\t\ta5,%s\n", op -> ptrs[1] -> image);
+                file_write(fp, "\t\tmv\t\ta4,a3\n");
+                file_write(fp, "\t\tslli\t\ta4,a4,3\n");
+                file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                file_write(fp, "\t\tfld\t\tft2,(a5)\n");
+            }
+            break;
+    }
+
+    scope -> lookup(scope, lval -> ptrs[2] -> ptrs[0] -> image);
+    if (!strcmp(op -> image, "+")) {
+        switch (lval -> ptrs[1] -> kind) {
+            case IntType:
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    fprintf(fp, "\t\taddi\t\ta5,s0,%d\n", global_info_ptr -> frame_offset);
+                    file_write(fp, "\t\tmv\t\ta4,a3\n");
+                    file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                    file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                    file_write(fp, "\t\tadd\t\tt0,t1,t2\n");
+                    file_write(fp, "\t\tsw\t\tt0,(a5)\n");
+                }
+                break;
+            case FloatType:
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    fprintf(fp, "\t\taddi\t\ta5,s0,%d\n", global_info_ptr -> frame_offset);
+                    file_write(fp, "\t\tmv\t\ta4,a3\n");
+                    file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                    file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                    file_write(fp, "\t\tfadd.s\t\tft0,ft1,ft2\n");
+                    file_write(fp, "\t\tfsw\t\tft0,(a5)\n");
+                }
+                break;
+            case DoubleType:
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    fprintf(fp, "\t\taddi\t\ta5,s0,%d\n", global_info_ptr -> frame_offset);
+                    file_write(fp, "\t\tmv\t\ta4,a3\n");
+                    file_write(fp, "\t\tslli\t\ta4,a4,3\n");
+                    file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                    file_write(fp, "\t\tfadd.d\t\tft0,ft1,ft2\n");
+                    file_write(fp, "\t\tfsd\t\tft0,(a5)\n");
+                }
+                break;
+        }
+    }
+    else if (!strcmp(op -> image, "-")) {
+        switch (lval -> ptrs[1] -> kind) {
+            case IntType:
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    fprintf(fp, "\t\taddi\t\ta5,s0,%d\n", global_info_ptr -> frame_offset);
+                    file_write(fp, "\t\tmv\t\ta4,a3\n");
+                    file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                    file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                    file_write(fp, "\t\tsub\t\tt0,t1,t2\n");
+                    file_write(fp, "\t\tsw\t\tt0,(a5)\n");
+                }
+                break;
+            case FloatType:
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    fprintf(fp, "\t\taddi\t\ta5,s0,%d\n", global_info_ptr -> frame_offset);
+                    file_write(fp, "\t\tmv\t\ta4,a3\n");
+                    file_write(fp, "\t\tslli\t\ta4,a4,2\n");
+                    file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                    file_write(fp, "\t\tfsub.s\t\tft0,ft1,ft2\n");
+                    file_write(fp, "\t\tfsw\t\tft0,(a5)\n");
+                }
+                break;
+            case DoubleType:
+                if (global_info_ptr -> loc_type == LOCAL_VAR) {
+                    fprintf(fp, "\t\taddi\t\ta5,s0,%d\n", global_info_ptr -> frame_offset);
+                    file_write(fp, "\t\tmv\t\ta4,a3\n");
+                    file_write(fp, "\t\tslli\t\ta4,a4,3\n");
+                    file_write(fp, "\t\tadd\t\ta5,a4,a5\n");
+                    file_write(fp, "\t\tfsub.d\t\tft0,ft1,ft2\n");
+                    file_write(fp, "\t\tfsd\t\tft0,(a5)\n");
+                }
+                break;
+        }
+    }
+    file_write(fp, "\t\taddi\t\ta3,a3,1\n");
+
+    fprintf(fp, ".L%d:\n", branch_label - 1);    
+    fprintf(fp, "\t\tli\t\tt1,%d\n", global_info_ptr -> arrlen);
+    file_write(fp, "\t\tsext.w\t\ta3,a3\n");
+    file_write(fp, "\t\tsext.w\t\tt1,t1\n");
+    fprintf(fp, "\t\tblt\t\ta3,t1,.L%d\n", branch_label);
+    branch_label++;
+}
+
 void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branch) {
     switch (stmt_node -> kind) {
         case DefinedVariables:
@@ -1122,6 +1270,14 @@ void riscv64_put_stmt(FILE * fp, ASTNode * stmt_node, Scope * scope, int * branc
             }
             break;
         case Assign:
+            if (stmt_node -> ptrs[0] -> kind == Identifier) {
+                ASTNode * lval = scope -> lookup(scope, stmt_node -> ptrs[0] -> image);
+                if (global_info_ptr -> isArray == 1) {
+                    riscv64_put_vector(fp, lval, stmt_node -> ptrs[1], scope);
+                    break;
+                }
+            }
+
             if (stmt_node -> ptrs[1] -> kind == IntegerLiteral) {
                 fprintf(fp, "\t\tli\t\tt0,%s\n", stmt_node -> ptrs[1] -> image);
             }

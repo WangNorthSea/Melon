@@ -32,17 +32,17 @@ int main(int argc, const char * argv[]) {
     
     Token * headToken = lexicalAnalyze(fp);
     Token * pos = NULL;
-    list_for_each_entry(pos, &headToken -> list, list) {
+    /*list_for_each_entry(pos, &headToken -> list, list) {
         //printf("line: %d\t\tvalue: %s\t\tkind: %d   \t\tfpos: %lld\n", pos -> beginLine, pos -> image, pos -> kind, pos -> fpos);
         printf("line: %d\t\tvalue: %s\t\tkind: %d\n", pos -> beginLine, pos -> image, pos -> kind);
-    }
+    }*/
 
     if (!list_empty(&err_list -> list)) {
         dumpErrorList(err_list, fp);
         return -1;
     }
     
-    printf("\nAST:\n");
+    //printf("\nAST:\n");
     
     
     ASTNode * rootNode = compilationUnit(headToken);
@@ -52,21 +52,21 @@ int main(int argc, const char * argv[]) {
         return -1;
     }
 
-    dumpAST(rootNode);
+    //dumpAST(rootNode);
     
     semanticAnalyze(rootNode, parsingFile);
     
-    printf("\nAfter semantic analysis...\nScope:\n");
+    //printf("\nAfter semantic analysis...\nScope:\n");
 
     if (!list_empty(&err_list -> list)) {
         dumpErrorList(err_list, fp);
         return -1;
     }
     
-    dumpScope(scope);
+    //dumpScope(scope);
 
-    printf("\nAST:\n");
-    dumpAST(rootNode);
+    //printf("\nAST:\n");
+    //dumpAST(rootNode);
 
     riscv64_codegen(rootNode, scope);
     
